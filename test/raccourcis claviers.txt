@@ -1,0 +1,54 @@
+ctrl a : sélectionner tout le texte sur la page (basique)
+
+ctrl c / ctrl v : copier coller (basique)
+
+ctrl x : couper (mouais)
+
+ctrl t : ouvre un nouvel onglet quand on est sur le web (utile)
+
+ctrl w : fermer l'onglet web ou l'explorateur de fichier ouvert (utile)
+
+ctrl tab : permet de changer de page web rapidement (utile)
+
+ctrl r : permet de rechercher dans une page (ex : sur l'ide java on fait ctrl r puis "test" et il va nous afficher en surbrillance tout les mots "test") (utile) ⚠dans les pages ce raccourci actualise la page
+
+ctrl f : permet de rechercher dans les pages web (ctrl r rafraîchit la page) (utile)
+
+ctrl s : effectuer un "save all" (sauvegarde tout) (très utile)
+
+ctrl n : créer un nouveau fichier quand vous êtes sur un éditeur de texte (utile)
+
+ctrl tab : permet de changer d'onglet web facilement quand vous êtes sur le web (utile)
+
+windows d : vous met sur le bureau,refaites windows d pour remettre tout comme avant (raccourci très utile) 
+
+window m : même effet que windows d mais on ne peut pas revenir en arrière (peu utile)
+
+windows ; : ouvre le sélecteur d'emoji (super utile)
+
+windows e : ouvre l'explorateur de fichier (SUPER UTILE DE LA MORT QUI TUE)
+
+windows+ touches au dessus de l'azerty : ouvre les applis de la barre des tâches (ex : windows + & pour le premier icône,windows é pour le deuxième etc...) (très utile)
+
+windows r : permet d'ouvre des commandes internes au pc tel que "cmd","java","python","appdata" etc... (peu utile)
+
+alt+tab : permet de choisir une appli ouverte sur le bureau actuel (ouvre un petit menu pour sélectionner) (très très très utile)
+
+alt F4 : ferme l'application actuelle ou vous propose d'éteindre le pc si vous êtes sur le bureau (pcs portables : alt fn f4) (très utile)
+
+ctrl windows d : crée un nouveau bureau (voir vous même l'utilisation de ca) (utile)
+
+ctrl windows flèches : change de bureau rapidement (utile)
+
+windows tab : permet d'afficher les bureux créer ou de changer manuellement (utile)
+
+ctrl shift échap : affiche le gestionnaire des tâches (utile seulement si vous utilisez le gestionnaire)
+
+
+RACCOURCIS NON CLAVIER MAIS UTILES //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+quand vous êtes sur le bureau,appuyez sur n'importe quelle touche vous ménera directement sur l'application dont l'initiale du nom est cete touche (ex : j'appuie sur i il va mettre a intellij) vous n'avez plus qu'a faire entrée pour l'ouvrir
+
+
+
