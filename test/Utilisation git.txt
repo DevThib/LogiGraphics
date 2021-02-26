@@ -1,5 +1,0 @@
-créer une copie du projet : git clone + lien
-récupérer le projet : git pull
-ajouter le fichier : git add . puis git commit et enfin git push 
-
-/!\ toujours faire git pull avant d'ajouter un fichier lorsque le projet est en travail avec plusieurs personnes
