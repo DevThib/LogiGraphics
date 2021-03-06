@@ -178,15 +178,13 @@ public class Main extends Application {
                             numberOfCircle++;
                             c.setOpacity(1);
                             nodeAction = c;
-                        }
-                        if (nodeAction.getTypeSelector().equalsIgnoreCase("Rectangle")) {
+                        }else if (nodeAction.getTypeSelector().equalsIgnoreCase("Rectangle")) {
                             Rectangle c = (Rectangle) nodeAction;
                             c.setId("r" + numberOfRectangle);
                             numberOfRectangle++;
                             c.setOpacity(1);
                             nodeAction = c;
-                        }
-                        if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
+                        }else if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
                             Line c = (Line) nodeAction;
                             c.setId("l" + numberOfLine);
                             numberOfLine++;
@@ -202,6 +200,8 @@ public class Main extends Application {
                     }
 
                 });
+
+                new OnMouseMoved();
 
                 scene.setOnKeyTyped(event14 -> {
 

@@ -6,7 +6,6 @@ import javafx.scene.shape.Rectangle;
 public class OnMouseMoved {
     public void onMouseMoved() {
         Main.scene.setOnMouseMoved(event1 -> {
-
             if (Main.isOnAction) {
 
                 if (Main.selector == 1) {
