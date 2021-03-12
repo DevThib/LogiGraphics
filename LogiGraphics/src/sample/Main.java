@@ -69,15 +69,13 @@ public class Main extends Application {
     boolean mLi = true;
     boolean rSh = true;
 
-    int ch = 0;
-
     /* selector :
 
     1 = rectangle
     2 = cercle
     3 = ligne
-    4 = libre
-    5 = polyline
+    4 = polyline
+    5 = libre
 
      */
 
@@ -164,11 +162,11 @@ public class Main extends Application {
                         @Override
                         public void handle(MouseEvent event) {
 
-                            if(selector == 5){
+                            if(selector == 4){
 
                                 if(pline == null){
                                     pline = new Polyline();
-                                    pline.setOpacity(0.3);
+                                    pline.setId("pl"+numberOfPolyLine);
                                     pline.getPoints().addAll(event.getX(),event.getY());
                                     group.getChildren().add(pline);
                                 }else {
@@ -179,7 +177,7 @@ public class Main extends Application {
 
 
                                 if (!isOnAction) {
-                                    if (selector != 4) {
+                                    if (selector != 5) {
                                         isOnAction = true;
                                     }
 
@@ -368,11 +366,10 @@ public class Main extends Application {
                         @Override
                         public void handle(MouseEvent event) {
 
-                            if(selector == 5){
+                            if(selector == 4){
 
                                 if(pline == null){
                                     pline = new Polyline();
-                                    pline.setOpacity(0.3);
                                     pline.setId("pl"+numberOfPolyLine);
                                     pline.getPoints().addAll(event.getX(),event.getY());
                                     group.getChildren().add(pline);
@@ -384,7 +381,7 @@ public class Main extends Application {
 
 
                                 if (!isOnAction) {
-                                    if (selector != 4) {
+                                    if (selector != 5) {
                                         isOnAction = true;
                                     }
 
@@ -719,7 +716,7 @@ public class Main extends Application {
                     l.setStartY(Double.parseDouble(start[1]));
                     l.setEndX(Double.parseDouble(end[0]));
                     l.setEndY(Double.parseDouble(end[1]));
-                    l.setId(properties[4]);
+                    l.setId(properties[3]);
                     group.getChildren().add(l);
                     numberOfLine++;
 
@@ -923,7 +920,7 @@ public class Main extends Application {
         polyline.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                selector = 5;
+                selector = 4;
             }
         });
 
@@ -931,7 +928,7 @@ public class Main extends Application {
         free.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                selector = 4;
+                selector = 5;
             }
         });
 
@@ -1191,7 +1188,7 @@ public class Main extends Application {
         });
 
         MenuItem mli = new MenuItem("〰 Visible");
-        li.setOnAction(event -> {
+        mli.setOnAction(event -> {
             if(mLi){
                 mLi = false;
                 setVisibilty(false,"Polyline");
@@ -1380,8 +1377,9 @@ public class Main extends Application {
 
                         general.getChildren().addAll(with,wi,height,hi,x,xi,y,yi,soumettre);
                     }
-
-
+                    if(element.getTypeSelector().equalsIgnoreCase("Polyline")) {
+                        title.setText("Les multilignes ne sont pas encore modifiables pour l'instant");
+                    }
                 }else{
                     search.setText("Aucun élément");
                 }
