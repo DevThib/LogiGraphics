@@ -22,52 +22,47 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.util.Random;
 
 public class Main extends Application {
 
-    Stage primary;
+    public static Stage primary;
 
-    Group group = new Group();
+    public static Group group = new Group();
     Scene scene = new Scene(group,1300,900, Color.GREY);
 
-    boolean isOnAction = false;
-    Node nodeAction = null;
+    public static boolean isOnAction = false;
+    public static Node nodeAction = null;
 
     double moveX = 0;
     double moveY = 0;
 
-    int selector = 1;
+    public static int selector = 1;
 
     Circle circle;
     Rectangle rectangle;
     Line line;
     Polyline pline;
 
-    int numberOfRectangle = 0;
-    int numberOfCircle = 0;
-    int numberOfLine = 0;
-    int numberOfPolyLine = 0;
+    public static int numberOfRectangle = 0;
+    public static int numberOfCircle = 0;
+     public static int numberOfLine = 0;
+    public static int numberOfPolyLine = 0;
 
     Line indicator = new Line();
 
-    File workspace;
+    public static File workspace;
 
     MenuBar bar = new MenuBar();
 
-    Menu formes = new Menu("Construire");
-    Menu functions = new Menu("Fonctions");
-    Menu files = new Menu("Fichiers");
-    Menu elements = new Menu("Éléments");
-    Menu visibilty = new Menu("Visibilité");
+    public static File superpose;
 
-    File superpose;
+    public static boolean rVis = true;
+    public static boolean rCi = true;
+    public static boolean rLi = true;
+    public static boolean mLi = true;
+    public static boolean rSh = true;
 
-    boolean rVis = true;
-    boolean rCi = true;
-    boolean rLi = true;
-    boolean mLi = true;
-    boolean rSh = true;
+    public static Label icon = new Label();
 
     /* selector :
 
@@ -84,7 +79,6 @@ public class Main extends Application {
 
         -pouvoir changer la rotation, l'id et la rotation des objets dans les paramètres des objets et pouvoir faire des copies d'un autre objet (on met les mêmes width et height d'un autre)
         -pouvoir avoir la liste des éléments du projet
-        -mettre github
         -bouton paramètres
         -le 3d (ROMAINPC) vidéo dessus
         -mettre un icone en haut qui indique ce qu'on a choisi (rectangle,cercle,libre,gomme etc...)
@@ -93,458 +87,112 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage){
 
-        addMenuItems();
+        try {
 
-        Stage choose = new Stage();
-        FlowPane e = new FlowPane();
-        Scene sce = new Scene(e,600,450);
+            AllMenus menus = new AllMenus();
+            bar = menus.getBar();
 
-        VBox b1 = new VBox();
-        VBox b2 = new VBox();
+            Stage choose = new Stage();
+            FlowPane e = new FlowPane();
+            Scene sce = new Scene(e, 600, 450);
 
-        Label lab = new Label("Créer un projet");
-        lab.setFont(new Font("Trebuchet MS",30));
+            VBox b1 = new VBox();
+            VBox b2 = new VBox();
 
-        Label label2 = new Label("Ouvrir un projet");
-        label2.setFont(new Font("Trebuchet MS",30));
+            Label lab = new Label("Créer un projet");
+            lab.setFont(new Font("Trebuchet MS", 30));
 
-        Button create = new Button("Créer");
-        Button open = new Button("Ouvrir");
+            Label label2 = new Label("Ouvrir un projet");
+            label2.setFont(new Font("Trebuchet MS", 30));
 
-        create.setFont( new Font("Trebuchet MS",25));
-        open.setFont( new Font("Trebuchet MS",25));
+            Button create = new Button("Créer");
+            Button open = new Button("Ouvrir");
 
-        b1.getChildren().addAll(lab,create);
-        b2.getChildren().addAll(label2,open);
+            create.setFont(new Font("Trebuchet MS", 25));
+            open.setFont(new Font("Trebuchet MS", 25));
 
-        b1.setAlignment(Pos.CENTER);
-        b2.setAlignment(Pos.CENTER);
-        b1.setPadding(new Insets(8));
-        b2.setPadding(new Insets(8));
+            b1.getChildren().addAll(lab, create);
+            b2.getChildren().addAll(label2, open);
 
-        e.setAlignment(Pos.CENTER);
-        e.getChildren().addAll(b1,b2);
+            b1.setAlignment(Pos.CENTER);
+            b2.setAlignment(Pos.CENTER);
+            b1.setPadding(new Insets(8));
+            b2.setPadding(new Insets(8));
 
-        choose.setScene(sce);
-        choose.setTitle("Projet");
-        choose.show();
+            e.setAlignment(Pos.CENTER);
+            e.getChildren().addAll(b1, b2);
 
-        create.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+            choose.setScene(sce);
+            choose.setTitle("Projet");
+            choose.show();
 
-                choose.close();
+            create.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
 
-                try {
-
-                    int number = 1;
-                    File file = new File(System.getProperty("user.dir"), "projet" + number + ".txt");
-                    while (file.exists()) {
-                        number++;
-                        file = new File(System.getProperty("user.dir"), "projet" + number + ".txt");
-                    }
-                    file.createNewFile();
-
-                    workspace = file;
-
-                    Stage stage = new Stage();
-                    VBox box = new VBox();
-                    Label label = new Label();
-                    label.setText(randomTip());
-                    label.setFont(new Font("Trebuchet MS",15));
-                    box.getChildren().addAll(label);
-                    box.setAlignment(Pos.CENTER);
-                    stage.setScene(new Scene(box,500,225));
-                    stage.setTitle("Astuce du jour !");
-
-                    scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-                        @Override
-                        public void handle(MouseEvent event) {
-
-                            if(selector == 4){
-
-                                if(pline == null){
-                                    pline = new Polyline();
-                                    pline.setId("pl"+numberOfPolyLine);
-                                    pline.getPoints().addAll(event.getX(),event.getY());
-                                    group.getChildren().add(pline);
-                                }else {
-                                    pline.getPoints().addAll(event.getX(), event.getY());
-                                }
-
-                            }else {
-
-
-                                if (!isOnAction) {
-                                    if (selector != 5) {
-                                        isOnAction = true;
-                                    }
-
-                                    if (selector == 1) {
-
-                                        rectangle = new Rectangle();
-
-                                        rectangle.setOpacity(0.3);
-                                        rectangle.setY(event.getY());
-                                        rectangle.setX(event.getX());
-                                        rectangle.setWidth(6);
-                                        rectangle.setHeight(6);
-                                        nodeAction = rectangle;
-                                        group.getChildren().add(rectangle);
-                                    }
-
-                                    if (selector == 2) {
-                                        circle = new Circle();
-
-                                        circle.setOpacity(0.3);
-                                        circle.setCenterX(event.getX());
-                                        circle.setCenterY(event.getY());
-                                        circle.setRadius(15);
-                                        nodeAction = circle;
-                                        group.getChildren().add(circle);
-                                    }
-
-                                    if (selector == 3) {
-                                        line = new Line();
-
-                                        line.setOpacity(0.3);
-                                        line.setStartX(event.getX());
-                                        line.setStartY(event.getY());
-                                        line.setEndY(event.getX());
-                                        line.setEndY(event.getY());
-                                        nodeAction = line;
-                                        group.getChildren().add(line);
-                                    }
-
-
-                                } else {
-
-                                    if (nodeAction.getTypeSelector().equalsIgnoreCase("Circle")) {
-                                        Circle c = (Circle) nodeAction;
-                                        c.setId("c" + numberOfCircle);
-                                        numberOfCircle++;
-                                        c.setOpacity(1);
-                                        nodeAction = c;
-                                    }
-                                    if (nodeAction.getTypeSelector().equalsIgnoreCase("Rectangle")) {
-                                        Rectangle c = (Rectangle) nodeAction;
-                                        c.setId("r" + numberOfRectangle);
-                                        numberOfRectangle++;
-                                        c.setOpacity(1);
-                                        nodeAction = c;
-                                    }
-                                    if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
-                                        Line c = (Line) nodeAction;
-                                        c.setId("l" + numberOfLine);
-                                        numberOfLine++;
-                                        c.setOpacity(1);
-                                        nodeAction = c;
-                                    }
-
-                                    isOnAction = false;
-                                    nodeAction = null;
-                                    moveY = 0;
-                                    moveX = 0;
-                                    save();
-                                }
-                            }
-
-                        }
-                    });
-
-                    scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-
-                            if(isOnAction){
-
-                                if(selector == 1){
-
-                                    Rectangle circle1 = (Rectangle) nodeAction;
-                                    circle1.setWidth(event.getX()-circle1.getX());
-                                    circle1.setHeight(event.getY()-circle1.getY());
-                                    rectangle = circle1;
-
-                                }
-
-                                if(selector == 2){
-
-                                    moveY = event.getY();
-                                    moveX = event.getX();
-                                    Circle circle1 = (Circle) nodeAction;
-                                    circle1.setRadius(event.getX()-circle1.getCenterX());
-                                    circle = circle1;
-
-                                }
-                                if(selector == 3){
-                                    line.setEndX(event.getX());
-                                    line.setEndY(event.getY());
-                                }
-
-                            }
-                            analyse(event.getY(), event.getX());
-                        }
-                    });
-
-                    scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
-                        @Override
-                        public void handle(KeyEvent event) {
-
-                            if(event.getCharacter().equalsIgnoreCase("p")){
-                                selector++;
-                                if(selector > 5){
-                                    selector = 1;
-                                }
-                            }
-
-                            if(event.getCharacter().equalsIgnoreCase("z")){
-                                moveY(true);
-                            }
-
-                            if(event.getCharacter().equalsIgnoreCase("s")){
-                                moveY(false);
-                            }
-
-                            if(event.getCharacter().equalsIgnoreCase("d")){
-                                moveX(true);
-                            }
-
-                            if(event.getCharacter().equalsIgnoreCase("q")){
-                                moveX(false);
-                            }
-
-                        }
-                    });
-
-                    bar.getMenus().addAll(files,formes,functions,elements,visibilty);
-                    group.getChildren().addAll(bar,indicator);
-
-                    openProject(workspace);
-
-                    char[] na = workspace.getName().toCharArray();
-                    String name = "";
-                    for(int i = 0; i < na.length-4;i++){
-                        name += na[i];
-                    }
-
-                    primaryStage.setTitle("LogiGraphics - "+name);
-                    primaryStage.setScene(scene);
-                    primaryStage.show();
-                    primary = primaryStage;
-                    stage.show();
-
-                }catch (IOException e){
-                    System.out.println("error");
-                }
-
-            }
-        });
-        open.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event){
-
-                try{
-
-                    FileChooser chooser = new FileChooser();
-                    chooser.setTitle("Sélectionner un projet");
-                    workspace = chooser.showOpenDialog(primaryStage);
-
-                    Stage stage = new Stage();
-                    VBox box = new VBox();
-                    Label label = new Label();
-                    label.setText(randomTip());
-                    label.setFont(new Font("Trebuchet MS", 15));
-                    box.getChildren().addAll(label);
-                    box.setAlignment(Pos.CENTER);
-                    stage.setScene(new Scene(box, 500, 225));
-                    stage.setTitle("Astuce du jour !");
-
-                    scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-                        @Override
-                        public void handle(MouseEvent event) {
-
-                            if(selector == 4){
-
-                                if(pline == null){
-                                    pline = new Polyline();
-                                    pline.setId("pl"+numberOfPolyLine);
-                                    pline.getPoints().addAll(event.getX(),event.getY());
-                                    group.getChildren().add(pline);
-                                }else {
-                                    pline.getPoints().addAll(event.getX(), event.getY());
-                                }
-
-                            }else {
-
-
-                                if (!isOnAction) {
-                                    if (selector != 5) {
-                                        isOnAction = true;
-                                    }
-
-                                    if (selector == 1) {
-
-                                        rectangle = new Rectangle();
-
-                                        rectangle.setOpacity(0.3);
-                                        rectangle.setY(event.getY());
-                                        rectangle.setX(event.getX());
-                                        rectangle.setWidth(6);
-                                        rectangle.setHeight(6);
-                                        nodeAction = rectangle;
-                                        group.getChildren().add(rectangle);
-                                    }
-
-                                    if (selector == 2) {
-                                        circle = new Circle();
-
-                                        circle.setOpacity(0.3);
-                                        circle.setCenterX(event.getX());
-                                        circle.setCenterY(event.getY());
-                                        circle.setRadius(15);
-                                        nodeAction = circle;
-                                        group.getChildren().add(circle);
-                                    }
-
-                                    if (selector == 3) {
-                                        line = new Line();
-
-                                        line.setOpacity(0.3);
-                                        line.setStartX(event.getX());
-                                        line.setStartY(event.getY());
-                                        line.setEndY(event.getX());
-                                        line.setEndY(event.getY());
-                                        nodeAction = line;
-                                        group.getChildren().add(line);
-                                    }
-
-
-                                } else {
-
-                                    if (nodeAction.getTypeSelector().equalsIgnoreCase("Circle")) {
-                                        Circle c = (Circle) nodeAction;
-                                        c.setId("c" + numberOfCircle);
-                                        numberOfCircle++;
-                                        c.setOpacity(1);
-                                        nodeAction = c;
-                                    }
-                                    if (nodeAction.getTypeSelector().equalsIgnoreCase("Rectangle")) {
-                                        Rectangle c = (Rectangle) nodeAction;
-                                        c.setId("r" + numberOfRectangle);
-                                        numberOfRectangle++;
-                                        c.setOpacity(1);
-                                        nodeAction = c;
-                                    }
-                                    if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
-                                        Line c = (Line) nodeAction;
-                                        c.setId("l" + numberOfLine);
-                                        numberOfLine++;
-                                        c.setOpacity(1);
-                                        nodeAction = c;
-                                    }
-
-                                    isOnAction = false;
-                                    nodeAction = null;
-                                    moveY = 0;
-                                    moveX = 0;
-                                    save();
-                                }
-                            }
-
-                        }
-                    });
-
-                    scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-
-                            if (isOnAction) {
-
-                                if (selector == 1) {
-
-                                    Rectangle circle1 = (Rectangle) nodeAction;
-                                    circle1.setWidth(event.getX() - circle1.getX());
-                                    circle1.setHeight(event.getY() - circle1.getY());
-                                    rectangle = circle1;
-
-                                }
-
-                                if (selector == 2) {
-
-                                    moveY = event.getY();
-                                    moveX = event.getX();
-                                    Circle circle1 = (Circle) nodeAction;
-                                    circle1.setRadius(event.getX() - circle1.getCenterX());
-                                    circle = circle1;
-
-                                }
-                                if (selector == 3) {
-                                    line.setEndX(event.getX());
-                                    line.setEndY(event.getY());
-                                }
-
-                            }
-                            analyse(event.getY(), event.getX());
-                        }
-                    });
-
-                    scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
-                        @Override
-                        public void handle(KeyEvent event) {
-
-                            if (event.getCharacter().equalsIgnoreCase("p")) {
-                                selector++;
-                                if (selector > 4) {
-                                    selector = 1;
-                                }
-                            }
-
-                            if (event.getCharacter().equalsIgnoreCase("z")) {
-                                moveY(true);
-                            }
-
-                            if (event.getCharacter().equalsIgnoreCase("s")) {
-                                moveY(false);
-                            }
-
-                            if (event.getCharacter().equalsIgnoreCase("d")) {
-                                moveX(true);
-                            }
-
-                            if (event.getCharacter().equalsIgnoreCase("q")) {
-                                moveX(false);
-                            }
-
-                        }
-                    });
-
-                    bar.getMenus().addAll(files, formes, functions, elements,visibilty);
-                    group.getChildren().addAll(bar, indicator);
-
-                    openProject(workspace);
-
-                    char[] na = workspace.getName().toCharArray();
-                    String name = "";
-                    for (int i = 0; i < na.length - 4; i++) {
-                        name += na[i];
-                    }
-
-                    primaryStage.setTitle("LogiGraphics - " + name);
-                    primaryStage.setScene(scene);
-                    primaryStage.show();
-                    primary = primaryStage;
-                    stage.show();
                     choose.close();
 
-                }catch (NullPointerException e){
-                    choose.close();
-                }
+                    try {
 
-            }
-        });
+                        File folder = new File(System.getProperty("user.dir"),"projets LogiGraphics");
+
+                        if(!folder.exists()){
+                           folder.mkdir();
+                        }
+
+                        int number = 1;
+                        File file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
+                        while (file.exists()) {
+                            number++;
+                            file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
+                        }
+                        file.createNewFile();
+
+                        workspace = file;
+
+                        startAll(primaryStage);
+
+                    } catch (IOException e) {
+                        System.out.println("error");
+                    }
+
+                }
+            });
+            open.setOnAction(new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent event) {
+
+                    try {
+
+                        FileChooser chooser = new FileChooser();
+                        workspace = chooser.showOpenDialog(primaryStage);
+                        startAll(primaryStage);
+                        choose.close();
+
+                    } catch (NullPointerException e) {
+                        choose.close();
+                    }
+
+                }
+            });
+
+        }catch (NullPointerException e){
+            Stage stage = new Stage();
+            VBox box = new VBox();
+            Scene scene = new Scene(box,600,450);
+
+            Label label = new Label("Une erreur s'est produite,LogiGraphics va se relancer");
+
+            start(new Stage());
+
+            box.getChildren().addAll(label);
+
+            stage.setScene(scene);
+            primaryStage.close();
+            stage.show();
+
+        }
 
     }
 
@@ -553,11 +201,203 @@ public class Main extends Application {
         launch(args);
     }
 
+    public void startAll(Stage primaryStage){
+        scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+
+                if(selector == 4){
+
+                    if(pline == null){
+                        pline = new Polyline();
+                        pline.setId("pl"+numberOfPolyLine);
+                        pline.getPoints().addAll(event.getX(),event.getY());
+                        group.getChildren().add(pline);
+                        save();
+                    }else {
+                        pline.getPoints().addAll(event.getX(), event.getY());
+                        save();
+                    }
+
+                }else {
+
+
+                    if (!isOnAction) {
+                        if (selector != 5) {
+                            isOnAction = true;
+                        }
+
+                        if (selector == 1) {
+
+                            rectangle = new Rectangle();
+
+                            rectangle.setOpacity(0.3);
+                            rectangle.setY(event.getY());
+                            rectangle.setX(event.getX());
+                            rectangle.setWidth(6);
+                            rectangle.setHeight(6);
+                            nodeAction = rectangle;
+                            group.getChildren().add(rectangle);
+                        }
+
+                        if (selector == 2) {
+                            circle = new Circle();
+
+                            circle.setOpacity(0.3);
+                            circle.setCenterX(event.getX());
+                            circle.setCenterY(event.getY());
+                            circle.setRadius(15);
+                            nodeAction = circle;
+                            group.getChildren().add(circle);
+                        }
+
+                        if (selector == 3) {
+                            line = new Line();
+
+                            line.setOpacity(0.3);
+                            line.setStartX(event.getX());
+                            line.setStartY(event.getY());
+                            line.setEndY(event.getX());
+                            line.setEndY(event.getY());
+                            nodeAction = line;
+                            group.getChildren().add(line);
+                        }
+
+
+                    } else {
+
+                        if (nodeAction.getTypeSelector().equalsIgnoreCase("Circle")) {
+                            Circle c = (Circle) nodeAction;
+                            c.setId("c" + numberOfCircle);
+                            numberOfCircle++;
+                            c.setOpacity(1);
+                            nodeAction = c;
+                        }
+                        if (nodeAction.getTypeSelector().equalsIgnoreCase("Rectangle")) {
+                            Rectangle c = (Rectangle) nodeAction;
+                            c.setId("r" + numberOfRectangle);
+                            numberOfRectangle++;
+                            c.setOpacity(1);
+                            nodeAction = c;
+                        }
+                        if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
+                            Line c = (Line) nodeAction;
+                            c.setId("l" + numberOfLine);
+                            numberOfLine++;
+                            c.setOpacity(1);
+                            nodeAction = c;
+                        }
+
+                        isOnAction = false;
+                        nodeAction = null;
+                        moveY = 0;
+                        moveX = 0;
+                        save();
+                    }
+                }
+
+            }
+        });
+
+        scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+                if(isOnAction){
+
+                    if(selector == 1){
+
+                        Rectangle circle1 = (Rectangle) nodeAction;
+                        circle1.setWidth(event.getX()-circle1.getX());
+                        circle1.setHeight(event.getY()-circle1.getY());
+                        rectangle = circle1;
+
+                    }
+
+                    if(selector == 2){
+
+                        moveY = event.getY();
+                        moveX = event.getX();
+                        Circle circle1 = (Circle) nodeAction;
+                        circle1.setRadius(event.getX()-circle1.getCenterX());
+                        circle = circle1;
+
+                    }
+                    if(selector == 3){
+                        line.setEndX(event.getX());
+                        line.setEndY(event.getY());
+                    }
+
+                }
+                analyse(event.getY(), event.getX());
+            }
+        });
+
+        scene.setOnKeyTyped(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+
+                if(event.getCharacter().equalsIgnoreCase("p")){
+                    selector++;
+                    if(selector > 5){
+                        selector = 1;
+                    }
+                    if(Main.isOnAction){
+                        Main.group.getChildren().remove(Main.group.getChildren().size()-1);
+                    }
+                    Main.isOnAction = false;
+                    Main.nodeAction = null;
+                    Main.selector = 1;
+                    affChange();
+                }
+
+                if(event.getCharacter().equalsIgnoreCase("z")){
+                    moveY(true);
+                }
+
+                if(event.getCharacter().equalsIgnoreCase("s")){
+                    moveY(false);
+                }
+
+                if(event.getCharacter().equalsIgnoreCase("d")){
+                    moveX(true);
+                }
+
+                if(event.getCharacter().equalsIgnoreCase("q")){
+                    moveX(false);
+                }
+
+            }
+        });
+
+        icon.setText("⬛");
+        icon.setTranslateY(25);
+        icon.setFont(new Font("Trebuchet MS",50));
+
+        group.getChildren().addAll(bar,indicator,icon);
+
+        openProject(workspace);
+
+        char[] na = workspace.getName().toCharArray();
+        String name = "";
+        for(int i = 0; i < na.length-4;i++){
+            name += na[i];
+        }
+
+        primaryStage.setTitle("LogiGraphics - "+name);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        Tip tip = new Tip();
+        tip.showTip();
+        primary = primaryStage;
+    }
+
     public void analyse(double posY,double posX){
 
         //créer une ligne entre la souris et le centre du cercle
 
-        for(int i = 1; i < group.getChildren().size(); i++){
+        for(int i = 3; i < group.getChildren().size(); i++){
             if(group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Circle")){
                 Circle circle = (Circle) group.getChildren().get(i);
                 if(circle.getCenterX() > posX-3 && circle.getCenterX() < posX+3 || circle.getCenterY() > posY-3 && circle.getCenterY() < posY+3){
@@ -607,30 +447,13 @@ public class Main extends Application {
 
     }
 
-    public String randomTip(){
-        Random r = new Random();
-        int nb = r.nextInt(2);
-
-        switch (nb){
-
-            case 0:
-                return "Vous pouvez changer de sélection en appuyant sur p !";
-
-            case 1:
-                return "Vous pouvez déplacer les éléments avec z q s et d !";
-
-
-        }
-        return "null";
-    }
-
     public void moveY(boolean up){
         if(up) {
-            for (int i = 2; i < group.getChildren().size(); i++) {
+            for (int i = 3; i < group.getChildren().size(); i++) {
                 group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY()-10);
             }
         }else{
-            for (int i = 2; i < group.getChildren().size(); i++) {
+            for (int i = 3; i < group.getChildren().size(); i++) {
                 group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY()+10);
             }
         }
@@ -638,24 +461,24 @@ public class Main extends Application {
 
     public void moveX(boolean right){
         if(!right) {
-            for (int i = 2; i < group.getChildren().size(); i++) {
+            for (int i = 3; i < group.getChildren().size(); i++) {
                 group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()-10);
             }
         }else{
-            for (int i = 2; i < group.getChildren().size(); i++) {
+            for (int i = 3; i < group.getChildren().size(); i++) {
                 group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()+10);
             }
         }
     }
 
-    public void back(){
-        if(group.getChildren().size() > 2) {
+    public static void back(){
+        if(group.getChildren().size() > 3) {
             group.getChildren().remove(group.getChildren().size() - 1);
         }
         save();
     }
 
-    public void openProject(File fileToOpen){
+    public static void openProject(File fileToOpen){
 
         try {
 
@@ -779,14 +602,14 @@ public class Main extends Application {
      */
 
 
-    public void save(){
+    public static void save(){
 
         try {
 
             FileWriter fw = new FileWriter(workspace);
             BufferedWriter bw = new BufferedWriter(fw);
 
-            for(int i = 2; i < group.getChildren().size();i++){
+            for(int i = 3; i < group.getChildren().size();i++){
 
                 System.out.println(group.getChildren().get(i).getTypeSelector());
 
@@ -891,334 +714,7 @@ public class Main extends Application {
 
     }
 
-    public void addMenuItems(){
-        MenuItem rectangle = new MenuItem("🟫 Rectangle");
-        rectangle.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                selector = 1;
-            }
-        });
-
-        MenuItem circle = new MenuItem("⭕ Cercle");
-        circle.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                selector = 2;
-            }
-        });
-
-        MenuItem line = new MenuItem("➖ Ligne");
-        line.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                selector = 3;
-            }
-        });
-
-        MenuItem polyline = new MenuItem("〰 MultiLigne");
-        polyline.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                selector = 4;
-            }
-        });
-
-        MenuItem free = new MenuItem("🖱 Libre");
-        free.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                selector = 5;
-            }
-        });
-
-        formes.getItems().addAll(rectangle,circle,line,polyline,free);
-
-        MenuItem back = new MenuItem("↩ Retour");
-        back.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                back();
-            }
-        });
-
-        MenuItem all = new MenuItem("❌ Effacer tout");
-        all.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                for(int i = 2; i < group.getChildren().size();i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size();i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size();i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size();i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size();i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size();i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                numberOfRectangle = 0;
-                numberOfLine = 0;
-                numberOfCircle = 0;
-            }
-        });
-
-
-        MenuItem eraser = new MenuItem("✂ Découper");
-        eraser.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                VBox general = new VBox();
-
-                Scene scene = new Scene(general,600,500);
-                Stage stage = new Stage();
-
-                Label text = new Label("Gommer un élément par rapport à un autre");
-                FlowPane pane = new FlowPane();
-                TextField id1 = new TextField();
-                id1.setPromptText("Soustraire l'objet (id)");
-                Label te = new Label("à");
-                TextField id2 = new TextField();
-                id2.setPromptText("l'objet (id)");
-                pane.getChildren().addAll(id1,te,id2);
-
-                Button soumet = new Button("Soumettre");
-                soumet.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        Node element1 = search(id1.getText());
-                        Node element2 = search(id2.getText());
-
-                        if(element1 != null && element2 != null){
-
-                            Shape shape1 = (Shape) element1;
-                            Shape shape2 = (Shape) element2;
-
-                            Shape shape = Shape.subtract(shape1,shape2);
-
-                            group.getChildren().addAll(shape);
-                            element1.setVisible(false);
-                            element2.setVisible(false);
-                            stage.close();
-                            shape.setId("substract,"+element1.getId()+","+element2.getId());
-                            save();
-
-                        }else{
-                            soumet.setText("Un identifiant est incorrect");
-                        }
-                    }
-                });
-
-                general.getChildren().addAll(text,pane,soumet);
-                general.setAlignment(Pos.CENTER);
-
-                pane.setAlignment(Pos.CENTER);
-
-                stage.setScene(scene);
-                stage.setTitle("Gomme");
-                stage.show();
-
-            }
-        });
-
-        functions.getItems().addAll(back,eraser,all);
-
-        MenuItem create = new MenuItem("➕ Nouveau");
-        create.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                int number = 1;
-                File file = new File(System.getProperty("user.dir"),"projet"+number+".txt");
-                while(file.exists()){
-                    number++;
-                    file = new File(System.getProperty("user.dir"),"projet"+number+".txt");
-                }
-                try {
-                    file.createNewFile();
-
-                    for(int i = 2; i < group.getChildren().size(); i++){
-                        group.getChildren().removeAll(group.getChildren().get(i));
-                    }
-                    for(int i = 2; i < group.getChildren().size(); i++){
-                        group.getChildren().removeAll(group.getChildren().get(i));
-                    }
-                    for(int i = 2; i < group.getChildren().size(); i++){
-                        group.getChildren().removeAll(group.getChildren().get(i));
-                    }
-                    for(int i = 2; i < group.getChildren().size(); i++){
-                        group.getChildren().removeAll(group.getChildren().get(i));
-                    }
-                    for(int i = 2; i < group.getChildren().size(); i++){
-                        group.getChildren().removeAll(group.getChildren().get(i));
-                    }
-                    for(int i = 2; i < group.getChildren().size(); i++){
-                        group.getChildren().removeAll(group.getChildren().get(i));
-                    }
-                    numberOfCircle = 0;
-                    numberOfLine = 0;
-                    numberOfRectangle = 0;
-                    workspace = file;
-                    char[] na = workspace.getName().toCharArray();
-                    String name = "";
-                    for(int i = 0; i < na.length-4;i++){
-                        name += na[i];
-                    }
-                    primary.setTitle("LogiGraphics - "+name);
-                    openProject(workspace);
-
-                } catch (IOException e) {System.out.println("error");}
-
-
-            }
-        });
-
-        MenuItem open = new MenuItem("📁 Ouvrir");
-        open.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                numberOfCircle = 0;
-                numberOfLine = 0;
-                numberOfRectangle = 0;
-                FileChooser chooser = new FileChooser();
-                chooser.setTitle("Sélectionner un projet");
-                workspace = chooser.showOpenDialog(primary);
-                char[] na = workspace.getName().toCharArray();
-                String name = "";
-                for(int i = 0; i < na.length-4;i++){
-                    name += na[i];
-                }
-                for(int i = 2; i < group.getChildren().size(); i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size(); i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size(); i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size(); i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size(); i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                for(int i = 2; i < group.getChildren().size(); i++){
-                    group.getChildren().removeAll(group.getChildren().get(i));
-                }
-                primary.setTitle("LogiGraphics - "+name);
-                openProject(workspace);
-            }
-        });
-
-        MenuItem save = new MenuItem("✅ Enregistrer");
-        save.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                save();
-            }
-        });
-
-        MenuItem superposer = new MenuItem("📃 Superposer");
-        superposer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                FileChooser chooser = new FileChooser();
-                chooser.setTitle("Sélectionner un projet");
-                superpose = chooser.showOpenDialog(primary);
-                openProject(superpose);
-            }
-        });
-
-        files.getItems().addAll(create,open,save,superposer);
-
-
-        MenuItem modifier = new MenuItem("📝 Modifier");
-        modifier.setOnAction(event -> openProperties());
-
-        elements.getItems().addAll(modifier);
-
-
-        MenuItem rec = new MenuItem("🟫 Visible");
-        rec.setOnAction(event -> {
-            if(rVis){
-                rVis = false;
-                setVisibilty(false,"Rectangle");
-                rec.setText("🟫 Invisible");
-            }else{
-                rVis = true;
-                setVisibilty(true,"Rectangle");
-                rec.setText("🟫 Visible");
-            }
-        });
-
-        MenuItem cir = new MenuItem("⭕ Visible");
-        cir.setOnAction(event -> {
-            if(rCi){
-                rCi = false;
-                setVisibilty(false,"Circle");
-                cir.setText("⭕ Invisible");
-            }else{
-                rCi = true;
-                setVisibilty(true,"Circle");
-                cir.setText("⭕ Visible");
-            }
-        });
-
-        MenuItem li = new MenuItem("➖ Visible");
-        li.setOnAction(event -> {
-            if(rLi){
-                rLi = false;
-                setVisibilty(false,"Line");
-                li.setText("〰 Invisible");
-            }else{
-                rLi = true;
-                setVisibilty(true,"Line");
-                li.setText("〰 Visible");
-            }
-        });
-
-        MenuItem mli = new MenuItem("〰 Visible");
-        mli.setOnAction(event -> {
-            if(mLi){
-                mLi = false;
-                setVisibilty(false,"Polyline");
-                mli.setText("〰 Invisible");
-            }else{
-                mLi = true;
-                setVisibilty(true,"Polyline");
-                mli.setText("〰 Visible");
-            }
-        });
-
-        MenuItem sh = new MenuItem("🌙 Visible");
-        sh.setOnAction(event -> {
-            if(rSh){
-                rSh = false;
-                setVisibilty(false,"Path");
-                sh.setText("🌙 Invisible");
-            }else{
-                rSh = true;
-                setVisibilty(true,"Path");
-                sh.setText("🌙 Visible");
-            }
-        });
-
-
-        visibilty.getItems().addAll(rec,cir,li,mli,sh);
-        //il y en aura un autre "autres" pour les paramètres,l'aide etc...
-    }
-
-    public void openProperties(){
+    public static void openProperties(){
 
         VBox general = new VBox();
 
@@ -1397,7 +893,7 @@ public class Main extends Application {
 
     }
 
-    public Node search(String id){
+    public static Node search(String id){
         for(int i = 2; i < group.getChildren().size(); i++){
             if(group.getChildren().get(i).getId() != null && group.getChildren().get(i).getId().equalsIgnoreCase(id)){
                 return group.getChildren().get(i);
@@ -1406,7 +902,7 @@ public class Main extends Application {
         return null;
     }
 
-    public void setVisibilty(boolean visible,String type){
+    public static void setVisibilty(boolean visible, String type){
 
         String id1 = "";
         String id2 = "";
@@ -1453,4 +949,28 @@ public class Main extends Application {
             }
         }
     }
-}
+
+    public static void affChange(){
+        if(selector == 1){
+            icon.setText("⬛");
+            icon.setTranslateY(25);
+        }
+        if(selector == 2){
+            icon.setText("⭕");
+            icon.setTranslateY(25);
+        }
+        if(selector == 3){
+            icon.setText("➖");
+            icon.setTranslateY(15);
+        }
+        if(selector == 4){
+            icon.setText("〰");
+            icon.setTranslateY(15);
+        }
+        if(selector == 5){
+            icon.setText("🖱");
+            icon.setTranslateY(25);
+        }
+    }
+
+    }
