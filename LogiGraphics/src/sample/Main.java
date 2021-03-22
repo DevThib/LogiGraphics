@@ -64,6 +64,7 @@ public class Main extends Application {
 
     public static Label icon = new Label();
 
+    Label positions = new Label(" X : 0\nY : 0");
     /* selector :
 
     1 = rectangle
@@ -74,15 +75,11 @@ public class Main extends Application {
 
      */
 
-         /*
-        A DEV :
+   public static WindowError error = new WindowError();
 
-        -pouvoir changer la rotation, l'id et la rotation des objets dans les paramètres des objets et pouvoir faire des copies d'un autre objet (on met les mêmes width et height d'un autre)
-        -pouvoir avoir la liste des éléments du projet
-        -bouton paramètres
-        -le 3d (ROMAINPC) vidéo dessus
-        -mettre un icone en haut qui indique ce qu'on a choisi (rectangle,cercle,libre,gomme etc...)
-         */
+   public static ProjectSaver saver = new ProjectSaver();
+
+   public static ProjectLoader loader = new ProjectLoader();
 
     @Override
     public void start(Stage primaryStage){
@@ -126,6 +123,8 @@ public class Main extends Application {
             choose.setTitle("Projet");
             choose.show();
 
+            positions.setTranslateY(30);
+
             create.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -153,7 +152,8 @@ public class Main extends Application {
                         startAll(primaryStage);
 
                     } catch (IOException e) {
-                        System.out.println("error");
+                        error.showError();
+                        primaryStage.close();
                     }
 
                 }
@@ -178,24 +178,11 @@ public class Main extends Application {
             });
 
         }catch (NullPointerException e){
-            Stage stage = new Stage();
-            VBox box = new VBox();
-            Scene scene = new Scene(box,600,450);
-
-            Label label = new Label("Une erreur s'est produite,LogiGraphics va se relancer");
-
-            start(new Stage());
-
-            box.getChildren().addAll(label);
-
-            stage.setScene(scene);
+            error.showError();
             primaryStage.close();
-            stage.show();
-
         }
 
     }
-
 
     public static void main(String[] args) {
         launch(args);
@@ -304,6 +291,8 @@ public class Main extends Application {
             @Override
             public void handle(MouseEvent event) {
 
+                positions.setText("X : "+event.getX()+"\n Y : "+event.getY());
+
                 if(isOnAction){
 
                     if(selector == 1){
@@ -345,10 +334,10 @@ public class Main extends Application {
                     }
                     if(Main.isOnAction){
                         Main.group.getChildren().remove(Main.group.getChildren().size()-1);
+                        Main.isOnAction = false;
+                        Main.nodeAction = null;
+                        Main.selector = 1;
                     }
-                    Main.isOnAction = false;
-                    Main.nodeAction = null;
-                    Main.selector = 1;
                     affChange();
                 }
 
@@ -372,10 +361,10 @@ public class Main extends Application {
         });
 
         icon.setText("⬛");
-        icon.setTranslateY(25);
+        icon.setTranslateY(60);
         icon.setFont(new Font("Trebuchet MS",50));
 
-        group.getChildren().addAll(bar,indicator,icon);
+        group.getChildren().addAll(bar,indicator,positions,icon);
 
         openProject(workspace);
 
@@ -449,11 +438,11 @@ public class Main extends Application {
 
     public void moveY(boolean up){
         if(up) {
-            for (int i = 3; i < group.getChildren().size(); i++) {
+            for (int i = 4; i < group.getChildren().size(); i++) {
                 group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY()-10);
             }
         }else{
-            for (int i = 3; i < group.getChildren().size(); i++) {
+            for (int i = 4; i < group.getChildren().size(); i++) {
                 group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY()+10);
             }
         }
@@ -461,134 +450,24 @@ public class Main extends Application {
 
     public void moveX(boolean right){
         if(!right) {
-            for (int i = 3; i < group.getChildren().size(); i++) {
+            for (int i = 4; i < group.getChildren().size(); i++) {
                 group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()-10);
             }
         }else{
-            for (int i = 3; i < group.getChildren().size(); i++) {
+            for (int i = 4; i < group.getChildren().size(); i++) {
                 group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()+10);
             }
         }
     }
 
     public static void back(){
-        if(group.getChildren().size() > 3) {
+        if(group.getChildren().size() > 4) {
             group.getChildren().remove(group.getChildren().size() - 1);
         }
         save();
     }
 
-    public static void openProject(File fileToOpen){
-
-        try {
-
-            FileReader fr = new FileReader(fileToOpen);
-            BufferedReader br = new BufferedReader(fr);
-
-            String all = "";
-            String str = "";
-            while(str != null){
-                str = br.readLine();
-                if(str != null){
-                    all += str;
-                }
-            }
-
-            String[] values = all.split(":");
-            for(int i = 0; i < values.length; i++){
-
-                String[] properties = values[i].split("/");
-                if(properties[0].equalsIgnoreCase("Rectangle")){
-
-                    double posX = Double.parseDouble(properties[1]);
-                    double posY = Double.parseDouble(properties[2]);
-                    String[] pr = properties[3].split(",");
-
-                    Rectangle r = new Rectangle();
-                    r.setY(posY);
-                    r.setX(posX);
-                    r.setWidth(Double.parseDouble(pr[0]));
-                    r.setHeight(Double.parseDouble(pr[1]));
-                    r.setId(properties[4]);
-                    group.getChildren().add(r);
-                    numberOfRectangle++;
-
-                }
-                if(properties[0].equalsIgnoreCase("Circle")){
-
-                    double posX = Double.parseDouble(properties[1]);
-                    double posY = Double.parseDouble(properties[2]);
-                    double radius = Double.parseDouble(properties[3]);
-
-                    Circle c = new Circle();
-                    c.setCenterY(posY);
-                    c.setCenterX(posX);
-                    c.setRadius(radius);
-                    c.setId(properties[4]);
-                    group.getChildren().add(c);
-                    numberOfCircle++;
-
-                }
-                if(properties[0].equalsIgnoreCase("Line")){
-
-                    String[] start = properties[1].split(",");
-                    String[] end = properties[2].split(",");
-
-                    Line l = new Line();
-                    l.setStartX(Double.parseDouble(start[0]));
-                    l.setStartY(Double.parseDouble(start[1]));
-                    l.setEndX(Double.parseDouble(end[0]));
-                    l.setEndY(Double.parseDouble(end[1]));
-                    l.setId(properties[3]);
-                    group.getChildren().add(l);
-                    numberOfLine++;
-
-                }
-                if(properties[0].equalsIgnoreCase("Polyline")){
-
-                    String[] val = properties[1].split(",");
-
-                    Polyline l = new Polyline();
-
-                    for(int a = 0; a < val.length; a++){
-                        l.getPoints().addAll(Double.valueOf(val[a]));
-                    }
-
-                    l.setId(properties[2]);
-
-                    group.getChildren().add(l);
-                    numberOfPolyLine++;
-
-                }
-
-            }
-            for(int i = 0; i < values.length; i++){
-                String[] properties = values[i].split("/");
-                if(properties[0].equalsIgnoreCase("Shape")){
-
-                    if(properties[1].equalsIgnoreCase("substract")){
-                        Shape shape1 = (Shape) search(properties[2]);
-                        Shape shape2 = (Shape) search(properties[3]);
-                        Shape shape = Shape.subtract(shape1,shape2);
-
-                        for(int a = 0; a < group.getChildren().size(); a++){
-                            if(properties[2].equalsIgnoreCase(group.getChildren().get(a).getId()) || properties[3].equalsIgnoreCase(group.getChildren().get(a).getId())){
-                                group.getChildren().get(a).setVisible(false);
-                            }
-                        }
-                        group.getChildren().addAll(shape);
-                    }
-
-                }
-            }
-
-
-        }catch (IOException e){
-            System.out.println("error");
-        }
-
-
-    }
+    public static void openProject(File fileToOpen){loader.loadProject(fileToOpen);}
 
     /*
     C'est sous la forme :
@@ -601,118 +480,7 @@ public class Main extends Application {
 
      */
 
-
-    public static void save(){
-
-        try {
-
-            FileWriter fw = new FileWriter(workspace);
-            BufferedWriter bw = new BufferedWriter(fw);
-
-            for(int i = 3; i < group.getChildren().size();i++){
-
-                System.out.println(group.getChildren().get(i).getTypeSelector());
-
-                bw.newLine();
-                bw.write(":");
-                bw.newLine();
-
-                if(group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Rectangle")){
-                    Rectangle circle = (Rectangle) group.getChildren().get(i);
-                    bw.write("Rectangle/");
-                    bw.newLine();
-                    bw.write(String.valueOf(circle.getX()+"/"));
-                    bw.newLine();
-                    bw.write(String.valueOf(circle.getY()+"/"));
-                    bw.newLine();
-                    bw.write(circle.getWidth() + "," + circle.getHeight()+"/");
-                    bw.newLine();
-                    if(circle.getId() == null){
-                        bw.write("null");
-                    }else{
-                        bw.write(circle.getId());
-                    }
-
-                }
-                if(group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Line")){
-                    Line circle = (Line) group.getChildren().get(i);
-                    bw.write("Line/");
-                    bw.newLine();
-                    bw.write(circle.getStartX()+","+circle.getStartY()+"/");
-                    bw.newLine();
-                    bw.write(circle.getEndX()+","+circle.getEndY()+"/");
-                    bw.newLine();
-                    if(circle.getId() == null){
-                        bw.write("null");
-                    }else{
-                        bw.write(circle.getId());
-                    }
-
-                }
-                if(group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Circle")) {
-                    Circle circle = (Circle) group.getChildren().get(i);
-                    bw.write("Circle/");
-                    bw.newLine();
-                    bw.write(String.valueOf(circle.getCenterX()+"/"));
-                    bw.newLine();
-                    bw.write(String.valueOf(circle.getCenterY()+"/"));
-                    bw.newLine();
-                    bw.write(String.valueOf(circle.getRadius())+"/");
-                    bw.newLine();
-                    if(circle.getId() == null){
-                        bw.write("null");
-                    }else{
-                        bw.write(circle.getId());
-                    }
-
-                }
-                if(group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Path")){
-
-                    String[] types = group.getChildren().get(i).getId().split(",");
-
-                    bw.write("Shape/");
-                    bw.newLine();
-                    bw.write(types[0]+"/");
-                    bw.newLine();
-                    bw.write(types[1]+"/");
-                    bw.newLine();
-                    bw.write(types[2]+"/");
-                    bw.newLine();
-                    bw.write(":");
-
-                }
-                if(group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Polyline")){
-
-                    Polyline line = (Polyline) group.getChildren().get(i);
-
-                    String d = String.valueOf(line.getPoints());
-                    char[] dd = d.toCharArray();
-                    String toWrite = "";
-                    for(int a = 1; a < dd.length-1; a++){
-                        toWrite += dd[a];
-                    }
-
-                    bw.write("PolyLine/");
-                    bw.newLine();
-                    bw.write(toWrite+"/");
-                    System.out.println(line.getPoints()+"/");
-                    bw.newLine();
-                    bw.write(line.getId()+"/");
-                    bw.newLine();
-                    bw.write(":");
-
-                }
-            }
-            bw.newLine();
-            bw.write(":");
-            bw.close();
-            fw.close();
-
-        }catch (IOException e){
-            System.out.println("error");
-        }
-
-    }
+    public static void save(){saver.saveProject();}
 
     public static void openProperties(){
 
@@ -894,7 +662,7 @@ public class Main extends Application {
     }
 
     public static Node search(String id){
-        for(int i = 2; i < group.getChildren().size(); i++){
+        for(int i = 4; i < group.getChildren().size(); i++){
             if(group.getChildren().get(i).getId() != null && group.getChildren().get(i).getId().equalsIgnoreCase(id)){
                 return group.getChildren().get(i);
             }
@@ -953,23 +721,23 @@ public class Main extends Application {
     public static void affChange(){
         if(selector == 1){
             icon.setText("⬛");
-            icon.setTranslateY(25);
+            icon.setTranslateY(60);
         }
         if(selector == 2){
             icon.setText("⭕");
-            icon.setTranslateY(25);
+            icon.setTranslateY(60);
         }
         if(selector == 3){
             icon.setText("➖");
-            icon.setTranslateY(15);
+            icon.setTranslateY(50);
         }
         if(selector == 4){
             icon.setText("〰");
-            icon.setTranslateY(15);
+            icon.setTranslateY(50);
         }
         if(selector == 5){
             icon.setText("🖱");
-            icon.setTranslateY(25);
+            icon.setTranslateY(60);
         }
     }
 

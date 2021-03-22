@@ -108,22 +108,22 @@ public class AllMenus {
         all.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                for(int i = 3; i < Main.group.getChildren().size();i++){
+                for(int i = 4; i < Main.group.getChildren().size();i++){
                     Main.group.getChildren().removeAll(Main.group.getChildren().get(i));
                 }
-                for(int i = 3; i < Main.group.getChildren().size();i++){
+                for(int i = 4; i < Main.group.getChildren().size();i++){
                     Main.group.getChildren().removeAll(Main.group.getChildren().get(i));
                 }
-                for(int i = 3; i < Main.group.getChildren().size();i++){
+                for(int i = 4; i < Main.group.getChildren().size();i++){
                     Main.group.getChildren().removeAll(Main.group.getChildren().get(i));
                 }
-                for(int i = 3; i < Main.group.getChildren().size();i++){
+                for(int i = 4; i < Main.group.getChildren().size();i++){
                     Main.group.getChildren().removeAll(Main.group.getChildren().get(i));
                 }
-                for(int i = 3; i < Main.group.getChildren().size();i++){
+                for(int i = 4; i < Main.group.getChildren().size();i++){
                     Main.group.getChildren().removeAll(Main.group.getChildren().get(i));
                 }
-                for(int i = 3; i < Main.group.getChildren().size();i++){
+                for(int i = 4; i < Main.group.getChildren().size();i++){
                     Main.group.getChildren().removeAll(Main.group.getChildren().get(i));
                 }
                 Main.numberOfRectangle = 0;
@@ -207,22 +207,22 @@ public class AllMenus {
                 try {
                     file.createNewFile();
 
-                    for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                    for(int i = 4; i <  Main.group.getChildren().size(); i++){
                         Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                     }
-                    for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                    for(int i = 4; i <  Main.group.getChildren().size(); i++){
                         Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                     }
-                    for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                    for(int i = 4; i <  Main.group.getChildren().size(); i++){
                         Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                     }
-                    for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                    for(int i = 4; i <  Main.group.getChildren().size(); i++){
                         Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                     }
-                    for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                    for(int i = 4; i <  Main.group.getChildren().size(); i++){
                         Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                     }
-                    for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                    for(int i = 4; i <  Main.group.getChildren().size(); i++){
                         Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                     }
                     Main.numberOfCircle = 0;
@@ -237,7 +237,7 @@ public class AllMenus {
                     Main.primary.setTitle("LogiGraphics - "+name);
                     Main.openProject( Main.workspace);
 
-                } catch (IOException e) {System.out.println("error");}
+                } catch (IOException e) { Main.error.showError();}
 
 
             }
@@ -259,22 +259,22 @@ public class AllMenus {
                 for(int i = 0; i < na.length-4;i++){
                     name += na[i];
                 }
-                for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                for(int i = 4; i <  Main.group.getChildren().size(); i++){
                     Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                 }
-                for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                for(int i = 4; i <  Main.group.getChildren().size(); i++){
                     Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                 }
-                for(int i = 2; i < Main.group.getChildren().size(); i++){
+                for(int i = 4; i < Main.group.getChildren().size(); i++){
                     Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                 }
-                for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                for(int i = 4; i <  Main.group.getChildren().size(); i++){
                     Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                 }
-                for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                for(int i = 4; i <  Main.group.getChildren().size(); i++){
                     Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                 }
-                for(int i = 2; i <  Main.group.getChildren().size(); i++){
+                for(int i = 4; i <  Main.group.getChildren().size(); i++){
                     Main.group.getChildren().removeAll( Main.group.getChildren().get(i));
                 }
                 Main.primary.setTitle("LogiGraphics - "+name);
