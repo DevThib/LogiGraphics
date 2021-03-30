@@ -27,6 +27,11 @@ public class Main extends Application {
 
     public static Stage primary;
 
+    public static RectangleCreator rectangleCreator = new RectangleCreator();
+    public static CircleCreator circleCreator = new CircleCreator();
+    public static LineCreator lineCreator = new LineCreator();
+    public static PolyLineCreator polyLineCreator = new PolyLineCreator();
+
     public static Group group = new Group();
     Scene scene = new Scene(group,1300,900, Color.GREY);
 
@@ -75,6 +80,8 @@ public class Main extends Application {
 
      */
 
+    AllMenus menus = new AllMenus();
+
    public static WindowError error = new WindowError();
 
    public static ProjectSaver saver = new ProjectSaver();
@@ -86,7 +93,6 @@ public class Main extends Application {
 
         try {
 
-            AllMenus menus = new AllMenus();
             bar = menus.getBar();
 
             Stage choose = new Stage();
@@ -125,56 +131,49 @@ public class Main extends Application {
 
             positions.setTranslateY(30);
 
-            create.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
+            create.setOnAction(event -> {
 
+                choose.close();
+
+                try {
+
+                    File folder = new File(System.getProperty("user.dir"),"projets LogiGraphics");
+
+                    if(!folder.exists()){
+                       folder.mkdir();
+                    }
+
+                    int number = 1;
+                    File file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
+                    while (file.exists()) {
+                        number++;
+                        file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
+                    }
+                    file.createNewFile();
+
+                    workspace = file;
+
+                    startAll(primaryStage);
+
+                } catch (IOException e1) {
+                    error.showError();
+                    primaryStage.close();
+                }
+
+            });
+            open.setOnAction(event -> {
+
+                try {
+
+                    FileChooser chooser = new FileChooser();
+                    workspace = chooser.showOpenDialog(primaryStage);
+                    startAll(primaryStage);
                     choose.close();
 
-                    try {
-
-                        File folder = new File(System.getProperty("user.dir"),"projets LogiGraphics");
-
-                        if(!folder.exists()){
-                           folder.mkdir();
-                        }
-
-                        int number = 1;
-                        File file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
-                        while (file.exists()) {
-                            number++;
-                            file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
-                        }
-                        file.createNewFile();
-
-                        workspace = file;
-
-                        startAll(primaryStage);
-
-                    } catch (IOException e) {
-                        error.showError();
-                        primaryStage.close();
-                    }
-
+                } catch (NullPointerException e12) {
+                    choose.close();
                 }
-            });
-            open.setOnAction(new EventHandler<ActionEvent>() {
 
-                @Override
-                public void handle(ActionEvent event) {
-
-                    try {
-
-                        FileChooser chooser = new FileChooser();
-                        workspace = chooser.showOpenDialog(primaryStage);
-                        startAll(primaryStage);
-                        choose.close();
-
-                    } catch (NullPointerException e) {
-                        choose.close();
-                    }
-
-                }
             });
 
         }catch (NullPointerException e){
@@ -197,7 +196,11 @@ public class Main extends Application {
                 if(selector == 4){
 
                     if(pline == null){
-                        pline = new Polyline();
+
+                        polyLineCreator.createPolyLine();
+                        menus.updateElements();
+
+                        pline = polyLineCreator.getAction();
                         pline.setId("pl"+numberOfPolyLine);
                         pline.getPoints().addAll(event.getX(),event.getY());
                         group.getChildren().add(pline);
@@ -217,30 +220,37 @@ public class Main extends Application {
 
                         if (selector == 1) {
 
-                            rectangle = new Rectangle();
-
-                            rectangle.setOpacity(0.3);
-                            rectangle.setY(event.getY());
+                            rectangleCreator.createRectangle();
+                            menus.updateElements();
+                            rectangle = rectangleCreator.getAction();
                             rectangle.setX(event.getX());
-                            rectangle.setWidth(6);
-                            rectangle.setHeight(6);
+                            rectangle.setY(event.getY());
+                            rectangle.setOpacity(0.3);
+
                             nodeAction = rectangle;
                             group.getChildren().add(rectangle);
                         }
 
                         if (selector == 2) {
-                            circle = new Circle();
+
+                            circleCreator.createCircle();
+                            menus.updateElements();
+                            circle = circleCreator.getAction();
 
                             circle.setOpacity(0.3);
                             circle.setCenterX(event.getX());
                             circle.setCenterY(event.getY());
                             circle.setRadius(15);
+
                             nodeAction = circle;
                             group.getChildren().add(circle);
                         }
 
                         if (selector == 3) {
-                            line = new Line();
+
+                            lineCreator.createLine();
+                            menus.updateElements();
+                            line = lineCreator.getAction();
 
                             line.setOpacity(0.3);
                             line.setStartX(event.getX());
@@ -469,197 +479,7 @@ public class Main extends Application {
 
     public static void openProject(File fileToOpen){loader.loadProject(fileToOpen);}
 
-    /*
-    C'est sous la forme :
-
-    -Type
-    -posX
-    -PosY
-    (pour les rectangles,width et height mais pour les cercles uniquement le Radius)
-    -id
-
-     */
-
     public static void save(){saver.saveProject();}
-
-    public static void openProperties(){
-
-        VBox general = new VBox();
-
-        Stage stage = new Stage();
-        Scene scene = new Scene(general,600,400);
-
-        TextArea id = new TextArea();
-        id.setMaxWidth(150);
-        id.setMaxHeight(10);
-        id.setPromptText("Recherchez par l'id");
-
-        Button search = new Button();
-        search.setText("Chercher");
-
-        Label result = new Label("Conseil : les ids de base sont sous la forme : initiale de l'objet + nombre d'objet\nPar exmple,si vous avez 3 Cercles,ce sera c0,c1 et c2 comme ids de base pour ces cercles");
-
-        FlowPane one = new FlowPane(id,search);
-
-        search.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Node element = search(id.getText());
-                if(element != null){
-                    stage.setTitle("Paramètres de l'élément : "+element.getId());
-                    general.getChildren().removeAll(one,result);
-
-                    Label title = new Label("Propriétés de l'élément : "+element.getId());
-                    Label none = new Label(" ");
-
-                    general.getChildren().addAll(title,none);
-
-                    if(element.getTypeSelector().equalsIgnoreCase("Rectangle")){
-                        Rectangle el = (Rectangle) element;
-                        Label with = new Label("Largeur :");
-                        TextField wi = new TextField();
-                        wi.setMaxWidth(150);
-                        wi.setMaxHeight(10);
-                        wi.setText(String.valueOf(el.getWidth()));
-                        Label height = new Label("Hauteur :");
-                        TextField hi = new TextField();
-                        hi.setMaxWidth(150);
-                        hi.setMaxHeight(10);
-                        hi.setText(String.valueOf(el.getHeight()));
-                        Label x = new Label("Position X :");
-                        TextField xi = new TextField();
-                        xi.setMaxWidth(150);
-                        xi.setMaxHeight(10);
-                        xi.setText(String.valueOf(el.getX()));
-                        Label y = new Label("Position Y :");
-                        TextField yi = new TextField();
-                        yi.setMaxWidth(150);
-                        yi.setMaxHeight(10);
-                        yi.setText(String.valueOf(el.getY()));
-
-                        Button soumettre = new Button("Modifier");
-                        soumettre.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                try {
-                                    el.setWidth(Double.parseDouble(wi.getText()));
-                                    el.setHeight(Double.parseDouble(hi.getText()));
-                                    el.setX(Double.parseDouble(xi.getText()));
-                                    el.setY(Double.parseDouble(yi.getText()));
-                                    stage.close();
-                                    save();
-                                }catch (NumberFormatException e){
-                                    soumettre.setPadding(new Insets(5));
-                                    soumettre.setText("Un nombre est invalide !");
-                                }
-                            }
-                        });
-
-
-
-
-                        general.getChildren().addAll(with,wi,height,hi,x,xi,y,yi,soumettre);
-                    }
-                    if(element.getTypeSelector().equalsIgnoreCase("Circle")){
-                        Circle el = (Circle) element;
-                        Label with = new Label("Rayon :");
-                        TextField wi = new TextField();
-                        wi.setMaxWidth(150);
-                        wi.setMaxHeight(10);
-                        wi.setText(String.valueOf(el.getRadius()));
-                        Label x = new Label("Position X :");
-                        TextField xi = new TextField();
-                        xi.setMaxWidth(150);
-                        xi.setMaxHeight(10);
-                        xi.setText(String.valueOf(el.getCenterX()));
-                        Label y = new Label("Position Y :");
-                        TextField yi = new TextField();
-                        yi.setMaxWidth(150);
-                        yi.setMaxHeight(10);
-                        yi.setText(String.valueOf(el.getCenterY()));
-
-                        Button soumettre = new Button("Modifier");
-                        soumettre.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                try {
-                                    el.setRadius(Double.parseDouble(wi.getText()));
-                                    el.setCenterY(Double.parseDouble(yi.getText()));
-                                    el.setCenterX(Double.parseDouble(xi.getText()));
-                                    stage.close();
-                                }catch (NumberFormatException e){
-                                    soumettre.setPadding(new Insets(5));
-                                    soumettre.setText("Un nombre est invalide !");
-                                }
-                            }
-                        });
-
-
-
-
-                        general.getChildren().addAll(with,wi,x,xi,y,yi,soumettre);
-                    }
-                    if(element.getTypeSelector().equalsIgnoreCase("Line")){
-                        Line el = (Line) element;
-                        Label with = new Label("Position X du début :");
-                        TextField wi = new TextField();
-                        wi.setMaxWidth(150);
-                        wi.setMaxHeight(10);
-                        wi.setText(String.valueOf(el.getStartX()));
-                        Label height = new Label("Position Y du début :");
-                        TextField hi = new TextField();
-                        hi.setMaxWidth(150);
-                        hi.setMaxHeight(10);
-                        hi.setText(String.valueOf(el.getStartY()));
-                        Label x = new Label("Position X de la fin :");
-                        TextField xi = new TextField();
-                        xi.setMaxWidth(150);
-                        xi.setMaxHeight(10);
-                        xi.setText(String.valueOf(el.getEndX()));
-                        Label y = new Label("Position Y de la fin :");
-                        TextField yi = new TextField();
-                        yi.setMaxWidth(150);
-                        yi.setMaxHeight(10);
-                        yi.setText(String.valueOf(el.getEndY()));
-
-                        Button soumettre = new Button("Modifier");
-                        soumettre.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                try {
-                                    el.setStartX(Double.parseDouble(wi.getText()));
-                                    el.setStartY(Double.parseDouble(hi.getText()));
-                                    el.setEndX(Double.parseDouble(xi.getText()));
-                                    el.setEndY(Double.parseDouble(yi.getText()));
-                                    stage.close();
-                                }catch (NumberFormatException e){
-                                    soumettre.setPadding(new Insets(5));
-                                    soumettre.setText("Un nombre est invalide !");
-                                }
-                            }
-                        });
-
-                        general.getChildren().addAll(with,wi,height,hi,x,xi,y,yi,soumettre);
-                    }
-                    if(element.getTypeSelector().equalsIgnoreCase("Polyline")) {
-                        title.setText("Les multilignes ne sont pas encore modifiables pour l'instant");
-                    }
-                }else{
-                    search.setText("Aucun élément");
-                }
-            }
-        });
-
-        general.getChildren().addAll(one,result);
-        general.setAlignment(Pos.CENTER);
-        one.setAlignment(Pos.CENTER);
-
-        stage.setTitle("Paramètres d'un élément");
-        stage.setScene(scene);
-        stage.show();
-
-
-    }
 
     public static Node search(String id){
         for(int i = 4; i < group.getChildren().size(); i++){
@@ -742,3 +562,5 @@ public class Main extends Application {
     }
 
     }
+
+

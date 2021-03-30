@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -22,7 +22,7 @@ public class AllMenus {
     Menu formes = new Menu("Construire");
     Menu functions = new Menu("Fonctions");
     Menu files = new Menu("Fichiers");
-    Menu elements = new Menu("Éléments");
+    Menu elements = new Menu("Elements");
     Menu visibilty = new Menu("Visibilité");
 
     public AllMenus(){
@@ -101,6 +101,7 @@ public class AllMenus {
             @Override
             public void handle(ActionEvent event) {
                 Main.back();
+                updateElements();
             }
         });
 
@@ -129,6 +130,7 @@ public class AllMenus {
                 Main.numberOfRectangle = 0;
                 Main.numberOfLine = 0;
                 Main.numberOfCircle = 0;
+                updateElements();
             }
         });
 
@@ -339,13 +341,6 @@ public class AllMenus {
 
         files.getItems().addAll(create,open,save,superposer);
 
-
-        MenuItem modifier = new MenuItem("📝 Modifier");
-        modifier.setOnAction(event ->  Main.openProperties());
-
-        elements.getItems().addAll(modifier);
-
-
         MenuItem rec = new MenuItem("🟫 Visible");
         rec.setOnAction(event -> {
             if(Main.rVis){
@@ -414,7 +409,11 @@ public class AllMenus {
 
         visibilty.getItems().addAll(rec,cir,li,mli,sh);
 
-        bar.getMenus().addAll(files,formes,functions,elements,visibilty);
+        updateElements();
+        MenuItem item = new MenuItem("Aucun élément dans le projet");
+        elements.getItems().add(item);
+
+        bar.getMenus().addAll(files,formes,functions,visibilty,elements);
         //il y en aura un autre "autres" pour les paramètres,l'aide etc...
 
     }
@@ -422,6 +421,59 @@ public class AllMenus {
 
     public MenuBar getBar(){
         return bar;
+    }
+
+    public void updateElements(){
+
+        PropertiesOpener opener = new PropertiesOpener();
+
+        for(int i = 0; i < elements.getItems().size(); i++){
+            elements.getItems().remove(i);
+        }
+        for(int i = 0; i < elements.getItems().size(); i++){
+            elements.getItems().remove(i);
+        }
+        for(int i = 0; i < elements.getItems().size(); i++){
+            elements.getItems().remove(i);
+        }
+            for (int i = 3; i < Main.group.getChildren().size(); i++) {
+                if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Rectangle")) {
+                    int a = i;
+                    MenuItem item = new MenuItem("🟫 Rectangle");
+                    item.setOnAction(event -> {
+                        opener.openRectanglePropoerties((Rectangle) Main.group.getChildren().get(a));
+                    });
+                    elements.getItems().add(item);
+                }
+                if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Circle")) {
+                    int a = i;
+                    MenuItem item = new MenuItem("⭕ Circle");
+                    item.setOnAction(event -> {
+                        opener.openCircleProperties((Circle) Main.group.getChildren().get(a));
+                    });
+                    elements.getItems().add(item);
+                }
+                if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Line")) {
+                    int a = i;
+                    MenuItem item = new MenuItem("➖ Ligne");
+                    item.setOnAction(event -> {
+                        opener.openLineProperties((Line) Main.group.getChildren().get(a));
+                    });
+                    elements.getItems().add(item);
+                }
+                if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Polyline")) {
+                    int a = i;
+                    MenuItem item = new MenuItem("〰 MultiLigne");
+                    item.setOnAction(event -> {
+                        opener.openPolyLineProperties((Polyline) Main.group.getChildren().get(a));
+                    });
+                    elements.getItems().add(item);
+                }
+            }
+        if(Main.group.getChildren().size() == 4){
+            MenuItem item = new MenuItem("Aucun élément dans le projet");
+            elements.getItems().add(item);
+        }
     }
 
 }
