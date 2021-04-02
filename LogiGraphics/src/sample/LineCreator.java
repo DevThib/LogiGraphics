@@ -107,7 +107,9 @@ public class LineCreator {
                 action = r1;
 
                 r1.setOnMouseClicked(event -> {
-                    opener.openLineProperties(r1);
+                    if(Main.selector == 5 && !r1.getId().equalsIgnoreCase("eraser"))
+                        opener.openLineProperties(r1);
+
                 });
 
                 Main.group.getChildren().add(r1);
@@ -117,6 +119,7 @@ public class LineCreator {
                 action = r2;
 
                 r2.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r2.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r2);
                 });
 
@@ -127,6 +130,7 @@ public class LineCreator {
                 action = r3;
 
                 r3.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r3.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r3);
                 });
 
@@ -137,6 +141,7 @@ public class LineCreator {
                 action = r4;
 
                 r4.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r4.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r4);
                 });
 
@@ -147,6 +152,7 @@ public class LineCreator {
                 action = r5;
 
                 r5.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r5.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r5);
                 });
 
@@ -157,6 +163,7 @@ public class LineCreator {
                 action = r6;
 
                 r6.setOnMouseClicked(event -> {
+                    if(Main.selector == 5&& !r6.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r6);
                 });
 
@@ -167,6 +174,7 @@ public class LineCreator {
                 action = r7;
 
                 r7.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r7.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r7);
                 });
 
@@ -177,6 +185,7 @@ public class LineCreator {
                 action = r8;
 
                 r8.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r8.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r8);
                 });
 
@@ -187,6 +196,7 @@ public class LineCreator {
                 action = r9;
 
                 r9.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r9.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r9);
                 });
 
@@ -197,6 +207,7 @@ public class LineCreator {
                 action = r10;
 
                 r10.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r10.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r10);
                 });
 
@@ -207,6 +218,7 @@ public class LineCreator {
                 action = r11;
 
                 r11.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r11.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r11);
                 });
 
@@ -217,6 +229,7 @@ public class LineCreator {
                 action = r12;
 
                 r12.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r12.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r12);
                 });
 
@@ -227,6 +240,7 @@ public class LineCreator {
                 action = r13;
 
                 r13.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r13.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r13);
                 });
 
@@ -237,6 +251,7 @@ public class LineCreator {
                 action = r14;
 
                 r14.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r14.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r14);
                 });
 
@@ -247,6 +262,7 @@ public class LineCreator {
                 action = r15;
 
                 r15.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r15.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r15);
                 });
 
@@ -257,6 +273,7 @@ public class LineCreator {
                 action = r16;
 
                 r16.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r16.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r16);
                 });
 
@@ -267,6 +284,7 @@ public class LineCreator {
                 action = r17;
 
                 r17.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r17.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r17);
                 });
 
@@ -277,6 +295,7 @@ public class LineCreator {
                 action = r18;
 
                 r18.setOnMouseClicked(event -> {
+                    if(Main.selector == 5&& !r18.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r18);
                 });
 
@@ -287,6 +306,7 @@ public class LineCreator {
                 action = r19;
 
                 r19.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r19.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r19);
                 });
 
@@ -297,6 +317,7 @@ public class LineCreator {
                 action = r20;
 
                 r20.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r20.getId().equalsIgnoreCase("eraser"))
                     opener.openLineProperties(r20);
                 });
 

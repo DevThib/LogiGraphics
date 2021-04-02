@@ -108,6 +108,7 @@ public class PolyLineCreator {
                 action = r1;
 
                 r1.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r1.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r1);
                 });
 
@@ -118,6 +119,7 @@ public class PolyLineCreator {
                 action = r2;
 
                 r2.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r2.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r2);
                 });
 
@@ -128,6 +130,7 @@ public class PolyLineCreator {
                 action = r3;
 
                 r3.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r3.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r3);
                 });
 
@@ -138,6 +141,7 @@ public class PolyLineCreator {
                 action = r4;
 
                 r4.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r4.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r4);
                 });
 
@@ -148,6 +152,7 @@ public class PolyLineCreator {
                 action = r5;
 
                 r5.setOnMouseClicked(event -> {
+                    if(Main.selector == 5&& !r5.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r5);
                 });
 
@@ -158,6 +163,7 @@ public class PolyLineCreator {
                 action = r6;
 
                 r6.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r6.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r6);
                 });
 
@@ -168,6 +174,7 @@ public class PolyLineCreator {
                 action = r7;
 
                 r7.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r7.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r7);
                 });
 
@@ -178,6 +185,7 @@ public class PolyLineCreator {
                 action = r8;
 
                 r8.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r8.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r8);
                 });
 
@@ -188,6 +196,7 @@ public class PolyLineCreator {
                 action = r9;
 
                 r9.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r9.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r9);
                 });
 
@@ -198,6 +207,7 @@ public class PolyLineCreator {
                 action = r10;
 
                 r10.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r10.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r10);
                 });
 
@@ -208,6 +218,7 @@ public class PolyLineCreator {
                 action = r11;
 
                 r11.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r11.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r11);
                 });
 
@@ -218,6 +229,7 @@ public class PolyLineCreator {
                 action = r12;
 
                 r12.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r12.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r12);
                 });
 
@@ -228,6 +240,7 @@ public class PolyLineCreator {
                 action = r13;
 
                 r13.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r13.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r13);
                 });
 
@@ -238,6 +251,7 @@ public class PolyLineCreator {
                 action = r14;
 
                 r14.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r14.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r14);
                 });
 
@@ -248,6 +262,7 @@ public class PolyLineCreator {
                 action = r15;
 
                 r15.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r15.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r15);
                 });
 
@@ -258,6 +273,7 @@ public class PolyLineCreator {
                 action = r16;
 
                 r16.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r16.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r16);
                 });
 
@@ -268,6 +284,7 @@ public class PolyLineCreator {
                 action = r17;
 
                 r17.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r17.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r17);
                 });
 
@@ -278,6 +295,7 @@ public class PolyLineCreator {
                 action = r18;
 
                 r18.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r18.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r18);
                 });
 
@@ -288,6 +306,7 @@ public class PolyLineCreator {
                 action = r19;
 
                 r19.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r19.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r19);
                 });
 
@@ -298,6 +317,7 @@ public class PolyLineCreator {
                 action = r20;
 
                 r20.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r20.getId().equalsIgnoreCase("eraser"))
                     opener.openPolyLineProperties(r20);
                 });
 

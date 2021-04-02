@@ -106,6 +106,7 @@ public class CircleCreator {
                 action = r1;
 
                 r1.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r1.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r1);
                 });
 
@@ -116,6 +117,7 @@ public class CircleCreator {
                 action = r2;
 
                 r2.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r2.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r2);
                 });
 
@@ -126,6 +128,7 @@ public class CircleCreator {
                 action = r3;
 
                 r3.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r3.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r3);
                 });
 
@@ -136,6 +139,7 @@ public class CircleCreator {
                 action = r4;
 
                 r4.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r4.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r4);
                 });
 
@@ -146,6 +150,7 @@ public class CircleCreator {
                 action = r5;
 
                 r5.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r5.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r5);
                 });
 
@@ -156,6 +161,7 @@ public class CircleCreator {
                 action = r6;
 
                 r6.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r6.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r6);
                 });
 
@@ -166,6 +172,7 @@ public class CircleCreator {
                 action = r7;
 
                 r7.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r7.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r7);
                 });
 
@@ -176,6 +183,7 @@ public class CircleCreator {
                 action = r8;
 
                 r8.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r8.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r8);
                 });
 
@@ -186,6 +194,7 @@ public class CircleCreator {
                 action = r9;
 
                 r9.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r9.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r9);
                 });
 
@@ -196,6 +205,7 @@ public class CircleCreator {
                 action = r10;
 
                 r10.setOnMouseClicked(event -> {
+                    if(Main.selector == 5&& !r10.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r10);
                 });
 
@@ -206,6 +216,7 @@ public class CircleCreator {
                 action = r11;
 
                 r11.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r11.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r11);
                 });
 
@@ -216,6 +227,7 @@ public class CircleCreator {
                 action = r12;
 
                 r12.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r12.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r12);
                 });
 
@@ -226,6 +238,7 @@ public class CircleCreator {
                 action = r13;
 
                 r13.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r13.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r13);
                 });
 
@@ -236,6 +249,7 @@ public class CircleCreator {
                 action = r14;
 
                 r14.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r14.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r14);
                 });
 
@@ -246,6 +260,7 @@ public class CircleCreator {
                 action = r15;
 
                 r15.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r15.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r15);
                 });
 
@@ -256,6 +271,7 @@ public class CircleCreator {
                 action = r16;
 
                 r16.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r16.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r16);
                 });
 
@@ -266,6 +282,7 @@ public class CircleCreator {
                 action = r17;
 
                 r17.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r17.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r17);
                 });
 
@@ -276,6 +293,7 @@ public class CircleCreator {
                 action = r18;
 
                 r18.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r18.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r18);
                 });
 
@@ -286,6 +304,7 @@ public class CircleCreator {
                 action = r19;
 
                 r19.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r19.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r19);
                 });
 
@@ -296,6 +315,7 @@ public class CircleCreator {
                 action = r20;
 
                 r20.setOnMouseClicked(event -> {
+                    if(Main.selector == 5 && !r20.getId().equalsIgnoreCase("eraser"))
                     opener.openCircleProperties(r20);
                 });
 

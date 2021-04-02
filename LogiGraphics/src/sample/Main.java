@@ -21,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.annotation.processing.Filer;
 import java.io.*;
 
 public class Main extends Application {
@@ -33,7 +34,7 @@ public class Main extends Application {
     public static PolyLineCreator polyLineCreator = new PolyLineCreator();
 
     public static Group group = new Group();
-    Scene scene = new Scene(group,1300,900, Color.GREY);
+    Scene scene = new Scene(group,1800,900, Color.GREY);
 
     public static boolean isOnAction = false;
     public static Node nodeAction = null;
@@ -43,10 +44,12 @@ public class Main extends Application {
 
     public static int selector = 1;
 
+    public static boolean isOnEraser = false;
+
     Circle circle;
     Rectangle rectangle;
     Line line;
-    Polyline pline;
+    public static Polyline pline;
 
     public static int numberOfRectangle = 0;
     public static int numberOfCircle = 0;
@@ -80,7 +83,7 @@ public class Main extends Application {
 
      */
 
-    AllMenus menus = new AllMenus();
+    public static AllMenus menus = new AllMenus();
 
    public static WindowError error = new WindowError();
 
@@ -90,6 +93,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage){
+
+    createConfig();
 
         try {
 
@@ -188,29 +193,32 @@ public class Main extends Application {
     }
 
     public void startAll(Stage primaryStage){
+
         scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override
             public void handle(MouseEvent event) {
 
-                if(selector == 4){
+                try{
 
-                    if(pline == null){
+                if (selector == 4) {
+
+                    if (pline == null) {
 
                         polyLineCreator.createPolyLine();
                         menus.updateElements();
 
                         pline = polyLineCreator.getAction();
-                        pline.setId("pl"+numberOfPolyLine);
-                        pline.getPoints().addAll(event.getX(),event.getY());
+                        pline.setId("pl" + numberOfPolyLine);
+                        pline.getPoints().addAll(event.getX(), event.getY());
                         group.getChildren().add(pline);
                         save();
-                    }else {
+                    } else {
                         pline.getPoints().addAll(event.getX(), event.getY());
                         save();
                     }
 
-                }else {
+                } else {
 
 
                     if (!isOnAction) {
@@ -226,6 +234,9 @@ public class Main extends Application {
                             rectangle.setX(event.getX());
                             rectangle.setY(event.getY());
                             rectangle.setOpacity(0.3);
+                            if (isOnEraser) {
+                                rectangle.setFill(Color.RED);
+                            }
 
                             nodeAction = rectangle;
                             group.getChildren().add(rectangle);
@@ -240,7 +251,10 @@ public class Main extends Application {
                             circle.setOpacity(0.3);
                             circle.setCenterX(event.getX());
                             circle.setCenterY(event.getY());
-                            circle.setRadius(15);
+                            circle.setRadius(0);
+                            if (isOnEraser) {
+                                circle.setFill(Color.RED);
+                            }
 
                             nodeAction = circle;
                             group.getChildren().add(circle);
@@ -266,21 +280,39 @@ public class Main extends Application {
 
                         if (nodeAction.getTypeSelector().equalsIgnoreCase("Circle")) {
                             Circle c = (Circle) nodeAction;
-                            c.setId("c" + numberOfCircle);
+                            if (isOnEraser) {
+                                c.setFill(Color.GREY);
+                                c.setId("eraser");
+                            } else {
+                                c.setId("c" + numberOfCircle);
+                                c.setFill(Color.BLACK);
+                            }
                             numberOfCircle++;
                             c.setOpacity(1);
                             nodeAction = c;
                         }
                         if (nodeAction.getTypeSelector().equalsIgnoreCase("Rectangle")) {
                             Rectangle c = (Rectangle) nodeAction;
-                            c.setId("r" + numberOfRectangle);
+                            if (isOnEraser) {
+                                c.setFill(Color.GREY);
+                                c.setId("eraser");
+                            } else {
+                                c.setId("r" + numberOfRectangle);
+                                c.setFill(Color.BLACK);
+                            }
                             numberOfRectangle++;
                             c.setOpacity(1);
                             nodeAction = c;
                         }
                         if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
                             Line c = (Line) nodeAction;
-                            c.setId("l" + numberOfLine);
+                            if (isOnEraser) {
+                                c.setFill(Color.GREY);
+                                c.setId("eraser");
+                            } else {
+                                c.setId("l" + numberOfLine);
+                                c.setFill(Color.BLACK);
+                            }
                             numberOfLine++;
                             c.setOpacity(1);
                             nodeAction = c;
@@ -293,6 +325,8 @@ public class Main extends Application {
                         save();
                     }
                 }
+
+            }catch (IllegalArgumentException e){}
 
             }
         });
@@ -349,6 +383,7 @@ public class Main extends Application {
                         Main.selector = 1;
                     }
                     affChange();
+                    Main.pline = null;
                 }
 
                 if(event.getCharacter().equalsIgnoreCase("z")){
@@ -448,25 +483,51 @@ public class Main extends Application {
 
     public void moveY(boolean up){
         if(up) {
-            for (int i = 4; i < group.getChildren().size(); i++) {
-                group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY()-10);
+            if(isOnAction){
+                for (int i = 4; i < group.getChildren().size()-1; i++) {
+                    group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY() - 10);
+                }
+            }else {
+                for (int i = 4; i < group.getChildren().size(); i++) {
+                    group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY() - 10);
+                }
             }
         }else{
-            for (int i = 4; i < group.getChildren().size(); i++) {
-                group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY()+10);
+            if(isOnAction){
+                for (int i = 4; i < group.getChildren().size()-1; i++) {
+                    group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY() + 10);
+                }
+            }else {
+                for (int i = 4; i < group.getChildren().size(); i++) {
+                    group.getChildren().get(i).setTranslateY(group.getChildren().get(i).getTranslateY() + 10);
+                }
             }
         }
     }
 
     public void moveX(boolean right){
         if(!right) {
-            for (int i = 4; i < group.getChildren().size(); i++) {
-                group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()-10);
+            if(isOnAction){
+                for (int i = 4; i < group.getChildren().size()-1; i++) {
+                    group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()-10);
+                }
+            }else{
+                for (int i = 4; i < group.getChildren().size(); i++) {
+                    group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()-10);
+                }
             }
+
         }else{
-            for (int i = 4; i < group.getChildren().size(); i++) {
-                group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()+10);
+            if(isOnAction){
+                for (int i = 4; i < group.getChildren().size()-1; i++) {
+                    group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()+10);
+                }
+            }else{
+                for (int i = 4; i < group.getChildren().size(); i++) {
+                    group.getChildren().get(i).setTranslateX(group.getChildren().get(i).getTranslateX()+10);
+                }
             }
+
         }
     }
 
@@ -477,7 +538,10 @@ public class Main extends Application {
         save();
     }
 
-    public static void openProject(File fileToOpen){loader.loadProject(fileToOpen);}
+    public static void openProject(File fileToOpen){
+        loader.loadProject(fileToOpen);
+        menus.updateElements();
+    }
 
     public static void save(){saver.saveProject();}
 
@@ -540,19 +604,36 @@ public class Main extends Application {
 
     public static void affChange(){
         if(selector == 1){
-            icon.setText("⬛");
+            if(isOnEraser){
+                icon.setText("⬛ > ✂");
+            }else{
+                icon.setText("⬛");
+            }
+
             icon.setTranslateY(60);
         }
         if(selector == 2){
-            icon.setText("⭕");
+            if(isOnEraser){
+                icon.setText("⭕ > ✂");
+            }else{
+                icon.setText("⭕");
+            }
             icon.setTranslateY(60);
         }
         if(selector == 3){
-            icon.setText("➖");
+            if(isOnEraser){
+                icon.setText("➖ > ✂");
+            }else {
+                icon.setText("➖");
+            }
             icon.setTranslateY(50);
         }
         if(selector == 4){
-            icon.setText("〰");
+            if(isOnEraser){
+                icon.setText("〰 > ✂");
+            }else{
+                icon.setText("〰");
+            }
             icon.setTranslateY(50);
         }
         if(selector == 5){
@@ -560,6 +641,71 @@ public class Main extends Application {
             icon.setTranslateY(60);
         }
     }
+
+    public void createConfig(){
+
+        try {
+
+            File folder = new File(System.getProperty("user.dir"),"Config\\");
+
+            if(!folder.exists()){
+                folder.mkdir();
+            }
+
+            File file = new File(System.getProperty("user.dir"), "Config\\config.txt");
+            if (!file.exists()) {
+                file.createNewFile();
+
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.write("GREY/");
+                bw.newLine();
+                bw.write("pixel:1/");
+                //ce sera l'affichage au dessus des formes (le 1 correspond au nb de pixel par unité ex: si on met en mètres "meter:100" 100pixel = 1mètre)
+
+                bw.close();
+                fw.close();
+            }
+
+        }catch (IOException e){
+            error.showError();
+        }
+
+    }
+
+    public static Color readBackgroundColor(){
+
+        try {
+
+            File file = new File(System.getProperty("user.dir"), "Config\\config.txt");
+            if (file.exists()) {
+
+                FileReader fr = new FileReader(file);
+                BufferedReader br = new BufferedReader(fr);
+
+                String all = "";
+                String msg = "";
+
+                while(msg != null){
+                    msg = br.readLine();
+                    all += msg;
+                }
+                br.close();
+                fr.close();
+
+                String[] test = all.split("/");
+
+                return Color.valueOf(test[0]);
+
+            }
+        }catch (IOException e ){
+            error.showError();
+        }
+        return null;
+    }
+
+    //conversion
 
     }
 

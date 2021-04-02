@@ -34,9 +34,9 @@ public class ProjectSaver {
                         Rectangle circle = (Rectangle) Main.group.getChildren().get(i);
                         bw.write("Rectangle/");
                         bw.newLine();
-                        bw.write(String.valueOf(circle.getX() + "/"));
+                        bw.write(circle.getX() + "/");
                         bw.newLine();
-                        bw.write(String.valueOf(circle.getY() + "/"));
+                        bw.write(circle.getY() + "/");
                         bw.newLine();
                         bw.write(circle.getWidth() + "," + circle.getHeight() + "/");
                         bw.newLine();

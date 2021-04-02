@@ -20,7 +20,9 @@ public class WindowError {
         Label label = new Label("Une erreur s'est produite,Veuillez relancer LogiGraphics");
         label.setFont(new Font("Trbuchet MS",15));
 
-        box.getChildren().addAll(label);
+        if(!box.getChildren().contains(label)){
+            box.getChildren().addAll(label);
+        }
 
         stage.setScene(scene);
         stage.show();
@@ -33,7 +35,9 @@ public class WindowError {
 
         label.setFont(new Font("Trbuchet MS",15));
 
-        box.getChildren().addAll(label);
+        if(!box.getChildren().contains(label)){
+            box.getChildren().addAll(label);
+        }
 
         stage.setScene(scene);
         stage.show();
