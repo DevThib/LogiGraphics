@@ -171,6 +171,9 @@ public class Main extends Application {
                 try {
 
                     FileChooser chooser = new FileChooser();
+                    File file = new File(System.getProperty("user.dir"),"projets LogiGraphics\\");
+                    chooser.setInitialDirectory(file);
+                    chooser.setTitle("Sélectionnez un projet");
                     workspace = chooser.showOpenDialog(primaryStage);
                     startAll(primaryStage);
                     choose.close();
@@ -199,8 +202,6 @@ public class Main extends Application {
             @Override
             public void handle(MouseEvent event) {
 
-                try{
-
                 if (selector == 4) {
 
                     if (pline == null) {
@@ -209,7 +210,7 @@ public class Main extends Application {
                         menus.updateElements();
 
                         pline = polyLineCreator.getAction();
-                        pline.setId("pl" + numberOfPolyLine);
+                        pline.setId("normal");
                         pline.getPoints().addAll(event.getX(), event.getY());
                         group.getChildren().add(pline);
                         save();
@@ -284,7 +285,7 @@ public class Main extends Application {
                                 c.setFill(Color.GREY);
                                 c.setId("eraser");
                             } else {
-                                c.setId("c" + numberOfCircle);
+                                c.setId("normal");
                                 c.setFill(Color.BLACK);
                             }
                             numberOfCircle++;
@@ -297,7 +298,7 @@ public class Main extends Application {
                                 c.setFill(Color.GREY);
                                 c.setId("eraser");
                             } else {
-                                c.setId("r" + numberOfRectangle);
+                                c.setId("normal");
                                 c.setFill(Color.BLACK);
                             }
                             numberOfRectangle++;
@@ -306,13 +307,7 @@ public class Main extends Application {
                         }
                         if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
                             Line c = (Line) nodeAction;
-                            if (isOnEraser) {
-                                c.setFill(Color.GREY);
-                                c.setId("eraser");
-                            } else {
-                                c.setId("l" + numberOfLine);
-                                c.setFill(Color.BLACK);
-                            }
+                            c.setId("normal");
                             numberOfLine++;
                             c.setOpacity(1);
                             nodeAction = c;
@@ -325,8 +320,6 @@ public class Main extends Application {
                         save();
                     }
                 }
-
-            }catch (IllegalArgumentException e){}
 
             }
         });

@@ -112,7 +112,6 @@ public class LineCreator {
 
                 });
 
-                Main.group.getChildren().add(r1);
             }
             if (r.equalsIgnoreCase("r2")) {
                 r2 = new Line();
@@ -123,7 +122,6 @@ public class LineCreator {
                     opener.openLineProperties(r2);
                 });
 
-                Main.group.getChildren().add(r2);
             }
             if (r.equalsIgnoreCase("r3")) {
                 r3 = new Line();
@@ -134,7 +132,6 @@ public class LineCreator {
                     opener.openLineProperties(r3);
                 });
 
-                Main.group.getChildren().add(r3);
             }
             if (r.equalsIgnoreCase("r4")) {
                 r4 = new Line();
@@ -145,7 +142,6 @@ public class LineCreator {
                     opener.openLineProperties(r4);
                 });
 
-                Main.group.getChildren().add(r4);
             }
             if (r.equalsIgnoreCase("r5")) {
                 r5 = new Line();
@@ -156,7 +152,6 @@ public class LineCreator {
                     opener.openLineProperties(r5);
                 });
 
-                Main.group.getChildren().add(r5);
             }
             if (r.equalsIgnoreCase("r6")) {
                 r6 = new Line();
@@ -167,7 +162,6 @@ public class LineCreator {
                     opener.openLineProperties(r6);
                 });
 
-                Main.group.getChildren().add(r6);
             }
             if (r.equalsIgnoreCase("r7")) {
                 r7 = new Line();
@@ -178,7 +172,6 @@ public class LineCreator {
                     opener.openLineProperties(r7);
                 });
 
-                Main.group.getChildren().add(r7);
             }
             if (r.equalsIgnoreCase("r8")) {
                 r8 = new Line();
@@ -189,7 +182,6 @@ public class LineCreator {
                     opener.openLineProperties(r8);
                 });
 
-                Main.group.getChildren().add(r8);
             }
             if (r.equalsIgnoreCase("r9")) {
                 r9 = new Line();
@@ -200,7 +192,6 @@ public class LineCreator {
                     opener.openLineProperties(r9);
                 });
 
-                Main.group.getChildren().add(r9);
             }
             if (r.equalsIgnoreCase("r10")) {
                 r10 = new Line();
@@ -211,7 +202,6 @@ public class LineCreator {
                     opener.openLineProperties(r10);
                 });
 
-                Main.group.getChildren().add(r10);
             }
             if (r.equalsIgnoreCase("r11")) {
                 r11 = new Line();
@@ -222,7 +212,6 @@ public class LineCreator {
                     opener.openLineProperties(r11);
                 });
 
-                Main.group.getChildren().add(r11);
             }
             if (r.equalsIgnoreCase("r12")) {
                 r12 = new Line();
@@ -233,7 +222,6 @@ public class LineCreator {
                     opener.openLineProperties(r12);
                 });
 
-                Main.group.getChildren().add(r12);
             }
             if (r.equalsIgnoreCase("r13")) {
                 r13 = new Line();
@@ -244,7 +232,6 @@ public class LineCreator {
                     opener.openLineProperties(r13);
                 });
 
-                Main.group.getChildren().add(r13);
             }
             if (r.equalsIgnoreCase("r14")) {
                 r14 = new Line();
@@ -255,7 +242,6 @@ public class LineCreator {
                     opener.openLineProperties(r14);
                 });
 
-                Main.group.getChildren().add(r14);
             }
             if (r.equalsIgnoreCase("r15")) {
                 r15 = new Line();
@@ -266,7 +252,6 @@ public class LineCreator {
                     opener.openLineProperties(r15);
                 });
 
-                Main.group.getChildren().add(r15);
             }
             if (r.equalsIgnoreCase("r16")) {
                 r16 = new Line();
@@ -277,7 +262,6 @@ public class LineCreator {
                     opener.openLineProperties(r16);
                 });
 
-                Main.group.getChildren().add(r16);
             }
             if (r.equalsIgnoreCase("r17")) {
                 r17 = new Line();
@@ -288,7 +272,6 @@ public class LineCreator {
                     opener.openLineProperties(r17);
                 });
 
-                Main.group.getChildren().add(r17);
             }
             if (r.equalsIgnoreCase("r18")) {
                 r18 = new Line();
@@ -299,18 +282,16 @@ public class LineCreator {
                     opener.openLineProperties(r18);
                 });
 
-                Main.group.getChildren().add(r18);
             }
             if (r.equalsIgnoreCase("r19")) {
                 r19 = new Line();
                 action = r19;
 
                 r19.setOnMouseClicked(event -> {
-                    if(Main.selector == 5 && !r19.getId().equalsIgnoreCase("eraser"))
-                    opener.openLineProperties(r19);
+                    if (Main.selector == 5 && !r19.getId().equalsIgnoreCase("eraser"))
+                        opener.openLineProperties(r19);
                 });
 
-                Main.group.getChildren().add(r19);
             }
             if (r.equalsIgnoreCase("r20")) {
                 r20 = new Line();
@@ -321,7 +302,6 @@ public class LineCreator {
                     opener.openLineProperties(r20);
                 });
 
-                Main.group.getChildren().add(r20);
             }
 
 

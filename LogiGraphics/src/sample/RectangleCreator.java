@@ -110,7 +110,6 @@ public class RectangleCreator {
                         opener.openRectanglePropoerties(r1);
                     });
 
-                    Main.group.getChildren().add(r1);
                 }
             if (r.equalsIgnoreCase("r2")) {
                 r2 = new Rectangle();
@@ -121,7 +120,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r2);
                 });
 
-                Main.group.getChildren().add(r2);
             }
             if (r.equalsIgnoreCase("r3")) {
                 r3 = new Rectangle();
@@ -132,7 +130,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r3);
                 });
 
-                Main.group.getChildren().add(r3);
             }
             if (r.equalsIgnoreCase("r4")) {
                 r4 = new Rectangle();
@@ -143,7 +140,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r4);
                 });
 
-                Main.group.getChildren().add(r4);
             }
             if (r.equalsIgnoreCase("r5")) {
                 r5 = new Rectangle();
@@ -154,7 +150,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r5);
                 });
 
-                Main.group.getChildren().add(r5);
             }
             if (r.equalsIgnoreCase("r6")) {
                 r6 = new Rectangle();
@@ -165,7 +160,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r6);
                 });
 
-                Main.group.getChildren().add(r6);
             }
             if (r.equalsIgnoreCase("r7")) {
                 r7 = new Rectangle();
@@ -176,7 +170,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r7);
                 });
 
-                Main.group.getChildren().add(r7);
             }
             if (r.equalsIgnoreCase("r8")) {
                 r8 = new Rectangle();
@@ -187,7 +180,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r8);
                 });
 
-                Main.group.getChildren().add(r8);
             }
             if (r.equalsIgnoreCase("r9")) {
                 r9 = new Rectangle();
@@ -198,7 +190,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r9);
                 });
 
-                Main.group.getChildren().add(r9);
             }
             if (r.equalsIgnoreCase("r10")) {
                 r10 = new Rectangle();
@@ -209,7 +200,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r10);
                 });
 
-                Main.group.getChildren().add(r10);
             }
             if (r.equalsIgnoreCase("r11")) {
                 r11 = new Rectangle();
@@ -220,7 +210,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r11);
                 });
 
-                Main.group.getChildren().add(r11);
             }
             if (r.equalsIgnoreCase("r12")) {
                 r12 = new Rectangle();
@@ -231,7 +220,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r12);
                 });
 
-                Main.group.getChildren().add(r12);
             }
             if (r.equalsIgnoreCase("r13")) {
                 r13 = new Rectangle();
@@ -242,7 +230,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r13);
                 });
 
-                Main.group.getChildren().add(r13);
             }
             if (r.equalsIgnoreCase("r14")) {
                 r14 = new Rectangle();
@@ -253,7 +240,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r14);
                 });
 
-                Main.group.getChildren().add(r14);
             }
             if (r.equalsIgnoreCase("r15")) {
                 r15 = new Rectangle();
@@ -264,7 +250,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r15);
                 });
 
-                Main.group.getChildren().add(r15);
             }
             if (r.equalsIgnoreCase("r16")) {
                 r16 = new Rectangle();
@@ -275,7 +260,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r16);
                 });
 
-                Main.group.getChildren().add(r16);
             }
             if (r.equalsIgnoreCase("r17")) {
                 r17 = new Rectangle();
@@ -285,8 +269,6 @@ public class RectangleCreator {
                     if(Main.selector == 5 && !r17.getId().equalsIgnoreCase("eraser"))
                     opener.openRectanglePropoerties(r17);
                 });
-
-                Main.group.getChildren().add(r17);
             }
             if (r.equalsIgnoreCase("r18")) {
                 r18 = new Rectangle();
@@ -297,7 +279,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r18);
                 });
 
-                Main.group.getChildren().add(r18);
             }
             if (r.equalsIgnoreCase("r19")) {
                 r19 = new Rectangle();
@@ -308,7 +289,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r19);
                 });
 
-                Main.group.getChildren().add(r19);
             }
             if (r.equalsIgnoreCase("r20")) {
                 r20 = new Rectangle();
@@ -319,7 +299,6 @@ public class RectangleCreator {
                     opener.openRectanglePropoerties(r20);
                 });
 
-                Main.group.getChildren().add(r20);
             }
 
 

@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.*;
 
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import static sample.Main.menus;
 import static sample.Main.search;
 
 public class ProjectLoader {
@@ -38,12 +40,18 @@ public class ProjectLoader {
                     double posY = Double.parseDouble(properties[2]);
                     String[] pr = properties[3].split(",");
 
-                    Rectangle r = new Rectangle();
+                    Main.rectangleCreator.createRectangle();
+                    menus.updateElements();
+                    Rectangle r = Main.rectangleCreator.getAction();
+
                     r.setY(posY);
                     r.setX(posX);
                     r.setWidth(Double.parseDouble(pr[0]));
                     r.setHeight(Double.parseDouble(pr[1]));
                     r.setId(properties[4]);
+                    if(properties[4].equalsIgnoreCase("eraser")){
+                        r.setFill(Color.GREY);
+                    }
                     r.setRotate(Double.parseDouble(properties[5]));
                     Main.group.getChildren().add(r);
                     Main.numberOfRectangle++;
@@ -55,11 +63,16 @@ public class ProjectLoader {
                     double posY = Double.parseDouble(properties[2]);
                     double radius = Double.parseDouble(properties[3]);
 
-                    Circle c = new Circle();
+                    Main.circleCreator.createCircle();
+                    Main.menus.updateElements();
+                    Circle c  = Main.circleCreator.getAction();
                     c.setCenterY(posY);
                     c.setCenterX(posX);
                     c.setRadius(radius);
                     c.setId(properties[4]);
+                    if(properties[4].equalsIgnoreCase("eraser")){
+                        c.setFill(Color.GREY);
+                    }
                     c.setRotate(Double.parseDouble(properties[5]));
                     Main.group.getChildren().add(c);
                     Main.numberOfCircle++;
