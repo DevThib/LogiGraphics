@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class AllMenus {
 
@@ -42,7 +43,7 @@ public class AllMenus {
                 Main.nodeAction = null;
                 Main.selector = 1;
                 Main.affChange();
-                Main.pline = null;
+                Main.rectangle = null;
             }
         });
 
@@ -57,7 +58,7 @@ public class AllMenus {
                 Main.nodeAction = null;
                 Main.selector = 2;
                 Main.affChange();
-                Main.pline = null;
+                Main.circle = null;
             }
         });
 
@@ -72,7 +73,7 @@ public class AllMenus {
                 Main.nodeAction = null;
                 Main.selector = 3;
                 Main.affChange();
-                Main.pline = null;
+                Main.line = null;
             }
         });
 
@@ -91,6 +92,35 @@ public class AllMenus {
             }
         });
 
+        MenuItem polygon = new MenuItem("🛑 Polygone");
+        polygon.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (Main.isOnAction) {
+                    Main.group.getChildren().remove(Main.group.getChildren().size() - 1);
+                }
+                Main.isOnAction = false;
+                Main.nodeAction = null;
+                Main.selector = 6;
+                Main.affChange();
+                Main.pgone = null;
+            }
+        });
+
+        MenuItem cross = new MenuItem("➕ Croix");
+        cross.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (Main.isOnAction) {
+                    Main.group.getChildren().remove(Main.group.getChildren().size() - 1);
+                }
+                Main.isOnAction = false;
+                Main.nodeAction = null;
+                Main.selector = 7;
+                Main.affChange();
+            }
+        });
+
         MenuItem free = new MenuItem("🖱 Libre");
         free.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -99,11 +129,10 @@ public class AllMenus {
                 Main.nodeAction = null;
                 Main.selector = 5;
                 Main.affChange();
-                Main.pline = null;
             }
         });
 
-        formes.getItems().addAll(rectangle, circle, line, polyline, free);
+        formes.getItems().addAll(rectangle, circle, line, polyline,polygon,cross, free);
 
         MenuItem back = new MenuItem("↩ Retour");
         back.setOnAction(new EventHandler<ActionEvent>() {
@@ -112,6 +141,17 @@ public class AllMenus {
                 Main.back();
                 updateElements();
             }
+        });
+
+        MenuItem eraser = new MenuItem("✂ Découper");
+        eraser.setOnAction(event -> {
+            if(Main.isOnEraser){
+                Main.isOnEraser = false;
+            }else{
+                Main.isOnEraser = true;
+            }
+            Main.affChange();
+
         });
 
         MenuItem all = new MenuItem("❌ Effacer tout");
@@ -123,7 +163,7 @@ public class AllMenus {
                 VBox box = new VBox();
                 Scene scene = new Scene(box,700,350);
 
-                Label label = new Label("Voulez vous vraiment effacer tout les éléments ?");
+                Label label = new Label("Voulez vous vraiment effacer tous les éléments ?");
                 label.setFont( new Font("Trebuchet MS",20));
 
                 VBox bb = new VBox();
@@ -169,91 +209,82 @@ public class AllMenus {
             }
         });
 
-
-        MenuItem eraser = new MenuItem("✂ Découper");
-        eraser.setOnAction(event -> {
-            if(Main.isOnEraser){
-                Main.isOnEraser = false;
-            }else{
-                Main.isOnEraser = true;
-            }
-            Main.affChange();
-
-        });
-     /*   eraser.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                VBox general = new VBox();
-
-                Scene scene = new Scene(general, 600, 500);
-                Stage stage = new Stage();
-
-                Label text = new Label("Gommer un élément par rapport à un autre");
-                FlowPane pane = new FlowPane();
-                TextField id1 = new TextField();
-                id1.setPromptText("Soustraire l'objet (id)");
-                Label te = new Label("à");
-                TextField id2 = new TextField();
-                id2.setPromptText("l'objet (id)");
-                pane.getChildren().addAll(id1, te, id2);
-
-                Button soumet = new Button("Soumettre");
-                soumet.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        Node element1 = Main.search(id1.getText());
-                        Node element2 = Main.search(id2.getText());
-
-                        if (element1 != null && element2 != null) {
-
-                            Shape shape1 = (Shape) element1;
-                            Shape shape2 = (Shape) element2;
-
-                            Shape shape = Shape.subtract(shape1, shape2);
-
-                            Main.group.getChildren().addAll(shape);
-                            element1.setVisible(false);
-                            element2.setVisible(false);
-                            stage.close();
-                            shape.setId("substract," + element1.getId() + "," + element2.getId());
-                            Main.save();
-
-                        } else {
-                            soumet.setText("Un identifiant est incorrect");
-                        }
-                    }
-                });
-
-                general.getChildren().addAll(text, pane, soumet);
-                general.setAlignment(Pos.CENTER);
-
-                pane.setAlignment(Pos.CENTER);
-
-                stage.setScene(scene);
-                stage.setTitle("Gomme");
-                stage.show();
-
-            }
-        });
-
-      */
-
         MenuItem gravity = new MenuItem("🛩 Gravité");
         gravity.setOnAction(event -> {
 
         });
 
-        functions.getItems().addAll(back, eraser, all);
+        MenuItem deleteall = new MenuItem("💥 Nettoyer");
+        deleteall.setOnAction(event -> {
+            Stage stage = new Stage();
+            VBox box = new VBox();
+            Scene scene = new Scene(box,700,350);
+
+            Label label = new Label("Voulez vous vraiment effacer tous les projets dans le dossier projets ?\n(Sauf le projet ouvert actuellement)");
+            label.setFont( new Font("Trebuchet MS",20));
+
+            VBox bb = new VBox();
+            VBox bbb = new VBox();
+
+            FlowPane pane = new FlowPane();
+            Button b1 = new Button("Oui");
+            Button b2 = new Button("Non");
+
+            b1.setOnAction(event1 -> {
+                stage.close();
+
+                int number = 1;
+                File file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
+                ArrayList<File> list = new ArrayList<>();
+                while (number < 50) {
+                    System.out.println("hey");
+                    list.add(file);
+                    number++;
+                    file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
+                }
+                for(int i = 0; i < list.size(); i++){
+                    list.get(i).delete();
+                }
+            });
+
+            b2.setOnAction(event12 -> {
+                stage.close();
+            });
+
+            b1.setFont( new Font("Trebuchet MS",30));
+            b2.setFont(new Font("Trebuchet MS",30));
+
+            bb.getChildren().addAll(b1);
+            bb.setPadding(new Insets(20));
+            bbb.getChildren().addAll(b2);
+            bbb.setPadding(new Insets(20));
+
+            if(!pane.getChildren().contains(b1) && !pane.getChildren().contains(b2)){
+                pane.getChildren().addAll(bb,bbb);
+            }
+
+            if(!box.getChildren().contains(label) && !pane.getChildren().contains(pane)){
+                box.getChildren().addAll(label,pane);
+            }
+
+            box.setAlignment(Pos.CENTER);
+            pane.setAlignment(Pos.CENTER);
+
+            stage.setScene(scene);
+            stage.show();
+
+        });
+
+        functions.getItems().addAll(back, eraser, all,deleteall);
 
         MenuItem create = new MenuItem("➕ Nouveau");
         create.setOnAction(event -> {
 
             int number = 1;
-            File file = new File(System.getProperty("user.dir"), "projet" + number + ".txt");
+            File file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
             while (file.exists()) {
                 number++;
-                file = new File(System.getProperty("user.dir"), "projet" + number + ".txt");
+                file = new File(System.getProperty("user.dir"), "projets LogiGraphics\\projet" + number + ".txt");
             }
             try {
                 file.createNewFile();
@@ -276,9 +307,6 @@ public class AllMenus {
                 for (int i = 4; i < Main.group.getChildren().size(); i++) {
                     Main.group.getChildren().removeAll(Main.group.getChildren().get(i));
                 }
-                Main.numberOfCircle = 0;
-                Main.numberOfLine = 0;
-                Main.numberOfRectangle = 0;
                 Main.workspace = file;
                 char[] na = Main.workspace.getName().toCharArray();
                 String name = "";
@@ -298,9 +326,6 @@ public class AllMenus {
         MenuItem open = new MenuItem("📁 Ouvrir");
         open.setOnAction(event -> {
 
-            Main.numberOfCircle = 0;
-            Main.numberOfLine = 0;
-            Main.numberOfRectangle = 0;
             FileChooser chooser = new FileChooser();
             chooser.setTitle("Sélectionner un projet");
             Main.workspace = chooser.showOpenDialog(Main.primary);
@@ -338,11 +363,12 @@ public class AllMenus {
         superposer.setOnAction(event -> {
             FileChooser chooser = new FileChooser();
             try {
+                File file = new File(System.getProperty("user.dir"),"projets LogiGraphics\\");
+                chooser.setInitialDirectory(file);
                 chooser.setTitle("Sélectionner un projet");
                 Main.superpose = chooser.showOpenDialog(Main.primary);
                 Main.openProject(Main.superpose);
-            } catch (NullPointerException e) {
-            }
+            } catch (NullPointerException e) {}
         });
 
         files.getItems().addAll(create, open, save, superposer);
@@ -399,21 +425,34 @@ public class AllMenus {
             }
         });
 
-        MenuItem sh = new MenuItem("🌙 Visible");
-        sh.setOnAction(event -> {
-            if (Main.rSh) {
-                Main.rSh = false;
-                Main.setVisibilty(false, "Path");
-                sh.setText("🌙 Invisible");
+        MenuItem pli = new MenuItem("🛑 Visible");
+        pli.setOnAction(event -> {
+            if (Main.pli) {
+                Main.pli = false;
+                Main.setVisibilty(false, "Polygon");
+                pli.setText("🛑 Invisible");
             } else {
-                Main.rSh = true;
+                Main.pli = true;
+                Main.setVisibilty(true, "Polygon");
+                pli.setText("🛑 Visible");
+            }
+        });
+
+        MenuItem cros = new MenuItem("➕ Visible");
+        cros.setOnAction(event -> {
+            if (Main.cross) {
+                Main.cross = false;
+                Main.setVisibilty(false, "Path");
+                cros.setText("➕ Invisible");
+            } else {
+                Main.cross = true;
                 Main.setVisibilty(true, "Path");
-                sh.setText("🌙 Visible");
+                cros.setText("➕ Visible");
             }
         });
 
 
-        visibilty.getItems().addAll(rec, cir, li, mli, sh);
+        visibilty.getItems().addAll(rec, cir, li, mli,pli,cros);
 
         updateElements();
         MenuItem item = new MenuItem("Aucun élément dans le projet");
@@ -481,6 +520,14 @@ public class AllMenus {
                 });
                 elements.getItems().add(item);
             }
+            if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Polygon")) {
+                int a = i;
+                MenuItem item = new MenuItem("🛑 Polygone");
+                item.setOnAction(event -> {
+                    opener.openPolyGonProperties((Polygon) Main.group.getChildren().get(a));
+                });
+                elements.getItems().add(item);
+            }
         }
         if (Main.group.getChildren().size() == 4) {
             MenuItem item = new MenuItem("Aucun élément dans le projet");
@@ -507,9 +554,6 @@ public class AllMenus {
         for(int i = 4; i < Main.group.getChildren().size();i++){
             Main.group.getChildren().removeAll(Main.group.getChildren().get(i));
         }
-        Main.numberOfRectangle = 0;
-        Main.numberOfLine = 0;
-        Main.numberOfCircle = 0;
         updateElements();
     }
 }

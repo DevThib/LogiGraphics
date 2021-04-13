@@ -1,9 +1,6 @@
 package sample;
 
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -85,21 +82,6 @@ public class ProjectSaver {
                         bw.write(String.valueOf(circle.getRotate()));
 
                     }
-                    if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Path")) {
-
-                        String[] types = Main.group.getChildren().get(i).getId().split(",");
-
-                        bw.write("Shape/");
-                        bw.newLine();
-                        bw.write(types[0] + "/");
-                        bw.newLine();
-                        bw.write(types[1] + "/");
-                        bw.newLine();
-                        bw.write(types[2] + "/");
-                        bw.newLine();
-                        bw.write(String.valueOf(Main.group.getChildren().get(i).getRotate()));
-
-                    }
                     if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Polyline")) {
 
                         Polyline line = (Polyline) Main.group.getChildren().get(i);
@@ -119,6 +101,34 @@ public class ProjectSaver {
                         bw.write(line.getId() + "/");
                         bw.newLine();
                         bw.write(String.valueOf(line.getRotate()));
+
+                    }
+                    if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Polygon")) {
+
+                        Polygon line = (Polygon) Main.group.getChildren().get(i);
+
+                        String d = String.valueOf(line.getPoints());
+                        char[] dd = d.toCharArray();
+                        String toWrite = "";
+                        for (int a = 1; a < dd.length - 1; a++) {
+                            toWrite += dd[a];
+                        }
+
+                        bw.write("Polygon/");
+                        bw.newLine();
+                        bw.write(toWrite + "/");
+                        System.out.println(line.getPoints() + "/");
+                        bw.newLine();
+                        bw.write(line.getId() + "/");
+                        bw.newLine();
+                        bw.write(String.valueOf(line.getRotate()));
+
+                    }
+                    if (Main.group.getChildren().get(i).getTypeSelector().equalsIgnoreCase("Path")) {
+
+                        bw.write("Shape/");
+                        bw.newLine();
+                        bw.write(Main.group.getChildren().get(i).getId());
 
                     }
                 }

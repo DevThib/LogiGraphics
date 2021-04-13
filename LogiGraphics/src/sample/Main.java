@@ -32,6 +32,8 @@ public class Main extends Application {
     public static CircleCreator circleCreator = new CircleCreator();
     public static LineCreator lineCreator = new LineCreator();
     public static PolyLineCreator polyLineCreator = new PolyLineCreator();
+    public static PolyGonCreator polyGonCreator = new PolyGonCreator();
+    public static CrossCreator crossCreator = new CrossCreator();
 
     public static Group group = new Group();
     Scene scene = new Scene(group,1800,900, Color.GREY);
@@ -46,15 +48,11 @@ public class Main extends Application {
 
     public static boolean isOnEraser = false;
 
-    Circle circle;
-    Rectangle rectangle;
-    Line line;
+    public static Circle circle;
+    public static Rectangle rectangle;
+    public static Line line;
     public static Polyline pline;
-
-    public static int numberOfRectangle = 0;
-    public static int numberOfCircle = 0;
-     public static int numberOfLine = 0;
-    public static int numberOfPolyLine = 0;
+    public static Polygon pgone;
 
     Line indicator = new Line();
 
@@ -68,7 +66,8 @@ public class Main extends Application {
     public static boolean rCi = true;
     public static boolean rLi = true;
     public static boolean mLi = true;
-    public static boolean rSh = true;
+    public static boolean pli = true;
+    public static boolean cross = true;
 
     public static Label icon = new Label();
 
@@ -80,8 +79,12 @@ public class Main extends Application {
     3 = ligne
     4 = polyline
     5 = libre
+    6 = polygone
+    7 = croix
 
      */
+
+    //METTRE LA LIMITE DE 50 PROJETS
 
     public static AllMenus menus = new AllMenus();
 
@@ -221,103 +224,123 @@ public class Main extends Application {
 
                 } else {
 
+                    if(selector == 6){
 
-                    if (!isOnAction) {
-                        if (selector != 5) {
-                            isOnAction = true;
+                        if (pgone == null) {
+
+                            polyGonCreator.createPolyGon();
+                            menus.updateElements();
+
+                            pgone = polyGonCreator.getAction();
+                            pgone.setId("normal");
+                            pgone.getPoints().addAll(event.getX(), event.getY());
+                            group.getChildren().add(pgone);
+                            save();
+                        } else {
+                            pgone.getPoints().addAll(event.getX(), event.getY());
+                            save();
                         }
 
-                        if (selector == 1) {
 
-                            rectangleCreator.createRectangle();
-                            menus.updateElements();
-                            rectangle = rectangleCreator.getAction();
-                            rectangle.setX(event.getX());
-                            rectangle.setY(event.getY());
-                            rectangle.setOpacity(0.3);
-                            if (isOnEraser) {
-                                rectangle.setFill(Color.RED);
+                    }else {
+
+                        if (!isOnAction) {
+                            if (selector != 5 && selector != 7) {
+                                isOnAction = true;
                             }
 
-                            nodeAction = rectangle;
-                            group.getChildren().add(rectangle);
-                        }
+                            if (selector == 1) {
 
-                        if (selector == 2) {
+                                rectangleCreator.createRectangle();
+                                menus.updateElements();
+                                rectangle = rectangleCreator.getAction();
+                                rectangle.setX(event.getX());
+                                rectangle.setY(event.getY());
+                                rectangle.setOpacity(0.3);
+                                if (isOnEraser) {
+                                    rectangle.setFill(Color.RED);
+                                }
 
-                            circleCreator.createCircle();
-                            menus.updateElements();
-                            circle = circleCreator.getAction();
-
-                            circle.setOpacity(0.3);
-                            circle.setCenterX(event.getX());
-                            circle.setCenterY(event.getY());
-                            circle.setRadius(0);
-                            if (isOnEraser) {
-                                circle.setFill(Color.RED);
+                                nodeAction = rectangle;
+                                group.getChildren().add(rectangle);
                             }
 
-                            nodeAction = circle;
-                            group.getChildren().add(circle);
-                        }
+                            if (selector == 2) {
 
-                        if (selector == 3) {
+                                circleCreator.createCircle();
+                                menus.updateElements();
+                                circle = circleCreator.getAction();
 
-                            lineCreator.createLine();
-                            menus.updateElements();
-                            line = lineCreator.getAction();
+                                circle.setOpacity(0.3);
+                                circle.setCenterX(event.getX());
+                                circle.setCenterY(event.getY());
+                                circle.setRadius(0);
+                                if (isOnEraser) {
+                                    circle.setFill(Color.RED);
+                                }
 
-                            line.setOpacity(0.3);
-                            line.setStartX(event.getX());
-                            line.setStartY(event.getY());
-                            line.setEndY(event.getX());
-                            line.setEndY(event.getY());
-                            nodeAction = line;
-                            group.getChildren().add(line);
-                        }
+                                nodeAction = circle;
+                                group.getChildren().add(circle);
+                            }
+
+                            if (selector == 3) {
+
+                                lineCreator.createLine();
+                                menus.updateElements();
+                                line = lineCreator.getAction();
+
+                                line.setOpacity(0.3);
+                                line.setStartX(event.getX());
+                                line.setStartY(event.getY());
+                                line.setEndY(event.getX());
+                                line.setEndY(event.getY());
+                                nodeAction = line;
+                                group.getChildren().add(line);
+                            }
+                            if(selector == 7){
+                                crossCreator.createCross(event.getX(), event.getY());
+                            }
 
 
-                    } else {
+                        } else {
 
-                        if (nodeAction.getTypeSelector().equalsIgnoreCase("Circle")) {
-                            Circle c = (Circle) nodeAction;
-                            if (isOnEraser) {
-                                c.setFill(Color.GREY);
-                                c.setId("eraser");
-                            } else {
+                            if (nodeAction.getTypeSelector().equalsIgnoreCase("Circle")) {
+                                Circle c = (Circle) nodeAction;
+                                if (isOnEraser) {
+                                    c.setFill(Color.GREY);
+                                    c.setId("eraser");
+                                } else {
+                                    c.setId("normal");
+                                    c.setFill(Color.BLACK);
+                                }
+                                c.setOpacity(1);
+                                nodeAction = c;
+                            }
+                            if (nodeAction.getTypeSelector().equalsIgnoreCase("Rectangle")) {
+                                Rectangle c = (Rectangle) nodeAction;
+                                if (isOnEraser) {
+                                    c.setFill(Color.GREY);
+                                    c.setId("eraser");
+                                } else {
+                                    c.setId("normal");
+                                    c.setFill(Color.BLACK);
+                                }
+                                c.setOpacity(1);
+                                nodeAction = c;
+                            }
+                            if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
+                                Line c = (Line) nodeAction;
                                 c.setId("normal");
-                                c.setFill(Color.BLACK);
+                                c.setOpacity(1);
+                                nodeAction = c;
                             }
-                            numberOfCircle++;
-                            c.setOpacity(1);
-                            nodeAction = c;
-                        }
-                        if (nodeAction.getTypeSelector().equalsIgnoreCase("Rectangle")) {
-                            Rectangle c = (Rectangle) nodeAction;
-                            if (isOnEraser) {
-                                c.setFill(Color.GREY);
-                                c.setId("eraser");
-                            } else {
-                                c.setId("normal");
-                                c.setFill(Color.BLACK);
-                            }
-                            numberOfRectangle++;
-                            c.setOpacity(1);
-                            nodeAction = c;
-                        }
-                        if (nodeAction.getTypeSelector().equalsIgnoreCase("Line")) {
-                            Line c = (Line) nodeAction;
-                            c.setId("normal");
-                            numberOfLine++;
-                            c.setOpacity(1);
-                            nodeAction = c;
-                        }
 
-                        isOnAction = false;
-                        nodeAction = null;
-                        moveY = 0;
-                        moveX = 0;
-                        save();
+                            isOnAction = false;
+                            nodeAction = null;
+                            moveY = 0;
+                            moveX = 0;
+                            save();
+                        }
                     }
                 }
 
@@ -364,9 +387,11 @@ public class Main extends Application {
             @Override
             public void handle(KeyEvent event) {
 
+                System.out.println(event.getCharacter());
+
                 if(event.getCharacter().equalsIgnoreCase("p")){
                     selector++;
-                    if(selector > 5){
+                    if(selector > 7){
                         selector = 1;
                     }
                     if(Main.isOnAction){
@@ -538,59 +563,11 @@ public class Main extends Application {
 
     public static void save(){saver.saveProject();}
 
-    public static Node search(String id){
-        for(int i = 4; i < group.getChildren().size(); i++){
-            if(group.getChildren().get(i).getId() != null && group.getChildren().get(i).getId().equalsIgnoreCase(id)){
-                return group.getChildren().get(i);
-            }
-        }
-        return null;
-    }
-
     public static void setVisibilty(boolean visible, String type){
 
-        String id1 = "";
-        String id2 = "";
-
-        try {
-
-            FileReader fr = new FileReader(workspace);
-            BufferedReader br = new BufferedReader(fr);
-
-            String all = "";
-            String str = "";
-            while(str != null){
-                str = br.readLine();
-                if(str != null){
-                    all += str;
-                }
-            }
-
-            String[] values = all.split(":");
-
-            for(int i = 0; i < values.length; i++){
-                String[] properties = values[i].split("/");
-                if(properties[0].equalsIgnoreCase("Shape")){
-
-                    if(properties[1].equalsIgnoreCase("substract")){
-                        id1 = properties[2];
-                        id2 = properties[3];
-                    }
-
-                }
-            }
-
-        }catch (IOException e){
-            System.out.println("error");
-        }
-
-        for(int i = 2; i < group.getChildren().size(); i++){
-            if(id1.equalsIgnoreCase(group.getChildren().get(i).getId()) || id2.equalsIgnoreCase(group.getChildren().get(i).getId())){
-                group.getChildren().get(i).setVisible(false);
-            }else {
-                if (group.getChildren().get(i).getTypeSelector().equalsIgnoreCase(type)) {
-                    group.getChildren().get(i).setVisible(visible);
-                }
+        for(int i = 4; i < group.getChildren().size(); i++){
+            if (group.getChildren().get(i).getTypeSelector().equalsIgnoreCase(type)) {
+                group.getChildren().get(i).setVisible(visible);
             }
         }
     }
@@ -614,24 +591,24 @@ public class Main extends Application {
             icon.setTranslateY(60);
         }
         if(selector == 3){
-            if(isOnEraser){
-                icon.setText("➖ > ✂");
-            }else {
-                icon.setText("➖");
-            }
+            icon.setText("➖");
             icon.setTranslateY(50);
         }
         if(selector == 4){
-            if(isOnEraser){
-                icon.setText("〰 > ✂");
-            }else{
-                icon.setText("〰");
-            }
+            icon.setText("〰");
             icon.setTranslateY(50);
+        }
+        if(selector == 6){
+            icon.setText("🛑");
+            icon.setTranslateY(70);
         }
         if(selector == 5){
             icon.setText("🖱");
-            icon.setTranslateY(60);
+            icon.setTranslateY(65);
+        }
+        if(selector == 7){
+            icon.setText("➕");
+            icon.setTranslateY(65);
         }
     }
 

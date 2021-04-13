@@ -9,8 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import static sample.Main.crossCreator;
 import static sample.Main.menus;
-import static sample.Main.search;
 
 public class ProjectLoader {
 
@@ -54,7 +54,6 @@ public class ProjectLoader {
                     }
                     r.setRotate(Double.parseDouble(properties[5]));
                     Main.group.getChildren().add(r);
-                    Main.numberOfRectangle++;
 
                 }
                 if(properties[0].equalsIgnoreCase("Circle")){
@@ -75,7 +74,6 @@ public class ProjectLoader {
                     }
                     c.setRotate(Double.parseDouble(properties[5]));
                     Main.group.getChildren().add(c);
-                    Main.numberOfCircle++;
 
                 }
                 if(properties[0].equalsIgnoreCase("Line")){
@@ -91,7 +89,6 @@ public class ProjectLoader {
                     l.setId(properties[3]);
                     l.setRotate(Double.parseDouble(properties[4]));
                     Main.group.getChildren().add(l);
-                    Main.numberOfLine++;
 
                 }
                 if(properties[0].equalsIgnoreCase("Polyline")){
@@ -107,30 +104,30 @@ public class ProjectLoader {
                     l.setId(properties[2]);
                     l.setRotate(Double.parseDouble(properties[3]));
                     Main.group.getChildren().add(l);
-                    Main.numberOfPolyLine++;
 
                 }
+                if(properties[0].equalsIgnoreCase("Polygon")){
 
-            }
-            for(int i = 0; i < values.length; i++){
-                String[] properties = values[i].split("/");
-                if(properties[0].equalsIgnoreCase("Shape")){
+                    String[] val = properties[1].split(",");
 
-                    if(properties[1].equalsIgnoreCase("substract")){
-                        Shape shape1 = (Shape) search(properties[2]);
-                        Shape shape2 = (Shape) search(properties[3]);
-                        Shape shape = Shape.subtract(shape1,shape2);
+                    Polygon l = new Polygon();
 
-                        for(int a = 0; a < Main.group.getChildren().size(); a++){
-                            if(properties[2].equalsIgnoreCase(Main.group.getChildren().get(a).getId()) || properties[3].equalsIgnoreCase(Main.group.getChildren().get(a).getId())){
-                                Main.group.getChildren().get(a).setVisible(false);
-                            }
-                        }
-                        shape.setRotate(Double.parseDouble(properties[4]));
-                        Main.group.getChildren().addAll(shape);
+                    for(int a = 0; a < val.length; a++){
+                        l.getPoints().addAll(Double.valueOf(val[a]));
                     }
 
+                    l.setId(properties[2]);
+                    l.setRotate(Double.parseDouble(properties[3]));
+                    Main.group.getChildren().add(l);
+
                 }
+                if(properties[0].equalsIgnoreCase("Shape")){
+                    String[] prop = properties[1].split(",");
+                    double x = Double.parseDouble(prop[0]);
+                    double y = Double.parseDouble(prop[1]);
+                    crossCreator.createCross(x,y);
+                }
+
             }
 
 
