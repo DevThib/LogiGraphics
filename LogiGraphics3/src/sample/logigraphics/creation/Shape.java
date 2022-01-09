@@ -9,10 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 
 public class Shape {
 
@@ -82,9 +79,31 @@ public class Shape {
                 this.object = imageView;
                 break;
 
+            case TRIANGLE:
+                Polygon polygon = new Polygon();
+                polygon.setFill(color);
+                polygon.getPoints().addAll(x,y,x+10,y+20,x+20,y);
+                this.object = polygon;
+                break;
+
         }
 
         if(object != null)object.setOpacity(opacity);
+
+        final double[] differenceX = new double[1];
+        final double[] differenceY = new double[1];
+        final boolean[] set = {false};
+
+        if(object != null)object.setOnMouseDragged(event -> {
+            if(!set[0]){
+                set[0] = true;
+                differenceX[0] = event.getX()-x;
+                differenceY[0] = event.getY()-y;
+            }
+
+            setX(event.getX() - differenceX[0]);
+            setY(event.getY() - differenceY[0]);
+        });
     }
 
     public void setOnClicked(EventHandler<MouseEvent> event){

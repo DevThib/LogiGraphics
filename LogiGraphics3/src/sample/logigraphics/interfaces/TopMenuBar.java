@@ -24,14 +24,10 @@ public class TopMenuBar {
 
         //files
         MenuItem nouv = new MenuItem("✏ Nouveau");
-        nouv.setOnAction(event -> {
-
-        });
+        nouv.setOnAction(event -> logiciel.getProject().startNew());
 
         MenuItem save = new MenuItem("💾 Enregistrer");
-        save.setOnAction(event -> {
-
-        });
+        save.setOnAction(event -> logiciel.getProject().save(!logiciel.getProject().hasBeenSaved()));
         save.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
 
         MenuItem open = new MenuItem("📁 Ouvrir");

@@ -30,6 +30,9 @@ public class ShapeCreator {
     Shape lastShape;
     Shape mirror;
 
+    double initialX;
+    double initialY;
+
     public ShapeCreator(Logiciel logiciel){
         this.logiciel = logiciel;
     }
@@ -53,6 +56,8 @@ public class ShapeCreator {
 
     public void startCreating(double posX, double posY, Image image){
         this.creating = true;
+        this.initialX = posX;
+        this.initialY = posY;
 
         Shape shape;
 
@@ -73,11 +78,14 @@ public class ShapeCreator {
             }
 
             double distance = Math.abs(logiciel.getMirrorAxe().getEndX() - posX);
+            boolean less;
 
             if(posX > logiciel.getMirrorAxe().getEndX()){
                 shape2.setX(posX - distance*2);
+                less = true;
             }else{
                 shape2.setX(posX + distance*2);
+                less = false;
             }
 
             shape.setOnClicked(event -> {
@@ -111,16 +119,33 @@ public class ShapeCreator {
 
             logiciel.getScene().setOnMouseMoved(event -> {
 
+                //dev le triagnle
+
                 switch (actual) {
 
                     case RECTANGLE:
                         Rectangle r = (Rectangle) shape.get();
-                        r.setWidth(event.getX() - r.getX());
-                        r.setHeight(event.getY() - r.getY());
+                        if(event.getX() < initialX){
+                            r.setX(event.getX());
+                            r.setWidth(Math.abs(event.getX() - initialX));
+                        }else{ r.setWidth(event.getX() - r.getX()); }
+
+                        if(event.getY() < initialY){
+                            r.setY(event.getY());
+                            r.setHeight(Math.abs(event.getY() - initialY));
+                        }else{ r.setHeight(event.getY() - r.getY()); }
 
                         Rectangle r2 = (Rectangle) shape2.get();
                         r2.setWidth(r.getWidth());
                         r2.setHeight(r.getHeight());
+                        r2.setY(r.getY());
+
+                        if(less){
+                            r2.setX(r.getX() - distance*2);
+                        }else{
+                            r2.setX(r.getX() + distance*2);
+                        }
+
                         break;
 
                     case CIRCLE:
@@ -173,12 +198,27 @@ public class ShapeCreator {
 
                     case IMAGE:
                         ImageView imageView = (ImageView) shape.get();
-                        imageView.setFitWidth(event.getX() - imageView.getX());
-                        imageView.setFitHeight(event.getY() - imageView.getY());
+                        if(event.getX() < initialX){
+                            imageView.setX(event.getX());
+                            imageView.setFitWidth(Math.abs(event.getX() - initialX));
+                        }else{ imageView.setFitWidth(event.getX() - imageView.getX()); }
+
+                        if(event.getY() < initialY){
+                            imageView.setY(event.getY());
+                            imageView.setFitHeight(Math.abs(event.getY() - initialY));
+                        }else{ imageView.setFitHeight(event.getY() - imageView.getY()); }
 
                         ImageView imageView2 = (ImageView) shape2.get();
-                        imageView2.setFitWidth(event.getX() - imageView.getX());
-                        imageView2.setFitHeight(event.getY() - imageView.getY());
+                        imageView2.setFitWidth(imageView.getFitWidth());
+                        imageView2.setFitHeight(imageView.getFitHeight());
+                        imageView2.setY(imageView.getY());
+
+                        if(less){
+                            imageView2.setX(imageView.getX() - distance*2);
+                        }else{
+                            imageView2.setX(imageView.getX() + distance*2);
+                        }
+
                         break;
 
                 }
@@ -215,8 +255,20 @@ public class ShapeCreator {
 
                     case RECTANGLE:
                         Rectangle r = (Rectangle) shape.get();
-                        r.setWidth(event.getX() - r.getX());
-                        r.setHeight(event.getY() - r.getY());
+
+                        if(event.getX() < initialX){
+                            r.setX(event.getX());
+                            r.setWidth(Math.abs(event.getX() - initialX));
+                        }else{
+                            r.setWidth(event.getX() - r.getX());
+                        }
+
+                        if(event.getY() < initialY){
+                            r.setY(event.getY());
+                            r.setHeight(Math.abs(event.getY() - initialY));
+                        }else{
+                            r.setHeight(event.getY() - r.getY());
+                        }
                         break;
 
                     case CIRCLE:
@@ -246,8 +298,17 @@ public class ShapeCreator {
 
                     case IMAGE:
                         ImageView imageView = (ImageView) shape.get();
-                        imageView.setFitWidth(event.getX() - imageView.getX());
-                        imageView.setFitHeight(event.getY() - imageView.getY());
+
+                        if(event.getX() < initialX){
+                            imageView.setX(event.getX());
+                            imageView.setFitWidth(Math.abs(event.getX() - initialX));
+                        }else{ imageView.setFitWidth(event.getX() - imageView.getX()); }
+
+                        if(event.getY() < initialY){
+                            imageView.setY(event.getY());
+                            imageView.setFitHeight(Math.abs(event.getY() - initialY));
+                        }else{ imageView.setFitHeight(event.getY() - imageView.getY()); }
+
                         break;
 
                 }
@@ -290,6 +351,8 @@ public class ShapeCreator {
 
         }
         logiciel.getScene().setOnMouseMoved(event -> {});
+
+        logiciel.getProject().save(false);
     }
 
     public ArrayList<Shape> getShapes() {
@@ -339,5 +402,9 @@ public class ShapeCreator {
 
     public Shape getMirror() {
         return mirror;
+    }
+
+    public void reset(){
+        this.shapes = new ArrayList<>();
     }
 }

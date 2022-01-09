@@ -1,5 +1,6 @@
 package sample.logigraphics;
 
+import com.sun.javafx.fxml.builder.TriangleMeshBuilder;
 import fr.devthib.databaseapi.Location;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -9,9 +10,11 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.TriangleMesh;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sample.logigraphics.creation.*;
@@ -21,18 +24,24 @@ import sample.logigraphics.interfaces.TopMenuBar;
 import sample.logigraphics.keyboard.KeyShort;
 import sample.logigraphics.keyboard.KeyShortEvent;
 import fr.devthib.databaseapi.DataBase;
+import sample.logigraphics.projects.Project;
 import sample.logigraphics.projects.ProjectChooser;
 import sample.logigraphics.themes.Theme;
 import sample.logigraphics.windows.ErrorWindow;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Logiciel {
 
     Group group = new Group();
+
     Stage stage = new Stage();
     Scene scene = new Scene(group, 1500, 800);
 
@@ -62,21 +71,16 @@ public class Logiciel {
     /*
     idées :
 
-        -enregistrer le thème dans les settings et le load au lancement du logiciel
-        -différents thèmes : light,dark etc...et dev tout un système de création de thèmes
         -faire une bordure autour des objets sélectionnés
         -possibilité de ctrl c et v les objets sélectionnés
         -déplacer avec les flèches
-        -zoom avec les touches +  et -
         -ctrl + p -> menu config pour changer les couleur
         -quand on passe devant le menu item rectangle,ca ouvre un sous menu et on choisit entre plein ou juste un contour (ez le contour on met le cercle de la meme couleur que le background et la bordure de la couleur souhaitée)
         -une fenetre s'ouvre pour le rgb pour les couleurs
+        -pinceau
+        -changer la taille du pinceau (affecte aussi l'épaisseur des formes non remplies)
 
         -pouvoir changer l'orientation du miroir
-        -système de miroir : on doit sélectionner une ligne et tout ce qu'on créer derrière la ligne se reproduit de l'autre coté
-
-    features autres:
-        -opti indicateur de couleur
 
         Aide : http://remy-manu.no-ip.biz/Java/Tutoriels/JavaFX/PDF/ihm1_fx_08_man.pdf
      */
@@ -96,6 +100,8 @@ public class Logiciel {
     Image image;
 
     ProjectChooser projectChooser = new ProjectChooser();
+
+    Project project = new Project(this,"nouveau Projet");
 
     public Logiciel() {
 
@@ -122,7 +128,6 @@ public class Logiciel {
             }
         });
 
-
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD0, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 0));
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD1, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 1));
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD2, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 2));
@@ -135,7 +140,6 @@ public class Logiciel {
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD9, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 9));
 
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN)), this::unSelectAll);
-
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)), () -> {
             if(shapeCreator.getShapes().size() != 0) {
                 if (shapeCreator.getShapes().size() > 1) {
@@ -143,18 +147,19 @@ public class Logiciel {
                     if (shapeSelected == shapeCreator.getLastShape()) {
                         shapeSelected = null;
                     }
-                    group.getChildren().remove(shapeCreator.getShapes().size());
-                    shapeCreator.removeShape(shapeCreator.getLastShape());
-                    shapeCreator.setLastShape(shapeCreator.getShapes().get(shapeCreator.getShapes().size() - 1));
+                    shapeCreator.getShapes().remove(shapeCreator.getShapes().size()-1);
+                    group.getChildren().remove(group.getChildren().size()-1);
+                    shapeCreator.setLastShape(shapeCreator.getShapes().get(shapeCreator.getShapes().size()-1));
 
                 } else {
                     shapeSelected = null;
                     shapeCreator.removeShape(0);
-                    group.getChildren().remove(1);
+                    group.getChildren().remove(2);
                     shapeCreator.setLastShape(null);
                 }
             }
         });
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> project.save(!project.hasBeenSaved()));
 
         scene.setOnMouseClicked(event -> {
 
@@ -263,10 +268,10 @@ public class Logiciel {
         return scene;
     }
 
-    public void start() {
+    public void start(){
         scene.setFill(backgroundColor);
 
-        stage.setTitle("LogiGraphics");
+        stage.setTitle("LogiGraphics - "+project.getName());
         stage.setScene(scene);
         stage.show();
     }
@@ -548,16 +553,13 @@ public class Logiciel {
                 break;
         }
 
+    }
 
+    public Project getProject() {
+        return project;
+    }
 
-
-
-
-
-
-
-
-
+    public void startNew(){
 
     }
 }

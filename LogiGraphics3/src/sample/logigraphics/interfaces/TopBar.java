@@ -4,16 +4,20 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.AccessibleRole;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import sample.logigraphics.Logiciel;
 import sample.logigraphics.creation.Creation;
+import sample.logigraphics.creation.Shape;
 import sample.logigraphics.creation.ShapeType;
 
 public class TopBar {
@@ -27,6 +31,7 @@ public class TopBar {
     Insets insets = new Insets(10);
     Font font = new Font("Trebuchet MS",10);
     Border buttonBorder = new Border(new BorderStroke(Color.WHITE,BorderStrokeStyle.SOLID,new CornerRadii(0),new BorderWidths(1)));
+    Border buttonBorder2 = new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID,new CornerRadii(0),new BorderWidths(1)));
     Border buttonBorderOnHover = new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID,new CornerRadii(0),new BorderWidths(1)));
 
     Button indicator = new Button();
@@ -94,29 +99,33 @@ public class TopBar {
         FlowPane flowPane2 = new FlowPane();
 
         flowPane.getChildren().addAll(
-                getButton("🟫", event -> logiciel.getShapeCreator().setShapeType(ShapeType.RECTANGLE)),
+                getElement(ShapeType.RECTANGLE),
                 getButtonSeparation(),
-                getButton("🟣", event -> logiciel.getShapeCreator().setShapeType(ShapeType.CIRCLE)),
+                getElement(ShapeType.CIRCLE),
                 getButtonSeparation(),
-                getButton("🔳", event -> logiciel.getShapeCreator().setShapeType(ShapeType.NONFILLEDRECTANGLE)),
+                getElement(ShapeType.NONFILLEDRECTANGLE),
                 getButtonSeparation(),
-                getButton("⭕", event -> logiciel.getShapeCreator().setShapeType(ShapeType.NONFILLEDCIRCLE))
+                getElement(ShapeType.ELLIPSE)
                 );
 
         flowPane1.getChildren().addAll(
-                getButton("➖", event -> logiciel.getShapeCreator().setShapeType(ShapeType.LINE)),
+                getElement(ShapeType.RECTANGLE),
                 getButtonSeparation(),
-                getButton("🕳", event -> logiciel.getShapeCreator().setShapeType(ShapeType.ELLIPSE)),
+                getElement(ShapeType.CIRCLE),
                 getButtonSeparation(),
-                getButton("🔳", event -> logiciel.getShapeCreator().setShapeType(ShapeType.HEXAGON)),
+                getElement(ShapeType.NONFILLEDRECTANGLE),
                 getButtonSeparation(),
-                getButton("⭕", event -> logiciel.getShapeCreator().setShapeType(ShapeType.OCTOGON))
+                getElement(ShapeType.ELLIPSE)
                 );
 
         flowPane2.getChildren().addAll(
-                getButton("🟫", event -> logiciel.getShapeCreator().setShapeType(ShapeType.NONFILLEDHEXAGON)),
+                getElement(ShapeType.RECTANGLE),
                 getButtonSeparation(),
-                getButton("🟣", event -> logiciel.getShapeCreator().setShapeType(ShapeType.NONFILLEDCIRCLE))
+                getElement(ShapeType.CIRCLE),
+                getButtonSeparation(),
+                getElement(ShapeType.NONFILLEDRECTANGLE),
+                getButtonSeparation(),
+                getElement(ShapeType.ELLIPSE)
         );
 
         vBox.setBackground(background);
@@ -165,16 +174,62 @@ public class TopBar {
         return vBox;
     }
 
-    private Button getButton(String icon,EventHandler<ActionEvent> event){
-        Button button = new Button(icon);
-        button.setMaxHeight(20);
-        button.setMinHeight(20);
-        button.setMinWidth(20);
-        button.setMaxWidth(20);
-        button.setOnAction(event);
-        button.setFont(font);
+    private Node getElement(ShapeType shapeType){
 
-        return button;
+        switch (shapeType){
+
+            case RECTANGLE:
+                Rectangle rectangle = new Rectangle(20,20);
+                rectangle.setOnMouseClicked(event -> logiciel.getShapeCreator().setShapeType(ShapeType.RECTANGLE));
+                rectangle.setOnMouseEntered(event1 -> rectangle.setOpacity(0.6));
+                rectangle.setOnMouseExited(event1 -> rectangle.setOpacity(1));
+                return rectangle;
+
+            case CIRCLE:
+                Circle circle = new Circle(10);
+                circle.setOnMouseClicked(event -> logiciel.getShapeCreator().setShapeType(ShapeType.CIRCLE));
+                circle.setOnMouseEntered(event1 -> circle.setOpacity(0.6));
+                circle.setOnMouseExited(event1 -> circle.setOpacity(1));
+                return circle;
+
+            case LINE:
+                break;
+
+            case NONFILLEDRECTANGLE:
+                Button button = new Button();
+                button.setMinWidth(19);
+                button.setMaxWidth(19);
+                button.setMinHeight(19);
+                button.setMaxHeight(19);
+                button.setBorder(buttonBorder2);
+                button.setBackground(background);
+                button.setOnMouseEntered(event1 -> button.setOpacity(0.6));
+                button.setOnMouseExited(event1 -> button.setOpacity(1));
+                button.setOnAction(event -> logiciel.getShapeCreator().setShapeType(ShapeType.NONFILLEDRECTANGLE));
+                return button;
+
+            case NONFILLEDCIRCLE:
+                break;
+
+            case ELLIPSE:
+                Ellipse ellipse = new Ellipse(10,7);
+                ellipse.setOnMouseEntered(event1 -> ellipse.setOpacity(0.6));
+                ellipse.setOnMouseExited(event1 -> ellipse.setOpacity(1));
+                ellipse.setOnMouseClicked(event -> logiciel.getShapeCreator().setShapeType(ShapeType.ELLIPSE));
+                return ellipse;
+
+            case HEXAGON:
+                break;
+            case OCTOGON:
+                break;
+            case NONFILLEDHEXAGON:
+                break;
+            case NONFILLEDOCTOGON:
+                break;
+            case IMAGE:
+                break;
+        }
+        return null;
     }
 
     private Button getButton(EventHandler<ActionEvent> event, Color fontColor){
