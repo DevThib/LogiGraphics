@@ -119,110 +119,119 @@ public class ShapeCreator {
 
             logiciel.getScene().setOnMouseMoved(event -> {
 
-                //dev le triagnle
+                if(event.getX() < logiciel.getProject().getDrawablePaper().getSurface().getWidth() && event.getY() < logiciel.getProject().getDrawablePaper().getSurface().getHeight()){
 
-                switch (actual) {
+                    switch (actual) {
 
-                    case RECTANGLE:
-                        Rectangle r = (Rectangle) shape.get();
-                        if(event.getX() < initialX){
-                            r.setX(event.getX());
-                            r.setWidth(Math.abs(event.getX() - initialX));
-                        }else{ r.setWidth(event.getX() - r.getX()); }
+                        case RECTANGLE:
+                            Rectangle r = (Rectangle) shape.get();
+                            if (event.getX() < initialX) {
+                                r.setX(event.getX());
+                                r.setWidth(Math.abs(event.getX() - initialX));
+                            } else {
+                                r.setWidth(event.getX() - r.getX());
+                            }
 
-                        if(event.getY() < initialY){
-                            r.setY(event.getY());
-                            r.setHeight(Math.abs(event.getY() - initialY));
-                        }else{ r.setHeight(event.getY() - r.getY()); }
+                            if (event.getY() < initialY) {
+                                r.setY(event.getY());
+                                r.setHeight(Math.abs(event.getY() - initialY));
+                            } else {
+                                r.setHeight(event.getY() - r.getY());
+                            }
 
-                        Rectangle r2 = (Rectangle) shape2.get();
-                        r2.setWidth(r.getWidth());
-                        r2.setHeight(r.getHeight());
-                        r2.setY(r.getY());
+                            Rectangle r2 = (Rectangle) shape2.get();
+                            r2.setWidth(r.getWidth());
+                            r2.setHeight(r.getHeight());
+                            r2.setY(r.getY());
 
-                        if(less){
-                            r2.setX(r.getX() - distance*2);
-                        }else{
-                            r2.setX(r.getX() + distance*2);
-                        }
+                            if (less) {
+                                r2.setX(r.getX() - distance * 2);
+                            } else {
+                                r2.setX(r.getX() + distance * 2);
+                            }
 
-                        break;
+                            break;
 
-                    case CIRCLE:
-                        Circle c = (Circle) shape.get();
-                        c.setRadius((Math.abs(event.getX() - c.getCenterX()) + Math.abs(event.getY() - c.getCenterY())) / 2);
+                        case CIRCLE:
+                            Circle c = (Circle) shape.get();
+                            c.setRadius((Math.abs(event.getX() - c.getCenterX()) + Math.abs(event.getY() - c.getCenterY())) / 2);
 
-                        Circle c2 = (Circle) shape2.get();
-                        c2.setRadius(((Math.abs(event.getX() - c.getCenterX()) + Math.abs(event.getY() - c.getCenterY())) / 2));
-                        break;
+                            Circle c2 = (Circle) shape2.get();
+                            c2.setRadius(((Math.abs(event.getX() - c.getCenterX()) + Math.abs(event.getY() - c.getCenterY())) / 2));
+                            break;
 
-                    case LINE:
-                        Line l = (Line) shape.get();
-                        l.setEndX(event.getX());
-                        l.setEndY(event.getY());
+                        case LINE:
+                            Line l = (Line) shape.get();
+                            l.setEndX(event.getX());
+                            l.setEndY(event.getY());
 
-                        Line l2 = (Line) shape2.get();
+                            Line l2 = (Line) shape2.get();
 
-                        if(posX > logiciel.getMirrorAxe().getEndX()){
-                            l2.setEndX(event.getX() - distance *2);
-                        }else{
-                            l2.setEndX(event.getX() + distance*2);
-                        }
-                        l2.setEndY(event.getY());
+                            if (posX > logiciel.getMirrorAxe().getEndX()) {
+                                l2.setEndX(event.getX() - distance * 2);
+                            } else {
+                                l2.setEndX(event.getX() + distance * 2);
+                            }
+                            l2.setEndY(event.getY());
 
-                        break;
+                            break;
 
-                    case NONFILLEDRECTANGLE:
-                        Button b = (Button) shape.get();
-                        b.setMinWidth(event.getX() - b.getTranslateX());
-                        b.setMaxWidth(event.getX() - b.getTranslateX());
-                        b.setMinHeight(event.getY() - b.getTranslateY());
-                        b.setMaxHeight(event.getY() - b.getTranslateY());
+                        case NONFILLEDRECTANGLE:
+                            Button b = (Button) shape.get();
+                            b.setMinWidth(event.getX() - b.getTranslateX());
+                            b.setMaxWidth(event.getX() - b.getTranslateX());
+                            b.setMinHeight(event.getY() - b.getTranslateY());
+                            b.setMaxHeight(event.getY() - b.getTranslateY());
 
-                        Button b2 = (Button) shape2.get();
-                        b2.setMinWidth(event.getX() - b.getTranslateX());
-                        b2.setMaxWidth(event.getX() - b.getTranslateX());
-                        b2.setMinHeight(event.getY() - b.getTranslateY());
-                        b2.setMaxHeight(event.getY() - b.getTranslateY());
-                        break;
+                            Button b2 = (Button) shape2.get();
+                            b2.setMinWidth(event.getX() - b.getTranslateX());
+                            b2.setMaxWidth(event.getX() - b.getTranslateX());
+                            b2.setMinHeight(event.getY() - b.getTranslateY());
+                            b2.setMaxHeight(event.getY() - b.getTranslateY());
+                            break;
 
-                    case ELLIPSE:
-                        Ellipse ellipse = (Ellipse) shape.get();
-                        ellipse.setRadiusX(Math.abs(event.getX() - ellipse.getCenterX()));
-                        ellipse.setRadiusY(Math.abs(event.getY() - ellipse.getCenterY()));
+                        case ELLIPSE:
+                            Ellipse ellipse = (Ellipse) shape.get();
+                            ellipse.setRadiusX(Math.abs(event.getX() - ellipse.getCenterX()));
+                            ellipse.setRadiusY(Math.abs(event.getY() - ellipse.getCenterY()));
 
-                        Ellipse ellipse2 = (Ellipse) shape2.get();
-                        ellipse2.setRadiusX(Math.abs(event.getX() - ellipse.getCenterX()));
-                        ellipse2.setRadiusY(Math.abs(event.getY() - ellipse.getCenterY()));
-                        break;
+                            Ellipse ellipse2 = (Ellipse) shape2.get();
+                            ellipse2.setRadiusX(Math.abs(event.getX() - ellipse.getCenterX()));
+                            ellipse2.setRadiusY(Math.abs(event.getY() - ellipse.getCenterY()));
+                            break;
 
-                    case IMAGE:
-                        ImageView imageView = (ImageView) shape.get();
-                        if(event.getX() < initialX){
-                            imageView.setX(event.getX());
-                            imageView.setFitWidth(Math.abs(event.getX() - initialX));
-                        }else{ imageView.setFitWidth(event.getX() - imageView.getX()); }
+                        case IMAGE:
+                            ImageView imageView = (ImageView) shape.get();
+                            if (event.getX() < initialX) {
+                                imageView.setX(event.getX());
+                                imageView.setFitWidth(Math.abs(event.getX() - initialX));
+                            } else {
+                                imageView.setFitWidth(event.getX() - imageView.getX());
+                            }
 
-                        if(event.getY() < initialY){
-                            imageView.setY(event.getY());
-                            imageView.setFitHeight(Math.abs(event.getY() - initialY));
-                        }else{ imageView.setFitHeight(event.getY() - imageView.getY()); }
+                            if (event.getY() < initialY) {
+                                imageView.setY(event.getY());
+                                imageView.setFitHeight(Math.abs(event.getY() - initialY));
+                            } else {
+                                imageView.setFitHeight(event.getY() - imageView.getY());
+                            }
 
-                        ImageView imageView2 = (ImageView) shape2.get();
-                        imageView2.setFitWidth(imageView.getFitWidth());
-                        imageView2.setFitHeight(imageView.getFitHeight());
-                        imageView2.setY(imageView.getY());
+                            ImageView imageView2 = (ImageView) shape2.get();
+                            imageView2.setFitWidth(imageView.getFitWidth());
+                            imageView2.setFitHeight(imageView.getFitHeight());
+                            imageView2.setY(imageView.getY());
 
-                        if(less){
-                            imageView2.setX(imageView.getX() - distance*2);
-                        }else{
-                            imageView2.setX(imageView.getX() + distance*2);
-                        }
+                            if (less) {
+                                imageView2.setX(imageView.getX() - distance * 2);
+                            } else {
+                                imageView2.setX(imageView.getX() + distance * 2);
+                            }
 
-                        break;
+                            break;
+
+                    }
 
                 }
-
 
             });
 
@@ -251,68 +260,75 @@ public class ShapeCreator {
 
             logiciel.getScene().setOnMouseMoved(event -> {
 
-                switch (actual) {
+               if(event.getX() < logiciel.getProject().getDrawablePaper().getSurface().getWidth() && event.getY() < logiciel.getProject().getDrawablePaper().getSurface().getHeight()) {
 
-                    case RECTANGLE:
-                        Rectangle r = (Rectangle) shape.get();
+                   switch (actual) {
 
-                        if(event.getX() < initialX){
-                            r.setX(event.getX());
-                            r.setWidth(Math.abs(event.getX() - initialX));
-                        }else{
-                            r.setWidth(event.getX() - r.getX());
-                        }
+                       case RECTANGLE:
+                           Rectangle r = (Rectangle) shape.get();
 
-                        if(event.getY() < initialY){
-                            r.setY(event.getY());
-                            r.setHeight(Math.abs(event.getY() - initialY));
-                        }else{
-                            r.setHeight(event.getY() - r.getY());
-                        }
-                        break;
+                           if (event.getX() < initialX) {
+                               r.setX(event.getX());
+                               r.setWidth(Math.abs(event.getX() - initialX));
+                           } else {
+                               r.setWidth(event.getX() - r.getX());
+                           }
 
-                    case CIRCLE:
-                        Circle c = (Circle) shape.get();
-                        c.setRadius((Math.abs(event.getX() - c.getCenterX()) + Math.abs(event.getY() - c.getCenterY())) / 2);
-                        break;
+                           if (event.getY() < initialY) {
+                               r.setY(event.getY());
+                               r.setHeight(Math.abs(event.getY() - initialY));
+                           } else {
+                               r.setHeight(event.getY() - r.getY());
+                           }
+                           break;
 
-                    case LINE:
-                        Line l = (Line) shape.get();
-                        l.setEndX(event.getX());
-                        l.setEndY(event.getY());
-                        break;
+                       case CIRCLE:
+                           Circle c = (Circle) shape.get();
+                           c.setRadius((Math.abs(event.getX() - c.getCenterX()) + Math.abs(event.getY() - c.getCenterY())) / 2);
+                           break;
 
-                    case NONFILLEDRECTANGLE:
-                        Button b = (Button) shape.get();
-                        b.setMinWidth(event.getX() - b.getTranslateX());
-                        b.setMaxWidth(event.getX() - b.getTranslateX());
-                        b.setMinHeight(event.getY() - b.getTranslateY());
-                        b.setMaxHeight(event.getY() - b.getTranslateY());
-                        break;
+                       case LINE:
+                           Line l = (Line) shape.get();
+                           l.setEndX(event.getX());
+                           l.setEndY(event.getY());
+                           break;
 
-                    case ELLIPSE:
-                        Ellipse ellipse = (Ellipse) shape.get();
-                        ellipse.setRadiusX(Math.abs(event.getX() - ellipse.getCenterX()));
-                        ellipse.setRadiusY(Math.abs(event.getY() - ellipse.getCenterY()));
-                        break;
+                       case NONFILLEDRECTANGLE:
+                           Button b = (Button) shape.get();
+                           b.setMinWidth(event.getX() - b.getTranslateX());
+                           b.setMaxWidth(event.getX() - b.getTranslateX());
+                           b.setMinHeight(event.getY() - b.getTranslateY());
+                           b.setMaxHeight(event.getY() - b.getTranslateY());
+                           break;
 
-                    case IMAGE:
-                        ImageView imageView = (ImageView) shape.get();
+                       case ELLIPSE:
+                           Ellipse ellipse = (Ellipse) shape.get();
+                           ellipse.setRadiusX(Math.abs(event.getX() - ellipse.getCenterX()));
+                           ellipse.setRadiusY(Math.abs(event.getY() - ellipse.getCenterY()));
+                           break;
 
-                        if(event.getX() < initialX){
-                            imageView.setX(event.getX());
-                            imageView.setFitWidth(Math.abs(event.getX() - initialX));
-                        }else{ imageView.setFitWidth(event.getX() - imageView.getX()); }
+                       case IMAGE:
+                           ImageView imageView = (ImageView) shape.get();
 
-                        if(event.getY() < initialY){
-                            imageView.setY(event.getY());
-                            imageView.setFitHeight(Math.abs(event.getY() - initialY));
-                        }else{ imageView.setFitHeight(event.getY() - imageView.getY()); }
+                           if (event.getX() < initialX) {
+                               imageView.setX(event.getX());
+                               imageView.setFitWidth(Math.abs(event.getX() - initialX));
+                           } else {
+                               imageView.setFitWidth(event.getX() - imageView.getX());
+                           }
 
-                        break;
+                           if (event.getY() < initialY) {
+                               imageView.setY(event.getY());
+                               imageView.setFitHeight(Math.abs(event.getY() - initialY));
+                           } else {
+                               imageView.setFitHeight(event.getY() - imageView.getY());
+                           }
 
-                }
+                           break;
 
+                   }
+
+               }
 
             });
             lastShape = shape;

@@ -71,6 +71,7 @@ public class TopMenuBar {
         themes.getItems().addAll(dark,light,custom);
 
         menuBar.getMenus().addAll(files,settings,themes);
+        menuBar.setMinHeight(30);
 
         return menuBar;
     }

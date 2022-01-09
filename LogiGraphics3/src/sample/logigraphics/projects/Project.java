@@ -10,6 +10,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sample.logigraphics.Logiciel;
 import sample.logigraphics.creation.Shape;
+import sample.logigraphics.interfaces.DrawablePaper;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,7 +20,7 @@ import java.io.IOException;
 
 public class Project {
 
-    Rectangle paper = new Rectangle(0,0,2000,2000);
+    DrawablePaper drawablePaper;
 
     Logiciel logiciel;
 
@@ -32,6 +33,7 @@ public class Project {
     public Project(Logiciel logiciel,String name){
         this.logiciel = logiciel;
         this.name = name;
+        drawablePaper = new DrawablePaper(logiciel);
     }
 
     public void load(){
@@ -52,12 +54,12 @@ public class Project {
 
         try {
 
-            BufferedImage bufferedImage = new BufferedImage(1500, 800, BufferedImage.TYPE_INT_RGB);
+            BufferedImage bufferedImage = new BufferedImage((int) drawablePaper.getSurface().getWidth(), (int) drawablePaper.getSurface().getHeight(), BufferedImage.TYPE_INT_RGB);
 
             Graphics2D g = bufferedImage.createGraphics();
 
             g.setColor(Color.WHITE);
-            g.fillRect(0, 0, 1500, 800);
+            g.fillRect(0, 0, (int) drawablePaper.getSurface().getWidth(), (int) drawablePaper.getSurface().getHeight());
             g.setColor(Color.BLACK);
 
             for (Shape shape : logiciel.getShapeCreator().getShapes()) {
@@ -131,7 +133,7 @@ public class Project {
         return name;
     }
 
-    public Color convert(javafx.scene.paint.Color color){
+    private Color convert(javafx.scene.paint.Color color){
         if(color.equals(javafx.scene.paint.Color.BLACK)){
             return Color.BLACK;
         }
@@ -162,4 +164,10 @@ public class Project {
     public boolean hasBeenSaved() {
         return hasBeenSaved;
     }
+
+    public DrawablePaper getDrawablePaper() {
+        return drawablePaper;
+    }
 }
+
+

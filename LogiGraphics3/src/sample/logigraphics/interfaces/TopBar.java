@@ -29,7 +29,6 @@ public class TopBar {
     Background background = new Background(new BackgroundFill(Color.TRANSPARENT,new CornerRadii(0),new Insets(0)));
 
     Insets insets = new Insets(10);
-    Font font = new Font("Trebuchet MS",10);
     Border buttonBorder = new Border(new BorderStroke(Color.WHITE,BorderStrokeStyle.SOLID,new CornerRadii(0),new BorderWidths(1)));
     Border buttonBorder2 = new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID,new CornerRadii(0),new BorderWidths(1)));
     Border buttonBorderOnHover = new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID,new CornerRadii(0),new BorderWidths(1)));
@@ -56,9 +55,7 @@ public class TopBar {
         indicator.setPadding(new Insets(5));
 
         flowPane.setMinWidth(8000);
-        flowPane.setMinWidth(8000);
         flowPane.setMinHeight(100);
-        flowPane.setMaxHeight(100);
         flowPane.setBackground(new Background(new BackgroundFill(Color.rgb(216,216,216),new CornerRadii(0),new Insets(0))));
 
         ChoiceBox<String> modes = new ChoiceBox<>();

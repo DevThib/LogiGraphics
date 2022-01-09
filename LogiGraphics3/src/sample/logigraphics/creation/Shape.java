@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -117,7 +118,7 @@ public class Shape {
 
     public void unSelect(){
         this.selected = false;
-        object.setOpacity(1);
+        if(object != null)object.setOpacity(1);
     }
 
     public Node get(){
@@ -175,6 +176,13 @@ public class Shape {
                 image.setX(x);
                 this.object = image;
                 break;
+
+            case TEXT:
+
+                Label label = (Label) object;
+                label.setTranslateX(x);
+                this.object = label;
+                break;
         }
     }
 
@@ -224,6 +232,13 @@ public class Shape {
                 ImageView imageView = (ImageView) object;
                 imageView.setY(y);
                 this.object = imageView;
+                break;
+
+            case TEXT:
+
+                Label label = (Label) object;
+                label.setTranslateY(y);
+                this.object = label;
                 break;
         }
 
@@ -275,7 +290,23 @@ public class Shape {
         return shapeType;
     }
 
-    public void set(Node node){
+    public void setObject(Node node,EventHandler<MouseEvent> event){
         this.object = node;
+        object.setOnMouseClicked(event);
+
+        final double[] differenceX = new double[1];
+        final double[] differenceY = new double[1];
+        final boolean[] set = {false};
+
+        if(object != null)object.setOnMouseDragged(ee -> {
+            if(!set[0]){
+                set[0] = true;
+                differenceX[0] = ee.getX()-x;
+                differenceY[0] = ee.getY()-y;
+            }
+
+            setX(ee.getX() - differenceX[0]);
+            setY(ee.getY() - differenceY[0]);
+        });
     }
 }

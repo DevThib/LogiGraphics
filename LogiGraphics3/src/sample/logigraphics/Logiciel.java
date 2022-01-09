@@ -3,18 +3,21 @@ package sample.logigraphics;
 import com.sun.javafx.fxml.builder.TriangleMeshBuilder;
 import fr.devthib.databaseapi.Location;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.TriangleMesh;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sample.logigraphics.creation.*;
@@ -30,7 +33,6 @@ import sample.logigraphics.themes.Theme;
 import sample.logigraphics.windows.ErrorWindow;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,7 +65,9 @@ public class Logiciel {
 
     Creation creation = Creation.SHAPES;
 
-    Line mirrorAxe = new Line(750,135,750,4000);
+    Line mirrorAxe = new Line(750,0,750,0);
+    TextField text = new TextField();
+
     boolean followAxe = false;
 
     Theme theme = new Theme(this);
@@ -103,6 +107,8 @@ public class Logiciel {
 
     Project project = new Project(this,"nouveau Projet");
 
+    Font trebuchet = new Font("Trebuchet MS",20);
+
     public Logiciel() {
 
         menus.getChildren().addAll(topMenuBar.build(),topBar.build());
@@ -112,6 +118,7 @@ public class Logiciel {
 
         mirrorAxe.setScaleX(1.2);
         mirrorAxe.setVisible(false);
+        mirrorAxe.setEndY(project.getDrawablePaper().getSurface().getHeight());
         mirrorAxe.setOnMouseClicked(event -> {
             if(!shapeCreator.isCreating()) {
                 if (!followAxe) {
@@ -127,6 +134,13 @@ public class Logiciel {
                 }
             }
         });
+        mirrorAxe.setTranslateY(135);
+
+        text.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,new CornerRadii(0),new Insets(0))));
+        text.setBorder(new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.DASHED,new CornerRadii(0),new BorderWidths(2))));
+        text.setVisible(false);
+        text.setFont(trebuchet);
+        text.setText("");
 
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD0, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 0));
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD1, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 1));
@@ -168,19 +182,56 @@ public class Logiciel {
                 case PRIMARY:
 
                     if (!free) {
-                        if (shapeCreator.isCreating()) {
-                            shapeCreator.stopCreating();
-                        } else {
-                            if (event.getY() > 140) {
-                                if(shapeCreator.getShapeType() == ShapeType.IMAGE){
-                                    try {
-                                        shapeCreator.startCreating(event.getX(), event.getY(), image);
-                                    }catch (NullPointerException e){
-                                        try { image = new Image(new FileInputStream(projectChooser.openAndGetFile())); } catch (FileNotFoundException fileNotFoundException) {}
+
+                        if (shapeCreator.getShapeType() == ShapeType.TEXT) {
+
+                            if(!text.getText().equals("")){
+                                Label label = new Label(text.getText());
+                                label.setTranslateX(text.getTranslateX()+15);
+                                label.setTranslateY(text.getTranslateY()+10);
+                                label.setFont(trebuchet);
+
+                                text.setVisible(false);
+                                text.setText("");
+
+                                Shape shape = new Shape(ShapeType.TEXT,text.getTranslateX(),text.getTranslateY(),Color.BLACK,null);
+                                shape.setObject(label, event12 -> {
+                                    if (free) {
+                                        shapeSelected = shape;
+                                        shape.select();
                                     }
-                                }else{ shapeCreator.startCreating(event.getX(), event.getY(),null);}
+                                });
+
+                                shapeCreator.getShapes().add(shape);
+                                group.getChildren().add(label);
+                            }else{
+                                if(event.getY() > 140 && event.getX() < project.getDrawablePaper().getSurface().getWidth() && event.getY() < project.getDrawablePaper().getSurface().getHeight()) {
+                                    resetText(event.getX(), event.getY());
+                                }
                             }
+
+                        }else{
+
+                            if (shapeCreator.isCreating()) {
+                                shapeCreator.stopCreating();
+                            } else {
+                                if (event.getY() > 140 && event.getX() < project.getDrawablePaper().getSurface().getWidth() && event.getY() < project.getDrawablePaper().getSurface().getHeight()) {
+                                    if (shapeCreator.getShapeType() == ShapeType.IMAGE) {
+                                        try {
+                                            shapeCreator.startCreating(event.getX(), event.getY(), image);
+                                        } catch (NullPointerException e) {
+                                            try {
+                                                image = new Image(new FileInputStream(projectChooser.openAndGetFile()));
+                                            } catch (FileNotFoundException fileNotFoundException) {}
+                                        }
+                                    } else {
+                                        shapeCreator.startCreating(event.getX(), event.getY(), null);
+                                    }
+                                }
+                            }
+
                         }
+
                     }
                     break;
 
@@ -249,7 +300,7 @@ public class Logiciel {
 
         });
 
-        group.getChildren().addAll(menus,mirrorAxe);
+        group.getChildren().addAll(project.getDrawablePaper().build(),menus,mirrorAxe,text);
     }
 
     public void addElement(Node node) {
@@ -336,7 +387,10 @@ public class Logiciel {
 
         });
 
-        menu.getItems().addAll(fre,rectangle,unFilledRectangle,circle,nonFilledCircle,ellipse,line,image);
+        MenuItem txt = new MenuItem("🔢 Texte");
+        txt.setOnAction(event -> shapeCreator.setShapeType(ShapeType.TEXT));
+
+        menu.getItems().addAll(fre,rectangle,unFilledRectangle,circle,nonFilledCircle,ellipse,line,image,txt);
 
         return menu;
     }
@@ -559,7 +613,9 @@ public class Logiciel {
         return project;
     }
 
-    public void startNew(){
-
+    private void resetText(double x,double y){
+        text.setTranslateY(y);
+        text.setTranslateX(x);
+        text.setVisible(true);
     }
 }
