@@ -1,76 +1,65 @@
 package sample.logigraphics;
 
-import com.sun.javafx.fxml.builder.TriangleMeshBuilder;
 import fr.devthib.databaseapi.Location;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.TriangleMesh;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import sample.logigraphics.creation.*;
-import sample.logigraphics.creation.Shape;
-import sample.logigraphics.interfaces.TopBar;
-import sample.logigraphics.interfaces.TopMenuBar;
+import sample.logigraphics.interfaces.LogicielStructure;
 import sample.logigraphics.keyboard.KeyShort;
 import sample.logigraphics.keyboard.KeyShortEvent;
 import fr.devthib.databaseapi.DataBase;
-import sample.logigraphics.projects.Project;
 import sample.logigraphics.projects.ProjectChooser;
-import sample.logigraphics.themes.Theme;
-import sample.logigraphics.windows.ErrorWindow;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class Logiciel {
 
-    Group group = new Group();
-
-    Stage stage = new Stage();
-    Scene scene = new Scene(group, 1500, 800);
-
-    ShapeCreator shapeCreator = new ShapeCreator(this);
+    LogicielStructure logicielStructure = new LogicielStructure(this);
 
     ArrayList<KeyShort> keyShorts = new ArrayList<>();
 
-    Shape shapeSelected;
-
     boolean free = false;
-
-    Color backgroundColor = Color.GREY;
-
-    TopBar topBar = new TopBar(this);
-
-    TopMenuBar topMenuBar = new TopMenuBar(this);
 
     DataBase dataBase = new DataBase(".logiGraphics", Location.APPDATA);
 
     Creation creation = Creation.SHAPES;
+
+    ShapeType shapeType = ShapeType.RECTANGLE;
 
     Line mirrorAxe = new Line(750,0,750,0);
     TextField text = new TextField();
 
     boolean followAxe = false;
 
-    Theme theme = new Theme(this);
+    File directoryToSave;
+
+    //Pour le truc a gauche,un tree de dossiers comme intellij pour ouvrir les projets
+    //Faire de LogiGraphics un paint très mathématique : genre créer des tangentes aux cercles etc...
+    //Une système pour changer l'hexagone,on demande un nombre de cotés spécifiques et c'est calculer mathématiquement
+    //la barre a droite on peut ouvrir différents onglets,un pour la création,un pour les fonctiones etc...
+    //dans les paramètres on pourra défnir la taille de base du papier quand on démarre le logiciel
 
     /*
     idées :
@@ -97,44 +86,47 @@ public class Logiciel {
     -setX et setY de la Shape
      */
 
-    VBox menus = new VBox();
-
-    ErrorWindow errorWindow = new ErrorWindow();
-
     Image image;
 
     ProjectChooser projectChooser = new ProjectChooser();
 
-    Project project = new Project(this,"nouveau Projet");
-
     Font trebuchet = new Font("Trebuchet MS",20);
+
+    boolean creating = false;
+
+    double currentX;
+    double currentY;
+
+    double startX;
+    double startY;
+
+    ArrayList<Double> xPoints = new ArrayList<>();
+    ArrayList<Double> yPoints = new ArrayList<>();
 
     public Logiciel() {
 
-        menus.getChildren().addAll(topMenuBar.build(),topBar.build());
-
         checkDataBase();
-        updateTheme();
 
-        mirrorAxe.setScaleX(1.2);
+     /*   mirrorAxe.setScaleX(1.2);
         mirrorAxe.setVisible(false);
         mirrorAxe.setEndY(project.getDrawablePaper().getSurface().getHeight());
         mirrorAxe.setOnMouseClicked(event -> {
             if(!shapeCreator.isCreating()) {
                 if (!followAxe) {
                     followAxe = true;
-                    scene.setOnMouseMoved(event1 -> {
+                    getScene().setOnMouseMoved(event1 -> {
                         mirrorAxe.setStartX(event1.getX());
                         mirrorAxe.setEndX(event1.getX());
                     });
                 } else {
                     followAxe = false;
-                    scene.setOnMouseMoved(event1 -> {
-                    });
+                    getScene().setOnMouseMoved(event1 -> {});
                 }
             }
         });
         mirrorAxe.setTranslateY(135);
+
+      */
 
         text.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,new CornerRadii(0),new Insets(0))));
         text.setBorder(new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.DASHED,new CornerRadii(0),new BorderWidths(2))));
@@ -142,19 +134,7 @@ public class Logiciel {
         text.setFont(trebuchet);
         text.setText("");
 
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD0, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 0));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD1, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 1));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD2, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 2));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD3, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 3));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD4, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 4));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD5, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 5));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD6, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 6));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD7, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 7));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD8, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 8));
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.NUMPAD9, KeyCombination.CONTROL_DOWN)), () -> changeColor(true, 9));
-
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN)), this::unSelectAll);
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)), () -> {
+      /*  addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)), () -> {
             if(shapeCreator.getShapes().size() != 0) {
                 if (shapeCreator.getShapes().size() > 1) {
 
@@ -162,88 +142,22 @@ public class Logiciel {
                         shapeSelected = null;
                     }
                     shapeCreator.getShapes().remove(shapeCreator.getShapes().size()-1);
-                    group.getChildren().remove(group.getChildren().size()-1);
+                    getGroup().getChildren().remove(getGroup().getChildren().size()-1);
                     shapeCreator.setLastShape(shapeCreator.getShapes().get(shapeCreator.getShapes().size()-1));
 
                 } else {
                     shapeSelected = null;
                     shapeCreator.removeShape(0);
-                    group.getChildren().remove(2);
+                    getGroup().getChildren().remove(2);
                     shapeCreator.setLastShape(null);
                 }
             }
         });
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> project.save(!project.hasBeenSaved()));
 
-        scene.setOnMouseClicked(event -> {
+       */
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> save(true));
 
-            switch (event.getButton()) {
-
-                case PRIMARY:
-
-                    if (!free) {
-
-                        if (shapeCreator.getShapeType() == ShapeType.TEXT) {
-
-                            if(!text.getText().equals("")){
-                                Label label = new Label(text.getText());
-                                label.setTranslateX(text.getTranslateX()+15);
-                                label.setTranslateY(text.getTranslateY()+10);
-                                label.setFont(trebuchet);
-
-                                text.setVisible(false);
-                                text.setText("");
-
-                                Shape shape = new Shape(ShapeType.TEXT,text.getTranslateX(),text.getTranslateY(),Color.BLACK,null);
-                                shape.setObject(label, event12 -> {
-                                    if (free) {
-                                        shapeSelected = shape;
-                                        shape.select();
-                                    }
-                                });
-
-                                shapeCreator.getShapes().add(shape);
-                                group.getChildren().add(label);
-                            }else{
-                                if(event.getY() > 140 && event.getX() < project.getDrawablePaper().getSurface().getWidth() && event.getY() < project.getDrawablePaper().getSurface().getHeight()) {
-                                    resetText(event.getX(), event.getY());
-                                }
-                            }
-
-                        }else{
-
-                            if (shapeCreator.isCreating()) {
-                                shapeCreator.stopCreating();
-                            } else {
-                                if (event.getY() > 140 && event.getX() < project.getDrawablePaper().getSurface().getWidth() && event.getY() < project.getDrawablePaper().getSurface().getHeight()) {
-                                    if (shapeCreator.getShapeType() == ShapeType.IMAGE) {
-                                        try {
-                                            shapeCreator.startCreating(event.getX(), event.getY(), image);
-                                        } catch (NullPointerException e) {
-                                            try {
-                                                image = new Image(new FileInputStream(projectChooser.openAndGetFile()));
-                                            } catch (FileNotFoundException fileNotFoundException) {}
-                                        }
-                                    } else {
-                                        shapeCreator.startCreating(event.getX(), event.getY(), null);
-                                    }
-                                }
-                            }
-
-                        }
-
-                    }
-                    break;
-
-                case SECONDARY:
-                    getMenu().show(group, event.getScreenX(), event.getScreenY());
-                    break;
-
-            }
-
-        });
-
-        scene.setOnKeyPressed(event -> {
+        getScene().setOnKeyPressed(event -> {
 
             for (KeyShort keyShort1 : keyShorts) {
                 if (keyShort1.getKeyCombination().match(event)) {
@@ -251,93 +165,80 @@ public class Logiciel {
                 }
             }
 
-            switch (event.getCode()) {
-
-                case RIGHT:
-                    if(creation == Creation.MIRROR && !shapeCreator.isCreating()){
-                        mirrorAxe.setEndX(mirrorAxe.getEndX()+10);
-                        mirrorAxe.setStartX(mirrorAxe.getStartX()+10);
-                    }else{
-                        if (hasShapeSelected()) shapeSelected.setX(shapeSelected.getX() + 10);
-                    }
-                    break;
-
-                case LEFT:
-                    if(creation == Creation.MIRROR && !shapeCreator.isCreating()){
-                        mirrorAxe.setEndX(mirrorAxe.getEndX()-10);
-                        mirrorAxe.setStartX(mirrorAxe.getStartX()-10);
-                    }else{
-                        if (hasShapeSelected()) shapeSelected.setX(shapeSelected.getX() - 10);
-                    }
-                    break;
-
-                case UP:
-                    if (hasShapeSelected()) shapeSelected.setY(shapeSelected.getY() - 10);
-                    break;
-
-                case DOWN:
-                    if (hasShapeSelected()) shapeSelected.setY(shapeSelected.getY() + 10);
-                    break;
-
-                case ADD:
-                    for(int i = 2; i < group.getChildren().size(); i++){
-                        Node node = group.getChildren().get(i);
-                        node.setScaleX(node.getScaleX()+0.1);
-                        node.setScaleY(node.getScaleY()+0.1);
-                    }
-                    break;
-
-                case SUBTRACT:
-                    for(int i = 2; i < group.getChildren().size(); i++){
-                        Node node = group.getChildren().get(i);
-                        if(node.getScaleX() > 0.11) node.setScaleX(node.getScaleX()-0.1);
-                        if(node.getScaleY() > 0.11)node.setScaleY(node.getScaleY()-0.1);
-                    }
-
-                    break;
-
-            }
-
         });
-
-        group.getChildren().addAll(project.getDrawablePaper().build(),menus,mirrorAxe,text);
     }
 
     public void addElement(Node node) {
-        group.getChildren().add(node);
+       getGroup().getChildren().add(node);
+    }
+
+    public ArrayList<Double> getxPoints() {
+        return xPoints;
+    }
+
+    public ArrayList<Double> getyPoints() {
+        return yPoints;
+    }
+
+    public void setxPoints(ArrayList<Double> xPoints) {
+        this.xPoints = xPoints;
+    }
+
+    public void setyPoints(ArrayList<Double> yPoints) {
+        this.yPoints = yPoints;
     }
 
     public Group getGroup() {
-        return group;
+        return logicielStructure.getGroup();
     }
 
     public Stage getStage() {
-        return stage;
+        return logicielStructure.getStage();
     }
 
     public Scene getScene() {
-        return scene;
+        logicielStructure = new LogicielStructure(this);
+        return logicielStructure.getScene();
     }
 
     public void start(){
-        scene.setFill(backgroundColor);
-
-        stage.setTitle("LogiGraphics - "+project.getName());
-        stage.setScene(scene);
-        stage.show();
+        getStage().show();
     }
 
     public void stop() {
-        stage.close();
+        getStage().close();
     }
 
-    public void setShapeSelected(Shape shapeSelected) {
-        this.shapeSelected = shapeSelected;
-        for (Shape shape : shapeCreator.getShapes()) {
-            if (shape != shapeSelected) {
-                shape.unSelect();
-            }
-        }
+    public void restart(){
+        stop();
+
+        Logiciel logiciel = new Logiciel();
+        logiciel.start();
+    }
+
+    public void setCurrentX(double currentX) {
+        this.currentX = currentX;
+    }
+
+    public void setCurrentY(double currentY) {
+        this.currentY = currentY;
+    }
+
+    public void setStartX(double startX) {
+        this.startX = startX;
+    }
+
+    public void setStartY(double startY) {
+        this.startY = startY;
+    }
+
+    public void setSelectedColor(Color selectedColor) {
+        logicielStructure.getGraphicsContext().setFill(selectedColor);
+        logicielStructure.getGraphicsContext().setStroke(selectedColor);
+    }
+
+    public ShapeType getShapeType() {
+        return shapeType;
     }
 
     private void addKeyShort(KeyShort keyShort, KeyShortEvent keyShortEvent) {
@@ -345,7 +246,11 @@ public class Logiciel {
         keyShorts.add(keyShort);
     }
 
-    public ContextMenu getMenu() {
+    public boolean isCreating() {
+        return creating;
+    }
+
+    /*  public ContextMenu getMenu() {
 
         ContextMenu menu = new ContextMenu();
 
@@ -381,8 +286,7 @@ public class Logiciel {
                this.image = new Image(new FileInputStream(projectChooser.openAndGetFile()));
                shapeCreator.setShapeType(ShapeType.IMAGE);
             } catch (NullPointerException | FileNotFoundException e) {
-                errorWindow.setContent("Image non trouvée !");
-                errorWindow.show();
+
             }
 
         });
@@ -395,132 +299,25 @@ public class Logiciel {
         return menu;
     }
 
+    */
+
     public boolean isFree() {
         return free;
     }
 
-    public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
-        scene.setFill(backgroundColor);
+    public void setShapeType(ShapeType shapeType) {
+        this.shapeType = shapeType;
+        this.xPoints = new ArrayList<>();
+        this.yPoints = new ArrayList<>();
+        creating = false;
+        currentY = 0;
+        currentX = 0;
+        startX = 0;
+        startY = 0;
     }
 
-    public void changeColor(boolean background, int code) {
-
-        switch (code) {
-
-            case 0:
-                if (background) setBackgroundColor(Color.WHITE);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.WHITE);
-                    }
-                    shapeCreator.setSelectedColor(Color.WHITE);
-                }
-
-                break;
-            case 1:
-                if (background) setBackgroundColor(Color.BLACK);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.BLACK);
-                    }
-                    shapeCreator.setSelectedColor(Color.BLACK);
-                }
-                break;
-            case 2:
-                if (background) setBackgroundColor(Color.RED);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.RED);
-                    }
-                    shapeCreator.setSelectedColor(Color.RED);
-                }
-                break;
-            case 3:
-                if (background) setBackgroundColor(Color.BLUE);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.BLUE);
-                    }
-                    shapeCreator.setSelectedColor(Color.BLUE);
-                }
-                break;
-            case 4:
-                if (background) setBackgroundColor(Color.ORANGE);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.ORANGE);
-                    }
-                    shapeCreator.setSelectedColor(Color.ORANGE);
-                }
-                break;
-            case 5:
-                if (background) setBackgroundColor(Color.PURPLE);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.PURPLE);
-                    }
-                    shapeCreator.setSelectedColor(Color.PURPLE);
-                }
-                break;
-            case 6:
-                if (background) setBackgroundColor(Color.GREEN);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.GREEN);
-                    }
-                    shapeCreator.setSelectedColor(Color.GREEN);
-                }
-                break;
-            case 7:
-                if (background) setBackgroundColor(Color.GREY);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.GREY);
-                    }
-                    shapeCreator.setSelectedColor(Color.GREY);
-                }
-                break;
-            case 8:
-                if (background) setBackgroundColor(Color.BROWN);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.BROWN);
-                    }
-                    shapeCreator.setSelectedColor(Color.BROWN);
-                }
-                break;
-            case 9:
-                if (background) setBackgroundColor(Color.YELLOW);
-                else {
-                    if(shapeSelected != null){
-                        shapeSelected.changeColor(Color.YELLOW);
-                    }
-                    shapeCreator.setSelectedColor(Color.YELLOW);
-                }
-                break;
-        }
-
-    }
-
-    private void unSelectAll() {
-
-        for (Shape shape : shapeCreator.getShapes()) {
-            shape.unSelect();
-        }
-        this.shapeSelected = null;
-    }
-
-    public ShapeCreator getShapeCreator() {
-        return shapeCreator;
-    }
-
-    public boolean hasShapeSelected() {
-        return shapeSelected != null;
-    }
-
-    public TopBar getTopBar() {
-        return topBar;
+    public void setCreating(boolean creating) {
+        this.creating = creating;
     }
 
     private void checkDataBase(){
@@ -544,6 +341,78 @@ public class Logiciel {
 
     }
 
+    public void stopCreating(){
+
+        switch(shapeType){
+
+            case RECTANGLE:
+
+                if(currentX < startX && currentY < startY){
+                    logicielStructure.getGraphicsContext().fillRect(currentX,currentY,startX-currentX,startY-currentY);
+                }else if(currentX < startX && currentY > startY){
+                    logicielStructure.getGraphicsContext().fillRect(currentX,startY,startX-currentX,currentY-startY);
+                }else if(currentX > startX && currentY < startY){
+                    logicielStructure.getGraphicsContext().fillRect(startX,currentY,currentX-startX,startY-currentY);
+                }else{
+                    logicielStructure.getGraphicsContext().fillRect(startX,startY,currentX-startX,currentY-startY);
+                }
+                creating = false;
+                break;
+
+            case CIRCLE:
+                if((currentY-startY) > (currentX-startX)){
+                    logicielStructure.getGraphicsContext().fillOval(startX-Math.abs(currentY-startY),startY-Math.abs(currentY-startY),Math.abs(currentY-startY)*2,Math.abs(currentY-startY)*2);
+                }else{
+                    logicielStructure.getGraphicsContext().fillOval(startX-Math.abs(currentX-startX),startY-Math.abs(currentX-startX),Math.abs(currentX-startX)*2,Math.abs(currentX-startX)*2);
+                }
+                creating = false;
+                break;
+
+            case LINE:
+                logicielStructure.getGraphicsContext().strokeLine(startX,startY,currentX,currentY);
+                creating = false;
+                break;
+
+            case NONFILLEDRECTANGLE:
+
+                if(currentX < startX && currentY < startY){
+                    logicielStructure.getGraphicsContext().strokeRect(currentX,currentY,startX-currentX,startY-currentY);
+                }else if(currentX < startX && currentY > startY){
+                    logicielStructure.getGraphicsContext().strokeRect(currentX,startY,startX-currentX,currentY-startY);
+                }else if(currentX > startX && currentY < startY){
+                    logicielStructure.getGraphicsContext().strokeRect(startX,currentY,currentX-startX,startY-currentY);
+                }else{
+                    logicielStructure.getGraphicsContext().strokeRect(startX,startY,currentX-startX,currentY-startY);
+                }
+                creating = false;
+                break;
+
+            case NONFILLEDCIRCLE:
+                if((currentY-startY) > (currentX-startX)){
+                    logicielStructure.getGraphicsContext().strokeOval(startX-Math.abs(currentY-startY),startY-Math.abs(currentY-startY),Math.abs(currentY-startY)*2,Math.abs(currentY-startY)*2);
+                }else{
+                    logicielStructure.getGraphicsContext().strokeOval(startX-Math.abs(currentX-startX),startY-Math.abs(currentX-startX),Math.abs(currentX-startX)*2,Math.abs(currentX-startX)*2);
+                }
+                creating = false;
+                break;
+
+            case ELLIPSE:
+                logicielStructure.getGraphicsContext().fillOval(startX-Math.abs(currentX-startX),startY-Math.abs(currentY-startY),Math.abs(currentX-startX)*2,Math.abs(currentY-startY)*2);
+                creating = false;
+                break;
+
+            case TRIANGLE:
+                logicielStructure.getGraphicsContext().fillPolygon(new double[]{xPoints.get(0),xPoints.get(1),xPoints.get(2)},new double[]{yPoints.get(0),yPoints.get(1),yPoints.get(2)},3);
+                break;
+
+            case HEXAGON:
+               logicielStructure.getGraphicsContext().fillPolygon(new double[]{xPoints.get(0),xPoints.get(1),xPoints.get(2),xPoints.get(3),xPoints.get(4),xPoints.get(5)},new double[]{yPoints.get(0),yPoints.get(1),yPoints.get(2),yPoints.get(3),yPoints.get(4),yPoints.get(5)},6);
+                break;
+
+        }
+        save(false);
+    }
+
     public void setCreation(Creation creation) {
         this.creation = creation;
 
@@ -564,18 +433,6 @@ public class Logiciel {
         return creation;
     }
 
-    public TopMenuBar getTopMenuBar() {
-        return topMenuBar;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
-
-    public VBox getMenus() {
-        return menus;
-    }
-
     public DataBase getDataBase() {
         return dataBase;
     }
@@ -585,37 +442,50 @@ public class Logiciel {
        dataBase.getDirectoryByName("cache").saveInFile("theme.txt",theme);
     }
 
-    private void updateTheme(){
-
-        String[] values = dataBase.getDirectoryByName("cache").readLineFile("theme.txt",0).split("/");
-
-        switch (values[0]){
-
-            case "dark":
-                theme.setCustomColors(Color.rgb(64,64,64), Color.rgb(96,96,96));
-                theme.apply();
-                break;
-
-            case "light":
-                theme.setCustomColors(Color.rgb(230,230,230),Color.rgb(216,216,216));
-                theme.apply();
-                break;
-
-            case "custom":
-                theme.setCustomColors(theme.getCustomThemes().get(Integer.parseInt(values[1])).getColor1(),theme.getCustomThemes().get(Integer.parseInt(values[1])).getColor2());
-                theme.apply();
-                break;
-        }
-
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
     private void resetText(double x,double y){
         text.setTranslateY(y);
         text.setTranslateX(x);
         text.setVisible(true);
     }
+
+    public LogicielStructure getLogicielStructure() {
+        return logicielStructure;
+    }
+
+    public void save(boolean volunteer){
+
+        if(directoryToSave == null && volunteer){
+            FileChooser savefile = new FileChooser();
+            savefile.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image (*JPG)", "*.jpg"));
+            savefile.setInitialFileName("Nouveau projet");
+            savefile.setTitle("Enregistrer le projet");
+
+            directoryToSave = savefile.showSaveDialog(new Stage());
+            if (directoryToSave != null) {
+                try {
+                    WritableImage writableImage = new WritableImage((int) logicielStructure.getCanvas().getWidth(),(int) logicielStructure.getCanvas().getHeight());
+                    logicielStructure.getCanvas().snapshot(null, writableImage);
+                    RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                    ImageIO.write(renderedImage, "png", directoryToSave);
+                    logicielStructure.setTitle(directoryToSave.getName());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+        }else{
+            if(directoryToSave != null) {
+                try {
+                    WritableImage writableImage = new WritableImage((int) logicielStructure.getCanvas().getWidth(), (int) logicielStructure.getCanvas().getHeight());
+                    logicielStructure.getCanvas().snapshot(null, writableImage);
+                    RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                    ImageIO.write(renderedImage, "png", directoryToSave);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
+    }
+
 }
