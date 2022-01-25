@@ -1,5 +1,6 @@
 package sample.logigraphics.interfaces;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -8,12 +9,14 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sample.logigraphics.Logiciel;
+import sample.logigraphics.creation.ShapeType;
 import sample.logigraphics.interfaces.bars.LogicielBar;
 import sample.logigraphics.interfaces.bars.RightBar;
 
@@ -42,6 +45,8 @@ public class LogicielStructure {
     GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 
     File imageOpened;
+
+    boolean pressing = false;
 
     public LogicielStructure(Logiciel logiciel){
         this.logiciel = logiciel;
@@ -133,6 +138,14 @@ public class LogicielStructure {
 
         });
 
+        canvas.setOnMousePressed(event -> pressing = true);
+        canvas.setOnMouseReleased(event -> pressing = false);
+
+        canvas.setOnMouseDragged(event -> {
+            if(pressing && logiciel.getShapeType() == ShapeType.PENCIL){
+                graphicsContext.fillRect(event.getX(),event.getY(),5,5);
+            }
+        });
     }
 
     public Logiciel getLogiciel() {

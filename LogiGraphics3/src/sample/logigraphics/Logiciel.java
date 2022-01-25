@@ -32,6 +32,8 @@ import sample.logigraphics.stuff.Debug;
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -161,6 +163,19 @@ public class Logiciel {
        */
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> save(true));
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)), this::openImage);
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.ADD, KeyCombination.CONTROL_DOWN)), () -> {
+            if(logicielStructure.hasImageOpened()){
+                logicielStructure.getCanvas().setScaleX(logicielStructure.getCanvas().getScaleX()+0.1);
+                logicielStructure.getCanvas().setScaleY(logicielStructure.getCanvas().getScaleY()+0.1);
+            }
+        });
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.SUBTRACT, KeyCombination.CONTROL_DOWN)), () -> {
+            if(logicielStructure.hasImageOpened()){
+                logicielStructure.getCanvas().setScaleX(logicielStructure.getCanvas().getScaleX()-0.1);
+                logicielStructure.getCanvas().setScaleY(logicielStructure.getCanvas().getScaleY()-0.1);
+            }
+        });
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN)), () -> shapeType = ShapeType.PENCIL);
 
         getScene().setOnKeyPressed(event -> {
 
@@ -171,6 +186,7 @@ public class Logiciel {
             }
 
         });
+
     }
 
     public void addElement(Node node) {

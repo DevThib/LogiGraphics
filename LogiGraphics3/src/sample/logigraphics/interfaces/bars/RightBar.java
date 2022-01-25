@@ -1,5 +1,6 @@
 package sample.logigraphics.interfaces.bars;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -8,9 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -22,6 +21,7 @@ import javafx.scene.text.Font;
 import sample.logigraphics.creation.Creation;
 import sample.logigraphics.creation.ShapeType;
 import sample.logigraphics.interfaces.LogicielStructure;
+import sample.logigraphics.windows.SmallWindow;
 
 public class RightBar {
 
@@ -33,15 +33,32 @@ public class RightBar {
 
     Border indic = new Border(new BorderStroke(Color.WHITE,BorderStrokeStyle.SOLID,new CornerRadii(0),new BorderWidths(1)));
 
-    Background choiceBack = new Background(new BackgroundFill(Color.rgb(40,40,40),new CornerRadii(5),new Insets(0)));
-
     Color backgroundC = Color.rgb(60,60,60);
     Color choiceC = Color.BLACK;
 
     LogicielStructure logicielStructure;
 
+    SmallWindow smallWindow = new SmallWindow("Sélectionnez une couleur custom");
+
+    Rectangle indicator = new Rectangle(100,35,Color.BLACK);
+
     public RightBar(LogicielStructure logicielStructure){
         this.logicielStructure = logicielStructure;
+
+        ColorPicker colorPicker = new ColorPicker();
+        Button button = smallWindow.getStyliziedButton("OK");
+        button.setOnAction(event -> {
+            logicielStructure.getGraphicsContext().setStroke(colorPicker.getValue());
+            logicielStructure.getGraphicsContext().setFill(colorPicker.getValue());
+            indicator.setFill(colorPicker.getValue());
+            smallWindow.close();
+        });
+
+        smallWindow.setSpacing(10);
+        smallWindow.add(colorPicker);
+        smallWindow.add(button);
+
+        indicator.setCursor(Cursor.HAND);
     }
 
     public FlowPane get(){
@@ -533,7 +550,7 @@ public class RightBar {
 
     private VBox getColorSelector(){
 
-        Rectangle indicator = new Rectangle(100,35,Color.BLACK);
+        indicator.setOnMouseClicked(event -> smallWindow.show());
 
         VBox vBox = new VBox();
         vBox.setMinWidth(160);

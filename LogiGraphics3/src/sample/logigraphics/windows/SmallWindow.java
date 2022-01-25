@@ -1,6 +1,7 @@
 package sample.logigraphics.windows;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -39,24 +40,30 @@ public class SmallWindow {
 
     DropShadow ds = new DropShadow();
 
+    VBox vBox = new VBox();
+
     public SmallWindow(String title){
         this.title = title;
-    }
 
-    public void show(){
+        vBox.setMinWidth(scene.getWidth());
+        vBox.setMinHeight(scene.getHeight());
+        vBox.setAlignment(Pos.CENTER);
 
-        group.getChildren().add(get());
+        group.getChildren().addAll(vBox,get());
 
         scene.setFill(LogicielColors.getSmallWindowBackground());
 
         stage.setTitle(title);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(scene);
+    }
+
+    public void show(){
         stage.show();
     }
 
     public void add(Node node){
-        group.getChildren().add(node);
+        vBox.getChildren().add(node);
     }
 
     private FlowPane get(){
@@ -150,5 +157,9 @@ public class SmallWindow {
 
     public Font getFont() {
         return font;
+    }
+
+    public void setSpacing(double value){
+        vBox.setSpacing(value);
     }
 }
