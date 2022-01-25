@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import sample.logigraphics.events.Event;
+import sample.logigraphics.stuff.Debug;
 
 import java.io.File;
 
@@ -36,12 +37,19 @@ public class TreeBuilder {
 
     Scene scene;
 
-    Background background = new Background(new BackgroundFill(Color.GREY,new CornerRadii(0),new Insets(0)));
+    File file;
 
-    public TreeBuilder(File root, Node node, Scene scene){
+    LogicielStructure logicielStructure;
+
+    double lastClick = System.currentTimeMillis();
+
+    File searched;
+
+    public TreeBuilder(File root, Node node, Scene scene,LogicielStructure logicielStructure){
         this.root = root;
         this.node = node;
         this.scene = scene;
+        this.logicielStructure = logicielStructure;
 
         changeTree();
         createMenu();
@@ -68,11 +76,26 @@ public class TreeBuilder {
 
             selected = treeView.getSelectionModel().getSelectedItem();
 
+            file = searchFile(selected.getValue(),root);
+
+            if(file != null && !file.isDirectory()){
+                String extension = Debug.getExtension(file);
+
+                if(extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png")){
+                    logicielStructure.getLogiciel().save(false);
+                    logicielStructure.openImage(file);
+                }
+            }else{
+                System.out.println(file == null);
+            }
+
             if(event.getButton().equals(MouseButton.SECONDARY)){
                 contextMenu.show(node,event.getScreenX(),event.getScreenY());
             }else{
                 contextMenu.hide();
             }
+
+            lastClick = System.currentTimeMillis();
         };
 
         treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventHandle);
@@ -90,6 +113,7 @@ public class TreeBuilder {
                         "  -fx-font-family: \"Trebuchet MS\";");
 
         this.treeView = treeView;
+        logicielStructure.getBorderPane().setLeft(treeView);
     }
 
     private TreeItem<String> getTree(File file){
@@ -120,6 +144,9 @@ public class TreeBuilder {
         }else{
             return treeItem;
         }
+
+        logicielStructure.getLogiciel().getDataBase().getDirectoryByName("cache").removeInFile(logicielStructure.getLogiciel().getDataBase().getDirectoryByName("cache").getFileByName("root.txt"),logicielStructure.getLogiciel().getDataBase().getDirectoryByName("cache").readLineFile("root.txt",0));
+        logicielStructure.getLogiciel().getDataBase().getDirectoryByName("cache").saveInFile("root.txt",file.getPath());
 
         return treeItem;
     }
@@ -172,6 +199,36 @@ public class TreeBuilder {
             changeTree();
             dragEvent.run();
         }catch (NullPointerException e){}
+    }
+
+    private File searchFile(String name,File root){
+
+        if(root.isDirectory()){
+
+            File[] files = root.listFiles();
+
+            if(files != null && files.length != 0) {
+
+                for (File file1 : files) {
+
+                    if(!file1.isDirectory()){
+                        if(file1.getName().equals(name)){
+                            searched = file1;
+                        }
+                    }else{
+                        if(file1.getName().equals(name)){
+                            searched = file1;
+                        }else{
+                            searchFile(name,file1);
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+        return searched;
     }
 
     public void setOnRootChange(Event event){

@@ -159,6 +159,7 @@ public class RightBar {
         Circle nonfilledC2 = (Circle) n2.getChildren().get(1);
         Rectangle line = (Rectangle) n3.getChildren().get(1);
         Rectangle line2 = (Rectangle) n3.getChildren().get(0);
+        Polygon triangle1 = (Polygon) n4.getChildren().get(0);
 
         rectangle.setOnMouseExited(event -> {
             if(logicielStructure.getLogiciel().getShapeType() != ShapeType.RECTANGLE){
@@ -474,6 +475,11 @@ public class RightBar {
                         rectangle.setFill(Color.GREY);
                     }
                 });
+                rectangle.setOnMouseExited(event -> {
+                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.LINE){
+                        rectangle.setFill(Color.WHITE);
+                    }
+                });
                 rectangle.setCursor(Cursor.HAND);
                 back.setCursor(Cursor.HAND);
 
@@ -493,9 +499,14 @@ public class RightBar {
                         triangle.setFill(Color.GREY);
                     }
                 });
+                triangle.setOnMouseExited(event -> {
+                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.TRIANGLE){
+                        triangle.setFill(Color.WHITE);
+                    }
+                });
                 triangle.setCursor(Cursor.HAND);
 
-                black.getPoints().addAll(0.0,0.0,33.75,0.0,16.875,-33.75);
+                black.getPoints().addAll(2.5,-2.5,28.75,-2.5,16.875,-28.75);
                 black.setFill(Color.rgb(60,60,60));
                 black.setOnMouseExited(event -> {
                     if(logicielStructure.getLogiciel().getShapeType() != ShapeType.TRIANGLE){
@@ -510,7 +521,6 @@ public class RightBar {
                 black.setCursor(Cursor.HAND);
 
                 Group group4 = new Group();
-
 
                 group4.getChildren().addAll(triangle,black);
 

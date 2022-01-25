@@ -27,22 +27,24 @@ import sample.logigraphics.keyboard.KeyShort;
 import sample.logigraphics.keyboard.KeyShortEvent;
 import fr.devthib.databaseapi.DataBase;
 import sample.logigraphics.projects.ProjectChooser;
+import sample.logigraphics.stuff.Debug;
 
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class Logiciel {
-
-    LogicielStructure logicielStructure = new LogicielStructure(this);
 
     ArrayList<KeyShort> keyShorts = new ArrayList<>();
 
     boolean free = false;
 
     DataBase dataBase = new DataBase(".logiGraphics", Location.APPDATA);
+
+    LogicielStructure logicielStructure;
 
     Creation creation = Creation.SHAPES;
 
@@ -107,6 +109,8 @@ public class Logiciel {
 
         checkDataBase();
 
+        logicielStructure = new LogicielStructure(this);
+
      /*   mirrorAxe.setScaleX(1.2);
         mirrorAxe.setVisible(false);
         mirrorAxe.setEndY(project.getDrawablePaper().getSurface().getHeight());
@@ -156,6 +160,7 @@ public class Logiciel {
 
        */
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> save(true));
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)), this::openImage);
 
         getScene().setOnKeyPressed(event -> {
 
@@ -338,6 +343,10 @@ public class Logiciel {
             dataBase.getDirectoryByName("cache").createFile("theme.txt");
             dataBase.getDirectoryByName("cache").saveInFile("theme.txt","light/none");
         }
+        if(!dataBase.getDirectoryByName("cache").containsFile("root.txt")){
+            dataBase.getDirectoryByName("cache").createFile("root.txt");
+            dataBase.getDirectoryByName("cache").saveInFile("root.txt",dataBase.getLocation()+"\\.logiGraphics");
+        }
 
     }
 
@@ -457,12 +466,21 @@ public class Logiciel {
         if(directoryToSave == null && volunteer){
             FileChooser savefile = new FileChooser();
             savefile.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image (*JPG)", "*.jpg"));
-            savefile.setInitialFileName("Nouveau projet");
+            savefile.setInitialFileName(logicielStructure.getTitle());
+            if(logicielStructure.hasImageOpened()){
+
+                String nam = logicielStructure.getImageOpened().getPath();
+                String target = logicielStructure.getImageOpened().getName();
+                String name = nam.replace(target,"");
+
+                savefile.setInitialDirectory(new File(name));
+            }
             savefile.setTitle("Enregistrer le projet");
 
             directoryToSave = savefile.showSaveDialog(new Stage());
             if (directoryToSave != null) {
                 try {
+
                     WritableImage writableImage = new WritableImage((int) logicielStructure.getCanvas().getWidth(),(int) logicielStructure.getCanvas().getHeight());
                     logicielStructure.getCanvas().snapshot(null, writableImage);
                     RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
@@ -488,4 +506,19 @@ public class Logiciel {
 
     }
 
+    public void openImage(){
+
+        //fenetre qui demande confirmation
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionnez une image");
+
+        File file = fileChooser.showOpenDialog(new Stage());
+
+        if(file != null){
+            String extension = Debug.getExtension(file);
+            if(extension.equalsIgnoreCase("jpg"))logicielStructure.openImage(file);
+        }
+
+    }
 }

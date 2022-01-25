@@ -82,7 +82,6 @@ public class LogicielBar {
                 extend.setText("↙");
                 logicielStructure.getStage().setFullScreen(true);
             }
-            logicielStructure.adaptCanvasSize();
             borderPane.setMinWidth(logicielStructure.getScene().getWidth());
         });
         extend.setFont(font);
@@ -125,6 +124,10 @@ public class LogicielBar {
 
     public void setTitle(String title){
         this.title.setText(title);
+    }
+
+    public String getTitle(){
+        return title.getText();
     }
 
 }
