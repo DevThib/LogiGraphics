@@ -16,6 +16,7 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sample.logigraphics.Logiciel;
+import sample.logigraphics.creation.Creation;
 import sample.logigraphics.creation.ShapeType;
 import sample.logigraphics.interfaces.bars.LogicielBar;
 import sample.logigraphics.interfaces.bars.RightBar;
@@ -54,16 +55,19 @@ public class LogicielStructure {
 
         treeBuilder = new TreeBuilder(new File(logiciel.getDataBase().getDirectoryByName("cache").readLineFile("root.txt",0)),borderPane,scene,this);
 
+        adaptCanvasSize();
+        buildCanvas();
+
+        Group group = new Group();
+        group.getChildren().addAll(canvas,logiciel.getMirrorAxe(),logiciel.getShow().getRectangle(),logiciel.getShow().getCircle(),logiciel.getShow().getLine());
+
         borderPane.setMinWidth(scene.getWidth());
         borderPane.setMinHeight(scene.getHeight());
         borderPane.setRight(rightBar.get());
         borderPane.setTop(logicielBar.get());
-        borderPane.setCenter(canvas);
+        borderPane.setCenter(group);
         borderPane.setLeft(treeBuilder.get());
         borderPane.setBackground(background);
-
-        adaptCanvasSize();
-        buildCanvas();
 
         DropShadow ds = new DropShadow();
         ds.setOffsetY(5);
@@ -79,6 +83,10 @@ public class LogicielStructure {
 
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
+    }
+
+    public void setExtend(boolean extend){
+
     }
 
     public void changeTheme(){
@@ -129,6 +137,32 @@ public class LogicielStructure {
                         logiciel.setCurrentY(event.getY());
                         logiciel.stopCreating();
                     }
+
+                    if(logiciel.isCreating()){
+                        if(logiciel.getShapeType() == ShapeType.CIRCLE){
+                            logiciel.getShow().showCircle(event.getX(),event.getY(),graphicsContext.getStroke());
+                        }
+                        if(logiciel.getShapeType() == ShapeType.RECTANGLE){
+                            logiciel.getShow().showRectangle(event.getX(),event.getY(),graphicsContext.getStroke());
+                        }
+                        if(logiciel.getShapeType() == ShapeType.LINE){
+                            logiciel.getShow().showLine(event.getX(),event.getY(),graphicsContext.getStroke());
+                        }
+
+                    }else{
+
+                        if(logiciel.getShapeType() == ShapeType.CIRCLE){
+                            logiciel.getShow().hideCircle();
+                        }
+                        if(logiciel.getShapeType() == ShapeType.RECTANGLE){
+                            logiciel.getShow().hideRectangle();
+                        }
+                        if(logiciel.getShapeType() == ShapeType.LINE){
+                            logiciel.getShow().hideLine();
+                        }
+
+                    }
+
                     break;
 
             }
@@ -138,9 +172,50 @@ public class LogicielStructure {
 
         });
 
+        canvas.setOnMouseMoved(event -> {
+
+            if(logiciel.isCreating()) {
+
+                switch (logiciel.getShapeType()) {
+
+                    case RECTANGLE:
+
+                        if(event.getX() < logiciel.getShow().getRectangle().getX() && event.getY() < logiciel.getShow().getRectangle().getY()){
+                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
+                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getRectangle().getY()-event.getY());
+                        }else if(event.getX() < logiciel.getShow().getRectangle().getX() && event.getY() > logiciel.getShow().getRectangle().getY()){
+                            logiciel.getShow().getRectangle().setWidth(logiciel.getShow().getRectangle().getX()-event.getX());
+                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getRectangle().getY());
+                        }else if(event.getX() > logiciel.getShow().getRectangle().getX() && event.getY() < logiciel.getShow().getRectangle().getY()){
+                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
+                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getRectangle().getY()-event.getY());
+                        }else{
+                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
+                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getRectangle().getY());
+                        }
+                        break;
+
+                    case CIRCLE:
+                        if((event.getY() - logiciel.getShow().getCircle().getCenterY()) > (event.getX() - logiciel.getShow().getCircle().getCenterX())){
+                            logiciel.getShow().getCircle().setRadius(Math.abs(event.getY()-logiciel.getShow().getCircle().getCenterY()));
+                        }else{
+                            logiciel.getShow().getCircle().setRadius(Math.abs(event.getX()-logiciel.getShow().getCircle().getCenterX()));
+                        }
+                        break;
+
+                    case LINE:
+                        logiciel.getShow().getLine().setEndY(event.getY()-1);
+                        logiciel.getShow().getLine().setEndX(event.getX()-1);
+                        break;
+
+                }
+
+            }
+
+        });
+
         canvas.setOnMousePressed(event -> pressing = true);
         canvas.setOnMouseReleased(event -> pressing = false);
-
         canvas.setOnMouseDragged(event -> {
             if(pressing && logiciel.getShapeType() == ShapeType.PENCIL){
                 graphicsContext.fillRect(event.getX(),event.getY(),5,5);

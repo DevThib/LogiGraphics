@@ -1,11 +1,13 @@
 package sample.logigraphics.interfaces.bars;
 
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -37,12 +39,43 @@ public class LogicielBar {
 
     public BorderPane get(){
 
+        Button extend = new Button("🔳");
+
         BorderPane borderPane = new BorderPane();
         borderPane.setMinWidth(logicielStructure.getScene().getWidth());
         borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
         borderPane.setMinHeight(40);
         borderPane.setMaxHeight(40);
         borderPane.setBackground(grey);
+
+        final double[] initialX = {0};
+        final double[] initialY = {0};
+
+        borderPane.setOnMousePressed(event -> {
+            initialX[0] = event.getX();
+            initialY[0] = event.getY();
+        });
+
+        borderPane.setOnMouseDragged(event -> {
+            logicielStructure.getStage().setX(event.getScreenX()-initialX[0]);
+            logicielStructure.getStage().setY(event.getScreenY()-initialY[0]);
+            if(logicielStructure.getStage().isFullScreen() && event.getScreenY() > 0){
+                extend.setText("🔳");
+                logicielStructure.getStage().setFullScreen(false);
+                borderPane.setMinWidth(logicielStructure.getScene().getWidth());
+                borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
+            }
+        });
+        borderPane.setOnMouseReleased(event -> {
+            if(event.getScreenY() == 0){
+                extend.setText("↙");
+                logicielStructure.getStage().setX(0);
+                logicielStructure.getStage().setY(0);
+                logicielStructure.getStage().setFullScreen(true);
+                borderPane.setMinWidth(logicielStructure.getScene().getWidth());
+                borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
+            }
+        });
 
         FlowPane flowPane1 = new FlowPane();
         FlowPane flowPane2 = new FlowPane();
@@ -65,7 +98,6 @@ public class LogicielBar {
         cross.setOnAction(event -> logicielStructure.getStage().close());
         cross.setFont(font);
 
-        Button extend = new Button("🔳");
         extend.setMinWidth(50);
         extend.setMinHeight(30);
         extend.setMaxHeight(30);
@@ -83,6 +115,7 @@ public class LogicielBar {
                 logicielStructure.getStage().setFullScreen(true);
             }
             borderPane.setMinWidth(logicielStructure.getScene().getWidth());
+            borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
         });
         extend.setFont(font);
 

@@ -59,6 +59,8 @@ public class Logiciel {
 
     File directoryToSave;
 
+    Show show = new Show();
+
     //Pour le truc a gauche,un tree de dossiers comme intellij pour ouvrir les projets
     //Faire de LogiGraphics un paint très mathématique : genre créer des tangentes aux cercles etc...
     //Une système pour changer l'hexagone,on demande un nombre de cotés spécifiques et c'est calculer mathématiquement
@@ -113,26 +115,10 @@ public class Logiciel {
 
         logicielStructure = new LogicielStructure(this);
 
-     /*   mirrorAxe.setScaleX(1.2);
+        mirrorAxe.setScaleX(1.2);
         mirrorAxe.setVisible(false);
-        mirrorAxe.setEndY(project.getDrawablePaper().getSurface().getHeight());
-        mirrorAxe.setOnMouseClicked(event -> {
-            if(!shapeCreator.isCreating()) {
-                if (!followAxe) {
-                    followAxe = true;
-                    getScene().setOnMouseMoved(event1 -> {
-                        mirrorAxe.setStartX(event1.getX());
-                        mirrorAxe.setEndX(event1.getX());
-                    });
-                } else {
-                    followAxe = false;
-                    getScene().setOnMouseMoved(event1 -> {});
-                }
-            }
-        });
-        mirrorAxe.setTranslateY(135);
+        mirrorAxe.setEndY(logicielStructure.getCanvas().getHeight());
 
-      */
 
         text.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,new CornerRadii(0),new Insets(0))));
         text.setBorder(new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.DASHED,new CornerRadii(0),new BorderWidths(2))));
@@ -161,6 +147,7 @@ public class Logiciel {
         });
 
        */
+
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> save(true));
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)), this::openImage);
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.ADD, KeyCombination.CONTROL_DOWN)), () -> {
@@ -183,6 +170,22 @@ public class Logiciel {
                 if (keyShort1.getKeyCombination().match(event)) {
                     keyShort1.execute();
                 }
+            }
+
+            if(creation == Creation.MIRROR) {
+
+                switch (event.getCode()) {
+
+                    case LEFT:
+                        mirrorAxe.setStartX(mirrorAxe.getStartX() - 10);
+                        mirrorAxe.setEndX(mirrorAxe.getEndX() - 10);
+                        break;
+                    case RIGHT:
+                        mirrorAxe.setStartX(mirrorAxe.getStartX() + 10);
+                        mirrorAxe.setEndX(mirrorAxe.getEndX() + 10);
+                        break;
+                }
+
             }
 
         });
@@ -215,6 +218,10 @@ public class Logiciel {
 
     public Stage getStage() {
         return logicielStructure.getStage();
+    }
+
+    public Show getShow() {
+        return show;
     }
 
     public Scene getScene() {

@@ -1,6 +1,7 @@
 package sample.logigraphics.creation;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -26,7 +27,7 @@ public class Show {
     }
 
 
-    public void showRectangle(double x, double y, Color color){
+    public void showRectangle(double x, double y, Paint color){
         rectangle.setY(y);
         rectangle.setX(x);
         rectangle.setFill(color);
@@ -35,14 +36,14 @@ public class Show {
         initialY = y;
     }
 
-    public void showCircle(double x, double y, Color color){
+    public void showCircle(double x, double y, Paint color){
         circle.setCenterY(y);
         circle.setCenterX(x);
         circle.setFill(color);
         circle.setVisible(true);
     }
 
-    public void showLine(double x, double y, Color color){
+    public void showLine(double x, double y, Paint color){
         line.setStartY(y);
         line.setStartX(x);
         line.setFill(color);

@@ -634,13 +634,12 @@ public class RightBar {
             switch (modes.getValue()){
 
                 case "Formes":
-                 //   logicielStructure.getLogiciel().setCreation(Creation.SHAPES);
-                  //  logicielStructure.getLogiciel().getMirrorAxe().setVisible(false);
+                    logicielStructure.getLogiciel().setCreation(Creation.SHAPES);
+                    logicielStructure.getLogiciel().getMirrorAxe().setVisible(false);
                     break;
 
                 case "Miroir":
-                   // logicielStructure.getLogiciel().setCreation(Creation.MIRROR);
-                   // logicielStructure.getLogiciel().setFree(true);
+                    logicielStructure.getLogiciel().setCreation(Creation.MIRROR);
                     break;
 
             }
@@ -655,6 +654,38 @@ public class RightBar {
                 "  -fx-mark-color: orange;");
         modes.setTooltip(new Tooltip("Changer de mode de création"));
 
+
+        return modes;
+    }
+
+    private ChoiceBox<String> getSizeSelector(){
+
+        ChoiceBox<String> modes = new ChoiceBox<>();
+
+        modes.setOnAction(event -> {
+
+            switch (modes.getValue()){
+
+                case "Formes":
+                    logicielStructure.getLogiciel().setCreation(Creation.SHAPES);
+                    logicielStructure.getLogiciel().getMirrorAxe().setVisible(false);
+                    break;
+
+                case "Miroir":
+                    logicielStructure.getLogiciel().setCreation(Creation.MIRROR);
+                    break;
+
+            }
+
+
+        });
+
+        modes.getItems().addAll("1","1.5");
+        modes.getSelectionModel().select(0);
+        modes.setMinWidth(150);
+        modes.setStyle(" -fx-background-color: black;\n" +
+                "  -fx-mark-color: orange;");
+        modes.setTooltip(new Tooltip("Changer de mode de création"));
 
         return modes;
     }
