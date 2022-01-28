@@ -1,22 +1,21 @@
 package sample.logigraphics.interfaces.bars;
 
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import sample.logigraphics.Logiciel;
 import sample.logigraphics.interfaces.LogicielColors;
 import sample.logigraphics.interfaces.LogicielStructure;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class LogicielBar {
 
@@ -29,7 +28,7 @@ public class LogicielBar {
 
     Font font = new Font("Seoge MDL2 Assets",15);
 
-    File icon = new File("");
+    File icon = new File("icon.jpg");
 
     Label title = new Label("Nouveau projet");
 
@@ -119,9 +118,12 @@ public class LogicielBar {
         });
         extend.setFont(font);
 
-        Rectangle imageView = new Rectangle();
-        imageView.setWidth(20);
-        imageView.setHeight(20);
+        ImageView imageView = null;
+        try {
+            imageView = new ImageView(new Image(new FileInputStream(logicielStructure.getLogiciel().getDataBase().getDirectoryByName("cache").getFileByName("icon.png"))));
+        } catch (FileNotFoundException e) {e.printStackTrace();}
+        imageView.setFitWidth(20);
+        imageView.setFitHeight(20);
 
         title.setFont(font);
         title.setTextFill(Color.WHITE);
@@ -135,19 +137,6 @@ public class LogicielBar {
         flowPane2.setOrientation(Orientation.HORIZONTAL);
         flowPane2.setMaxWidth(110);
         flowPane2.setPadding(new Insets(5));
-
-     /*   padded.setOnMouseDragged(event -> {
-
-            if(dragger == null)dragger = new Dragger(event.getX(),event.getY(),padded);
-
-            dragger.setOnXInferior(() -> stage.setX(stage.getX()+(dragger.getX()-event.getX())));
-            dragger.setOnXSuperior(() -> stage.setX(stage.getX()-(event.getX()-dragger.getX())));
-            dragger.setOnYInferior(() -> stage.setY(stage.getY()+(dragger.getY()-event.getY())));
-            dragger.setOnYSuperior(() -> stage.setY(stage.getY()-(event.getY()-dragger.getY())));
-
-        });
-
-      */
 
         borderPane.setLeft(flowPane1);
         borderPane.setRight(flowPane2);

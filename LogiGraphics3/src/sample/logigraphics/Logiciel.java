@@ -7,6 +7,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,6 +24,7 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sample.logigraphics.creation.*;
+import sample.logigraphics.interfaces.LogicielColors;
 import sample.logigraphics.interfaces.LogicielStructure;
 import sample.logigraphics.keyboard.KeyShort;
 import sample.logigraphics.keyboard.KeyShortEvent;
@@ -55,6 +58,8 @@ public class Logiciel {
     Line mirrorAxe = new Line(750,0,750,0);
     TextField text = new TextField();
 
+    Line indicator = new Line(0,0,0,0);
+
     boolean followAxe = false;
 
     File directoryToSave;
@@ -66,6 +71,7 @@ public class Logiciel {
     //Une système pour changer l'hexagone,on demande un nombre de cotés spécifiques et c'est calculer mathématiquement
     //la barre a droite on peut ouvrir différents onglets,un pour la création,un pour les fonctiones etc...
     //dans les paramètres on pourra défnir la taille de base du papier quand on démarre le logiciel
+    //dans les paramètres pouvoir choisir entre papier ou transparent (pour faire des trucs sans fond pratique)
 
     /*
     idées :
@@ -106,8 +112,10 @@ public class Logiciel {
     double startX;
     double startY;
 
-    ArrayList<Double> xPoints = new ArrayList<>();
-    ArrayList<Double> yPoints = new ArrayList<>();
+
+    ArrayList<Point> shapesPoints = new ArrayList<>();
+
+    ArrayList<Point> points = new ArrayList<>();
 
     public Logiciel() {
 
@@ -119,6 +127,7 @@ public class Logiciel {
         mirrorAxe.setVisible(false);
         mirrorAxe.setEndY(logicielStructure.getCanvas().getHeight());
 
+        indicator.setVisible(false);
 
         text.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,new CornerRadii(0),new Insets(0))));
         text.setBorder(new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.DASHED,new CornerRadii(0),new BorderWidths(2))));
@@ -196,20 +205,20 @@ public class Logiciel {
        getGroup().getChildren().add(node);
     }
 
-    public ArrayList<Double> getxPoints() {
-        return xPoints;
+    public Line getIndicator() {
+        return indicator;
     }
 
-    public ArrayList<Double> getyPoints() {
-        return yPoints;
+    public ArrayList<Point> getPoints() {
+        return points;
     }
 
-    public void setxPoints(ArrayList<Double> xPoints) {
-        this.xPoints = xPoints;
+    public ArrayList<Point> getShapesPoints() {
+        return shapesPoints;
     }
 
-    public void setyPoints(ArrayList<Double> yPoints) {
-        this.yPoints = yPoints;
+    public void setShapesPoints(ArrayList<Point> shapesPoints) {
+        this.shapesPoints = shapesPoints;
     }
 
     public Group getGroup() {
@@ -335,8 +344,7 @@ public class Logiciel {
 
     public void setShapeType(ShapeType shapeType) {
         this.shapeType = shapeType;
-        this.xPoints = new ArrayList<>();
-        this.yPoints = new ArrayList<>();
+        this.shapesPoints = new ArrayList<>();
         creating = false;
         currentY = 0;
         currentX = 0;
@@ -369,6 +377,35 @@ public class Logiciel {
         if(!dataBase.getDirectoryByName("cache").containsFile("root.txt")){
             dataBase.getDirectoryByName("cache").createFile("root.txt");
             dataBase.getDirectoryByName("cache").saveInFile("root.txt",dataBase.getLocation()+"\\.logiGraphics");
+        }
+        buildLogo();
+
+    }
+
+    private void buildLogo(){
+
+        if(!dataBase.getDirectoryByName("cache").containsFile("icon.png")){
+
+            Canvas canvas = new Canvas(20,20);
+            GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+            graphicsContext.setFill(LogicielColors.getTopBarColor());
+            graphicsContext.fillRect(0,0,20,20);
+            graphicsContext.setFill(Color.RED);
+            graphicsContext.fillRect(5,5,12,12);
+            graphicsContext.setFill(Color.GREEN);
+            graphicsContext.fillPolygon(new double[]{0.0,10.0,5.0},new double[]{19.0,19.0,7.0},3);
+            graphicsContext.setStroke(Color.BLUE);
+            graphicsContext.strokeOval(12,8,10,10);
+
+            try {
+                WritableImage writableImage = new WritableImage((int) canvas.getWidth(),(int) canvas.getHeight());
+                canvas.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                ImageIO.write(renderedImage, "png", new File(dataBase.getLocation()+"\\.logiGraphics\\cache\\icon.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
     }
@@ -434,11 +471,11 @@ public class Logiciel {
                 break;
 
             case TRIANGLE:
-                logicielStructure.getGraphicsContext().fillPolygon(new double[]{xPoints.get(0),xPoints.get(1),xPoints.get(2)},new double[]{yPoints.get(0),yPoints.get(1),yPoints.get(2)},3);
+                logicielStructure.getGraphicsContext().fillPolygon(new double[]{shapesPoints.get(0).getX(),shapesPoints.get(1).getX(),shapesPoints.get(2).getX()},new double[]{shapesPoints.get(0).getY(),shapesPoints.get(1).getY(),shapesPoints.get(2).getY()},3);
                 break;
 
             case HEXAGON:
-               logicielStructure.getGraphicsContext().fillPolygon(new double[]{xPoints.get(0),xPoints.get(1),xPoints.get(2),xPoints.get(3),xPoints.get(4),xPoints.get(5)},new double[]{yPoints.get(0),yPoints.get(1),yPoints.get(2),yPoints.get(3),yPoints.get(4),yPoints.get(5)},6);
+               logicielStructure.getGraphicsContext().fillPolygon(new double[]{shapesPoints.get(0).getX(),shapesPoints.get(1).getX(),shapesPoints.get(2).getX(),shapesPoints.get(3).getX(),shapesPoints.get(4).getX(),shapesPoints.get(5).getX()},new double[]{shapesPoints.get(0).getY(),shapesPoints.get(1).getY(),shapesPoints.get(2).getY(),shapesPoints.get(3).getY(),shapesPoints.get(4).getY(),shapesPoints.get(5).getY()},6);
                 break;
 
         }

@@ -1,6 +1,5 @@
 package sample.logigraphics.interfaces;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -9,22 +8,23 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sample.logigraphics.Logiciel;
-import sample.logigraphics.creation.Creation;
+import sample.logigraphics.creation.Point;
 import sample.logigraphics.creation.ShapeType;
 import sample.logigraphics.interfaces.bars.LogicielBar;
 import sample.logigraphics.interfaces.bars.RightBar;
+import sample.logigraphics.interfaces.bars.SettingsBar;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LogicielStructure {
 
@@ -33,6 +33,8 @@ public class LogicielStructure {
     Scene scene = new Scene(borderPane, 1650, 900);
 
     LogicielBar logicielBar;
+
+    SettingsBar settingsBar = new SettingsBar(this);
 
     Logiciel logiciel;
 
@@ -59,12 +61,15 @@ public class LogicielStructure {
         buildCanvas();
 
         Group group = new Group();
-        group.getChildren().addAll(canvas,logiciel.getMirrorAxe(),logiciel.getShow().getRectangle(),logiciel.getShow().getCircle(),logiciel.getShow().getLine());
+        group.getChildren().addAll(canvas,logiciel.getMirrorAxe(),logiciel.getIndicator(),logiciel.getShow().getRectangle(),logiciel.getShow().getCircle(),logiciel.getShow().getLine());
+
+        VBox bars = new VBox();
+        bars.getChildren().addAll(logicielBar.get(),settingsBar.get());
 
         borderPane.setMinWidth(scene.getWidth());
         borderPane.setMinHeight(scene.getHeight());
         borderPane.setRight(rightBar.get());
-        borderPane.setTop(logicielBar.get());
+        borderPane.setTop(bars);
         borderPane.setCenter(group);
         borderPane.setLeft(treeBuilder.get());
         borderPane.setBackground(background);
@@ -81,8 +86,41 @@ public class LogicielStructure {
         graphicsContext.fillRect(0,0,canvas.getWidth(),canvas.getHeight());
         graphicsContext.setFill(Color.BLACK);
 
+        loadBackgroundImage();
+
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
+    }
+
+    public void loadBackgroundImage(){
+
+        try {
+
+            File file = null;
+
+            for (File file1 : logiciel.getDataBase().getDirectoryByName("cache").getFiles()) {
+                if (file1.getName().split("\\.")[0].equals("pp")) {
+                    file = file1;
+                }
+            }
+
+            if (file != null) {
+
+                Image img = new Image(new FileInputStream(file));
+                BackgroundImage bImg = new BackgroundImage(
+                        img,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundPosition.CENTER,
+                        BackgroundSize.DEFAULT);
+
+                Background bGround = new Background(bImg);
+                borderPane.setBackground(bGround);
+                canvas.setOpacity(0.5);
+            }
+
+        }catch (FileNotFoundException e){}
+
     }
 
     public void setExtend(boolean extend){
@@ -100,30 +138,28 @@ public class LogicielStructure {
             switch(logiciel.getShapeType()){
 
                 case TRIANGLE:
-                    if(logiciel.getxPoints().size() == 2){
-                        logiciel.getxPoints().add(event.getX());
-                        logiciel.getyPoints().add(event.getY());
+                    if(logiciel.getShapesPoints().size() == 2){
+                        logiciel.getShapesPoints().add(new Point(event.getX(),event.getY()));
                         logiciel.stopCreating();
-                        logiciel.setxPoints(new ArrayList<>());
-                        logiciel.setyPoints(new ArrayList<>());
-
+                        for(Point point : logiciel.getShapesPoints()){
+                            logiciel.getPoints().add(point);
+                        }
+                        logiciel.setShapesPoints(new ArrayList<>());
                     }else{
-                        logiciel.getxPoints().add(event.getX());
-                        logiciel.getyPoints().add(event.getY());
+                        logiciel.getShapesPoints().add(new Point(event.getX(),event.getY()));
                     }
                     break;
 
                 case HEXAGON:
-                    if(logiciel.getxPoints().size() == 6){
-                        logiciel.getxPoints().add(event.getX());
-                        logiciel.getyPoints().add(event.getY());
+                    if(logiciel.getShapesPoints().size() == 6){
+                        logiciel.getShapesPoints().add(new Point(event.getX(),event.getY()));
                         logiciel.stopCreating();
-                        logiciel.setxPoints(new ArrayList<>());
-                        logiciel.setyPoints(new ArrayList<>());
-
+                        for(Point point : logiciel.getShapesPoints()){
+                            logiciel.getPoints().add(point);
+                        }
+                        logiciel.setShapesPoints(new ArrayList<>());
                     }else{
-                        logiciel.getxPoints().add(event.getX());
-                        logiciel.getyPoints().add(event.getY());
+                        logiciel.getShapesPoints().add(new Point(event.getX(),event.getY()));
                     }
                     break;
 
@@ -138,7 +174,7 @@ public class LogicielStructure {
                         logiciel.stopCreating();
                     }
 
-                    if(logiciel.isCreating()){
+                /*    if(logiciel.isCreating()){
                         if(logiciel.getShapeType() == ShapeType.CIRCLE){
                             logiciel.getShow().showCircle(event.getX(),event.getY(),graphicsContext.getStroke());
                         }
@@ -161,7 +197,7 @@ public class LogicielStructure {
                             logiciel.getShow().hideLine();
                         }
 
-                    }
+                    }*/
 
                     break;
 
@@ -172,7 +208,7 @@ public class LogicielStructure {
 
         });
 
-        canvas.setOnMouseMoved(event -> {
+    /*    canvas.setOnMouseMoved(event -> {
 
             if(logiciel.isCreating()) {
 
@@ -212,6 +248,22 @@ public class LogicielStructure {
 
             }
 
+        });*/
+
+        AtomicBoolean pointPLaced = new AtomicBoolean(false);
+
+        canvas.setOnMouseMoved(event -> {
+            pointPLaced.set(false);
+            for(Point point : logiciel.getPoints()){
+                if(point.getX() > event.getX()-1 && point.getX() < event.getX()+1 || point.getY() > event.getY()-1 && point.getY() < event.getY()+1){
+                    logiciel.getIndicator().setStartX(point.getX());
+                    logiciel.getIndicator().setStartY(point.getY());
+                    logiciel.getIndicator().setEndX(event.getX()-1);
+                    logiciel.getIndicator().setEndY(event.getY()-1);
+                    pointPLaced.set(true);
+                }
+            }
+            logiciel.getIndicator().setVisible(pointPLaced.get());
         });
 
         canvas.setOnMousePressed(event -> pressing = true);
@@ -253,7 +305,7 @@ public class LogicielStructure {
 
     public void adaptCanvasSize(){
         canvas.setWidth(scene.getWidth()-380);
-        canvas.setHeight(scene.getHeight()-60);
+        canvas.setHeight(scene.getHeight()-90);
     }
 
     public void setTitle(String title){

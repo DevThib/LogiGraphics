@@ -74,28 +74,25 @@ public class TreeBuilder {
 
         EventHandler<MouseEvent> mouseEventHandle = (MouseEvent event) -> {
 
-            selected = treeView.getSelectionModel().getSelectedItem();
-
-            file = searchFile(selected.getValue(),root);
-
-            if(file != null && !file.isDirectory()){
-                String extension = Debug.getExtension(file);
-
-                if(extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png")){
-                    logicielStructure.getLogiciel().save(false);
-                    logicielStructure.openImage(file);
-                }
-            }else{
-                System.out.println(file == null);
-            }
-
             if(event.getButton().equals(MouseButton.SECONDARY)){
                 contextMenu.show(node,event.getScreenX(),event.getScreenY());
-            }else{
+            }else if(event.getButton().equals(MouseButton.PRIMARY)){
+
+                if(file != null && !file.isDirectory()){
+                    String extension = Debug.getExtension(file);
+
+                    if(extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png")){
+                        logicielStructure.getLogiciel().save(false);
+                        logicielStructure.openImage(file);
+                    }
+                }
+
+                selected = treeView.getSelectionModel().getSelectedItem();
+                file = searchFile(selected.getValue(),root);
+                lastClick = System.currentTimeMillis();
+
                 contextMenu.hide();
             }
-
-            lastClick = System.currentTimeMillis();
         };
 
         treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventHandle);
