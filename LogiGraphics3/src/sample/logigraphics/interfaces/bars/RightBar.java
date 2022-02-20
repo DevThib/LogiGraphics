@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -46,8 +47,8 @@ public class RightBar {
 
     Rectangle indicator = new Rectangle(100,35,Color.BLACK);
 
-    SmallWindow loading = new SmallWindow("Traitement de l'image...");
-    ProgressBar progressBar = new ProgressBar();
+    CheckBox checkBox = new CheckBox("Noir et blanc");
+    Slider slider = new Slider();
 
     public RightBar(LogicielStructure logicielStructure){
         this.logicielStructure = logicielStructure;
@@ -125,19 +126,25 @@ public class RightBar {
         flowPane.setColumnHalignment(HPos.CENTER);
         flowPane.setVgap(15);
 
-        CheckBox checkBox = new CheckBox("Noir et blanc");
-        //une seekbar pour choisir l'assombrissement
         checkBox.setOnAction(event -> {
             if(checkBox.isSelected()){
                 if(logicielStructure.hasImageOpened()) {
-                    CanvasEditor.blackAndWhite(logicielStructure.getCanvas(), logicielStructure.getImageOpened());
-                }else checkBox.setSelected(false);
+                    slider.setVisible(true);
+                    slider.setValue(50);
+                    CanvasEditor.blackAndWhite(logicielStructure.getCanvas(), logicielStructure.getImageOpened(),slider.getValue());
+                }
+            }else{
+                checkBox.setSelected(false);
+                slider.setVisible(false);
             }
         });
         checkBox.setTextFill(Color.WHITE);
         checkBox.setFont(trebuchet);
 
-        flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst("Traitement"),checkBox);
+        slider.setVisible(false);
+        slider.setOnMouseDragged(event -> CanvasEditor.blackAndWhite(logicielStructure.getCanvas(), logicielStructure.getImageOpened(),slider.getValue()));
+
+        flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst("Traitement"),checkBox,slider);
 
         return flowPane;
     }
@@ -560,7 +567,7 @@ public class RightBar {
                 });
                 triangle.setCursor(Cursor.HAND);
 
-                black.getPoints().addAll(2.5,-2.5,28.75,-2.5,16.875,-28.75);
+                black.getPoints().addAll(5.0,-2.5,28.75,-2.5,16.875,-27.75);
                 black.setFill(Color.rgb(60,60,60));
                 black.setOnMouseExited(event -> {
                     if(logicielStructure.getLogiciel().getShapeType() != ShapeType.TRIANGLE){
@@ -725,6 +732,11 @@ public class RightBar {
         modes.setTooltip(new Tooltip("Changer de mode de création"));
 
         return modes;
+    }
+
+    public void unCheckAll(){
+        checkBox.setSelected(false);
+        slider.setVisible(false);
     }
 
 }

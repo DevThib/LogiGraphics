@@ -159,18 +159,6 @@ public class Logiciel {
 
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> save(true));
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)), this::openImage);
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.ADD, KeyCombination.CONTROL_DOWN)), () -> {
-            if(logicielStructure.hasImageOpened()){
-                logicielStructure.getCanvas().setScaleX(logicielStructure.getCanvas().getScaleX()+0.1);
-                logicielStructure.getCanvas().setScaleY(logicielStructure.getCanvas().getScaleY()+0.1);
-            }
-        });
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.SUBTRACT, KeyCombination.CONTROL_DOWN)), () -> {
-            if(logicielStructure.hasImageOpened()){
-                logicielStructure.getCanvas().setScaleX(logicielStructure.getCanvas().getScaleX()-0.1);
-                logicielStructure.getCanvas().setScaleY(logicielStructure.getCanvas().getScaleY()-0.1);
-            }
-        });
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN)), () -> shapeType = ShapeType.PENCIL);
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.ADD, KeyCombination.CONTROL_DOWN)), () -> {
             if(logicielStructure.getGrid().isVisible())logicielStructure.getGrid().setNumberOfLines(logicielStructure.getGrid().getNumberOfLines()+1);
@@ -293,57 +281,6 @@ public class Logiciel {
         return creating;
     }
 
-    /*  public ContextMenu getMenu() {
-
-        ContextMenu menu = new ContextMenu();
-
-        MenuItem fre = new MenuItem("🖱 Libre");
-        fre.setOnAction(event -> {
-            free = true;
-            shapeCreator.stopCreating();
-        });
-
-        MenuItem rectangle = new MenuItem("🟫 Rectangle");
-        rectangle.setOnAction(event -> shapeCreator.setShapeType(ShapeType.RECTANGLE));
-
-        MenuItem unFilledRectangle = new MenuItem("🔳 Rectangle creux");
-        unFilledRectangle.setOnAction(event -> shapeCreator.setShapeType(ShapeType.NONFILLEDRECTANGLE));
-
-
-        MenuItem circle = new MenuItem("⭕ Cercle");
-        circle.setOnAction(event -> shapeCreator.setShapeType(ShapeType.CIRCLE));
-
-        MenuItem nonFilledCircle = new MenuItem("⭕ Cercle creux");
-        nonFilledCircle.setOnAction(event -> shapeCreator.setShapeType(ShapeType.NONFILLEDCIRCLE));
-
-        MenuItem ellipse = new MenuItem("🕳 Ellipse");
-        ellipse.setOnAction(event -> shapeCreator.setShapeType(ShapeType.ELLIPSE));
-
-
-        MenuItem line = new MenuItem("➖ Ligne");
-        line.setOnAction(event -> shapeCreator.setShapeType(ShapeType.LINE));
-
-        MenuItem image = new MenuItem("🖼 Image");
-        image.setOnAction(event -> {
-            try {
-               this.image = new Image(new FileInputStream(projectChooser.openAndGetFile()));
-               shapeCreator.setShapeType(ShapeType.IMAGE);
-            } catch (NullPointerException | FileNotFoundException e) {
-
-            }
-
-        });
-
-        MenuItem txt = new MenuItem("🔢 Texte");
-        txt.setOnAction(event -> shapeCreator.setShapeType(ShapeType.TEXT));
-
-        menu.getItems().addAll(fre,rectangle,unFilledRectangle,circle,nonFilledCircle,ellipse,line,image,txt);
-
-        return menu;
-    }
-
-    */
-
     public boolean isFree() {
         return free;
     }
@@ -366,19 +303,14 @@ public class Logiciel {
 
         if(!dataBase.exists()){
             dataBase.create();
-            dataBase.createDirectories("cache","projects","themes","temporary");
+            dataBase.createDirectories("cache","projects");
             dataBase.getDirectoryByName("cache").createFile("settings.txt");
-            dataBase.getDirectoryByName("cache").createFile("themes.txt");
         }
-        if(!dataBase.containsDirectories("cache","projects","themes")){
-            dataBase.createDirectories("cache","projects","themes");
+        if(!dataBase.containsDirectories("cache","projects")){
+            dataBase.createDirectories("cache","projects");
         }
         if(!dataBase.getDirectoryByName("cache").containsFile("settings.txt")){
             dataBase.getDirectoryByName("cache").createFile("settings.txt");
-        }
-        if(!dataBase.getDirectoryByName("cache").containsFile("theme.txt")){
-            dataBase.getDirectoryByName("cache").createFile("theme.txt");
-            dataBase.getDirectoryByName("cache").saveInFile("theme.txt","light/none");
         }
         if(!dataBase.getDirectoryByName("cache").containsFile("root.txt")){
             dataBase.getDirectoryByName("cache").createFile("root.txt");
@@ -512,10 +444,6 @@ public class Logiciel {
         return dataBase;
     }
 
-    public void changeThemeInDatabase(String theme){
-       
-    }
-
     private void resetText(double x,double y){
         text.setTranslateY(y);
         text.setTranslateX(x);
@@ -584,6 +512,8 @@ public class Logiciel {
             String extension = Debug.getExtension(file);
             if(extension.equalsIgnoreCase("jpg"))logicielStructure.openImage(file);
         }
+
+        logicielStructure.getRightBar().unCheckAll();
 
     }
 }

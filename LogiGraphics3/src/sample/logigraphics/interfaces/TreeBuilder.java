@@ -78,6 +78,10 @@ public class TreeBuilder {
                 contextMenu.show(node,event.getScreenX(),event.getScreenY());
             }else if(event.getButton().equals(MouseButton.PRIMARY)){
 
+                selected = treeView.getSelectionModel().getSelectedItem();
+                lastClick = System.currentTimeMillis();
+                file = searchFile(selected.getValue(),root);
+
                 if(file != null && !file.isDirectory()){
                     String extension = Debug.getExtension(file);
 
@@ -86,11 +90,6 @@ public class TreeBuilder {
                         logicielStructure.openImage(file);
                     }
                 }
-
-                selected = treeView.getSelectionModel().getSelectedItem();
-                file = searchFile(selected.getValue(),root);
-                lastClick = System.currentTimeMillis();
-
                 contextMenu.hide();
             }
         };

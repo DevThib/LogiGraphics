@@ -30,10 +30,10 @@ public class Grid {
         double distanceHeight = canvas.getHeight()/(numberOfLines+1);
 
         for(int i = 1; i <= numberOfLines; i++){
-            canvas.getGraphicsContext2D().fillRect(distanceWidth*i,0,3,canvas.getHeight());
+            canvas.getGraphicsContext2D().fillRect(distanceWidth*i,0,2,canvas.getHeight());
         }
         for(int i = 1; i <= numberOfLines; i++){
-            canvas.getGraphicsContext2D().fillRect(0,distanceHeight*i,canvas.getWidth(),3);
+            canvas.getGraphicsContext2D().fillRect(0,distanceHeight*i,canvas.getWidth(),2);
         }
 
     }
@@ -54,6 +54,7 @@ public class Grid {
     public void setCanvasSize(double width,double height){
         canvas.setHeight(height);
         canvas.setWidth(width);
+        setNumberOfLines(numberOfLines);
     }
 
     public void setOnMouseClicked(EventHandler<MouseEvent> event){

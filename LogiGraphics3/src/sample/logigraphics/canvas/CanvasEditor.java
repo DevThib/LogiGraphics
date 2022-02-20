@@ -1,15 +1,10 @@
 package sample.logigraphics.canvas;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import sample.logigraphics.interfaces.LogicielStructure;
 
-import javax.imageio.ImageIO;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +12,7 @@ import java.io.IOException;
 
 public class CanvasEditor {
 
-    public static void blackAndWhite(Canvas canvas,File image){
+    public static void blackAndWhite(Canvas canvas,File image,double percentage){
 
         try {
 
@@ -52,7 +47,8 @@ public class CanvasEditor {
                     red = (color >> 16) & 0xff;
                     green = (color >> 8) & 0xff;
                     blue = color & 0xff;
-                    grey = (red + blue + green) / 3;
+                    grey = (red + blue + green) / 3 * (percentage/50);
+                    if(grey > 255)grey = 255;
                     canvas.getGraphicsContext2D().setFill(Color.rgb((int) grey, (int) grey, (int) grey));
                     canvas.getGraphicsContext2D().fillRect(a, i, 1, 1);
                 }

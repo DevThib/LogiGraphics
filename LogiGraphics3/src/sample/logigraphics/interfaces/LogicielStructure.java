@@ -26,6 +26,7 @@ import sample.logigraphics.creation.ShapeType;
 import sample.logigraphics.interfaces.bars.LogicielBar;
 import sample.logigraphics.interfaces.bars.RightBar;
 import sample.logigraphics.interfaces.bars.SettingsBar;
+import sample.logigraphics.tools.Glass;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,6 +63,8 @@ public class LogicielStructure {
 
     Grid grid = new Grid();
 
+    Glass glass = new Glass(this);
+
     public LogicielStructure(Logiciel logiciel){
         this.logiciel = logiciel;
         logicielBar = new LogicielBar(this);
@@ -89,6 +92,9 @@ public class LogicielStructure {
         borderPane.setCenter(group);
         borderPane.setLeft(treeBuilder.get());
         borderPane.setBackground(background);
+        borderPane.setOnMouseClicked(event -> {
+            if(event.getButton() == MouseButton.SECONDARY)menu.show(borderPane,event.getScreenX(),event.getScreenY());
+        });
 
         DropShadow ds = new DropShadow();
         ds.setOffsetY(5);
@@ -97,7 +103,6 @@ public class LogicielStructure {
 
         canvas.setEffect(ds);
         canvas.setCursor(Cursor.CROSSHAIR);
-        canvas.setTranslateX(5);
 
         graphicsContext.setFill(Color.WHITE);
         graphicsContext.fillRect(0,0,canvas.getWidth(),canvas.getHeight());
@@ -138,12 +143,8 @@ public class LogicielStructure {
 
     }
 
-    public void setExtend(boolean extend){
-
-    }
-
-    public void changeTheme(){
-        
+    public Glass getGlass() {
+        return glass;
     }
 
     private void buildCanvas(){
@@ -282,6 +283,8 @@ public class LogicielStructure {
                 }
             }
             logiciel.getIndicator().setVisible(pointPLaced.get());
+
+           // if(glass.isActivated())glass.zoom(event.getX(),event.getY());
         });
 
         canvas.setOnMousePressed(event -> pressing = true);
@@ -291,6 +294,8 @@ public class LogicielStructure {
                 graphicsContext.fillRect(event.getX(),event.getY(),5,5);
             }
         });
+        canvas.setOnMouseExited(event -> glass.stopZoom());
+
 
         grid.setOnMouseClicked(event -> {
 
@@ -399,6 +404,10 @@ public class LogicielStructure {
         checkMenuItem.setSelected(false);
         checkMenuItem.setOnAction(event -> grid.setVisible(checkMenuItem.isSelected()));
 
+        CheckMenuItem glass = new CheckMenuItem("🔎 Loupe");
+        glass.setSelected(false);
+        glass.setOnAction(event -> this.glass.setActivated(glass.isSelected()));
+
         menu.getItems().addAll(checkMenuItem);
     }
 
@@ -431,7 +440,7 @@ public class LogicielStructure {
     }
 
     public void adaptCanvasSize(){
-        canvas.setWidth(scene.getWidth()-380);
+        canvas.setWidth(scene.getWidth()-420);
         canvas.setHeight(scene.getHeight()-90);
     }
 
@@ -443,39 +452,18 @@ public class LogicielStructure {
 
         try {
 
-            canvas = new Canvas();
-            adaptCanvasSize();
-            buildCanvas();
-
-            Paint color = this.graphicsContext.getFill();
-            Paint stroke = this.graphicsContext.getStroke();
             Image image1 = new Image(new FileInputStream(image));
 
-            graphicsContext = canvas.getGraphicsContext2D();
-            graphicsContext.setFill(color);
-            graphicsContext.setStroke(stroke);
+            canvas.getGraphicsContext2D().clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+            adaptCanvasSize();
             graphicsContext.drawImage(image1, 0, 0);
-
-            DropShadow ds = new DropShadow();
-            ds.setOffsetY(5);
-            ds.setOffsetX(5);
-            ds.setRadius(10);
-
-            canvas.setEffect(ds);
-            canvas.setCursor(Cursor.CROSSHAIR);
             canvas.setHeight(image1.getHeight());
             canvas.setWidth(image1.getWidth());
-
             grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
-
             setTitle(image.getName());
 
-            borderPane.setCenter(canvas);
-
             imageOpened = image;
-        }catch (FileNotFoundException e){
-            //afficher qu'une erreur s'est produite
-        }
+        }catch (FileNotFoundException e){}
     }
 
     public String getTitle(){
@@ -492,5 +480,9 @@ public class LogicielStructure {
 
     public Grid getGrid() {
         return grid;
+    }
+
+    public RightBar getRightBar() {
+        return rightBar;
     }
 }
