@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -42,6 +43,8 @@ public class SmallWindow {
 
     VBox vBox = new VBox();
 
+    Button cross = new Button();
+
     public SmallWindow(String title){
         this.title = title;
 
@@ -77,7 +80,6 @@ public class SmallWindow {
         flowPane.setMaxWidth(scene.getWidth());
         flowPane.setBackground(grey);
 
-        Button cross = new Button();
         cross.setMinWidth(50);
         cross.setMinHeight(30);
         cross.setMaxHeight(30);
@@ -157,6 +159,10 @@ public class SmallWindow {
 
     public Font getFont() {
         return font;
+    }
+
+    public void setClosable(boolean closable){
+        cross.setVisible(closable);
     }
 
     public void setSpacing(double value){

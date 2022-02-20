@@ -1,13 +1,20 @@
 package sample.logigraphics.interfaces;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -49,7 +56,11 @@ public class LogicielStructure {
 
     File imageOpened;
 
+    ContextMenu menu = new ContextMenu();
+
     boolean pressing = false;
+
+    Grid grid = new Grid();
 
     public LogicielStructure(Logiciel logiciel){
         this.logiciel = logiciel;
@@ -59,12 +70,17 @@ public class LogicielStructure {
 
         adaptCanvasSize();
         buildCanvas();
+        buildMenu();
+
+        grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
+        grid.setNumberOfLines(1);
+        grid.setVisible(false);
 
         Group group = new Group();
-        group.getChildren().addAll(canvas,logiciel.getMirrorAxe(),logiciel.getIndicator(),logiciel.getShow().getRectangle(),logiciel.getShow().getCircle(),logiciel.getShow().getLine());
+        group.getChildren().addAll(canvas,logiciel.getMirrorAxe(),grid.getGrid());
 
         VBox bars = new VBox();
-        bars.getChildren().addAll(logicielBar.get(),settingsBar.get());
+        bars.getChildren().addAll(logicielBar.get());
 
         borderPane.setMinWidth(scene.getWidth());
         borderPane.setMinHeight(scene.getHeight());
@@ -81,45 +97,44 @@ public class LogicielStructure {
 
         canvas.setEffect(ds);
         canvas.setCursor(Cursor.CROSSHAIR);
+        canvas.setTranslateX(5);
 
         graphicsContext.setFill(Color.WHITE);
         graphicsContext.fillRect(0,0,canvas.getWidth(),canvas.getHeight());
         graphicsContext.setFill(Color.BLACK);
 
-        loadBackgroundImage();
+        try {
+            loadBackgroundImage();
+        }catch (FileNotFoundException e){}
 
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
     }
 
-    public void loadBackgroundImage(){
+    public void loadBackgroundImage() throws FileNotFoundException {
 
-        try {
+        File file = null;
 
-            File file = null;
-
-            for (File file1 : logiciel.getDataBase().getDirectoryByName("cache").getFiles()) {
-                if (file1.getName().split("\\.")[0].equals("pp")) {
-                    file = file1;
-                }
+        for (File file1 : logiciel.getDataBase().getDirectoryByName("cache").getFiles()) {
+            if (file1.getName().split("\\.")[0].equals("pp")) {
+                file = file1;
             }
+        }
 
-            if (file != null) {
+        if (file != null) {
 
-                Image img = new Image(new FileInputStream(file));
-                BackgroundImage bImg = new BackgroundImage(
-                        img,
-                        BackgroundRepeat.NO_REPEAT,
-                        BackgroundRepeat.NO_REPEAT,
-                        BackgroundPosition.CENTER,
-                        BackgroundSize.DEFAULT);
+            Image img = new Image(new FileInputStream(file));
+            BackgroundImage bImg = new BackgroundImage(
+                    img,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    BackgroundSize.DEFAULT);
 
-                Background bGround = new Background(bImg);
-                borderPane.setBackground(bGround);
-                canvas.setOpacity(0.5);
-            }
-
-        }catch (FileNotFoundException e){}
+            Background bGround = new Background(bImg);
+            borderPane.setBackground(bGround);
+            canvas.setOpacity(0.5);
+        }
 
     }
 
@@ -133,46 +148,50 @@ public class LogicielStructure {
 
     private void buildCanvas(){
 
+        AtomicBoolean pointPLaced = new AtomicBoolean(false);
+
         canvas.setOnMouseClicked(event -> {
 
-            switch(logiciel.getShapeType()){
+            if(event.getButton() == MouseButton.PRIMARY) {
 
-                case TRIANGLE:
-                    if(logiciel.getShapesPoints().size() == 2){
-                        logiciel.getShapesPoints().add(new Point(event.getX(),event.getY()));
-                        logiciel.stopCreating();
-                        for(Point point : logiciel.getShapesPoints()){
-                            logiciel.getPoints().add(point);
+                switch (logiciel.getShapeType()) {
+
+                    case TRIANGLE:
+                        if (logiciel.getShapesPoints().size() == 2) {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                            logiciel.stopCreating();
+                            for (Point point : logiciel.getShapesPoints()) {
+                                logiciel.getPoints().add(point);
+                            }
+                            logiciel.setShapesPoints(new ArrayList<>());
+                        } else {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
                         }
-                        logiciel.setShapesPoints(new ArrayList<>());
-                    }else{
-                        logiciel.getShapesPoints().add(new Point(event.getX(),event.getY()));
-                    }
-                    break;
+                        break;
 
-                case HEXAGON:
-                    if(logiciel.getShapesPoints().size() == 6){
-                        logiciel.getShapesPoints().add(new Point(event.getX(),event.getY()));
-                        logiciel.stopCreating();
-                        for(Point point : logiciel.getShapesPoints()){
-                            logiciel.getPoints().add(point);
+                    case HEXAGON:
+                        if (logiciel.getShapesPoints().size() == 6) {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                            logiciel.stopCreating();
+                            for (Point point : logiciel.getShapesPoints()) {
+                                logiciel.getPoints().add(point);
+                            }
+                            logiciel.setShapesPoints(new ArrayList<>());
+                        } else {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
                         }
-                        logiciel.setShapesPoints(new ArrayList<>());
-                    }else{
-                        logiciel.getShapesPoints().add(new Point(event.getX(),event.getY()));
-                    }
-                    break;
+                        break;
 
-                default:
-                    if(!logiciel.isCreating()){
-                        logiciel.setStartX(event.getX());
-                        logiciel.setStartY(event.getY());
-                        logiciel.setCreating(true);
-                    }else{
-                        logiciel.setCurrentX(event.getX());
-                        logiciel.setCurrentY(event.getY());
-                        logiciel.stopCreating();
-                    }
+                    default:
+                        if (!logiciel.isCreating()) {
+                            logiciel.setStartX(event.getX());
+                            logiciel.setStartY(event.getY());
+                            logiciel.setCreating(true);
+                        } else {
+                            logiciel.setCurrentX(event.getX());
+                            logiciel.setCurrentY(event.getY());
+                            logiciel.stopCreating();
+                        }
 
                 /*    if(logiciel.isCreating()){
                         if(logiciel.getShapeType() == ShapeType.CIRCLE){
@@ -199,12 +218,13 @@ public class LogicielStructure {
 
                     }*/
 
-                    break;
+                        break;
 
+                }
+
+            }else if(event.getButton() == MouseButton.SECONDARY){
+                menu.show(borderPane,event.getScreenX(),event.getScreenY());
             }
-
-
-
 
         });
 
@@ -250,8 +270,6 @@ public class LogicielStructure {
 
         });*/
 
-        AtomicBoolean pointPLaced = new AtomicBoolean(false);
-
         canvas.setOnMouseMoved(event -> {
             pointPLaced.set(false);
             for(Point point : logiciel.getPoints()){
@@ -273,6 +291,115 @@ public class LogicielStructure {
                 graphicsContext.fillRect(event.getX(),event.getY(),5,5);
             }
         });
+
+        grid.setOnMouseClicked(event -> {
+
+            if(event.getButton() == MouseButton.PRIMARY) {
+
+                switch (logiciel.getShapeType()) {
+
+                    case TRIANGLE:
+                        if (logiciel.getShapesPoints().size() == 2) {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                            logiciel.stopCreating();
+                            for (Point point : logiciel.getShapesPoints()) {
+                                logiciel.getPoints().add(point);
+                            }
+                            logiciel.setShapesPoints(new ArrayList<>());
+                        } else {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                        }
+                        break;
+
+                    case HEXAGON:
+                        if (logiciel.getShapesPoints().size() == 6) {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                            logiciel.stopCreating();
+                            for (Point point : logiciel.getShapesPoints()) {
+                                logiciel.getPoints().add(point);
+                            }
+                            logiciel.setShapesPoints(new ArrayList<>());
+                        } else {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                        }
+                        break;
+
+                    default:
+                        System.out.println("ee");
+                        if (!logiciel.isCreating()) {
+                            logiciel.setStartX(event.getX());
+                            logiciel.setStartY(event.getY());
+                            logiciel.setCreating(true);
+                        } else {
+                            logiciel.setCurrentX(event.getX());
+                            logiciel.setCurrentY(event.getY());
+                            logiciel.stopCreating();
+                        }
+
+                /*    if(logiciel.isCreating()){
+                        if(logiciel.getShapeType() == ShapeType.CIRCLE){
+                            logiciel.getShow().showCircle(event.getX(),event.getY(),graphicsContext.getStroke());
+                        }
+                        if(logiciel.getShapeType() == ShapeType.RECTANGLE){
+                            logiciel.getShow().showRectangle(event.getX(),event.getY(),graphicsContext.getStroke());
+                        }
+                        if(logiciel.getShapeType() == ShapeType.LINE){
+                            logiciel.getShow().showLine(event.getX(),event.getY(),graphicsContext.getStroke());
+                        }
+
+                    }else{
+
+                        if(logiciel.getShapeType() == ShapeType.CIRCLE){
+                            logiciel.getShow().hideCircle();
+                        }
+                        if(logiciel.getShapeType() == ShapeType.RECTANGLE){
+                            logiciel.getShow().hideRectangle();
+                        }
+                        if(logiciel.getShapeType() == ShapeType.LINE){
+                            logiciel.getShow().hideLine();
+                        }
+
+                    }*/
+
+                        break;
+
+                }
+
+            }else if(event.getButton() == MouseButton.SECONDARY){
+                menu.show(borderPane,event.getScreenX(),event.getScreenY());
+            }
+
+        });
+
+        grid.setOnMouseMoved(event -> {
+            pointPLaced.set(false);
+            for(Point point : logiciel.getPoints()){
+                if(point.getX() > event.getX()-1 && point.getX() < event.getX()+1 || point.getY() > event.getY()-1 && point.getY() < event.getY()+1){
+                    logiciel.getIndicator().setStartX(point.getX());
+                    logiciel.getIndicator().setStartY(point.getY());
+                    logiciel.getIndicator().setEndX(event.getX()-1);
+                    logiciel.getIndicator().setEndY(event.getY()-1);
+                    pointPLaced.set(true);
+                }
+            }
+            logiciel.getIndicator().setVisible(pointPLaced.get());
+        });
+
+        grid.setOnMousePressed(event -> pressing = true);
+        grid.setOnMouseReleased(event -> pressing = false);
+        grid.setOnMouseDragged(event -> {
+            if(pressing && logiciel.getShapeType() == ShapeType.PENCIL){
+                graphicsContext.fillRect(event.getX(),event.getY(),5,5);
+            }
+        });
+    }
+
+    private void buildMenu(){
+        CheckMenuItem checkMenuItem = new CheckMenuItem("➕ Grilles");
+        checkMenuItem.setSelected(false);
+        checkMenuItem.setOnAction(event -> grid.setVisible(checkMenuItem.isSelected()));
+
+        menu.getItems().addAll(checkMenuItem);
     }
 
     public Logiciel getLogiciel() {
@@ -339,6 +466,8 @@ public class LogicielStructure {
             canvas.setHeight(image1.getHeight());
             canvas.setWidth(image1.getWidth());
 
+            grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
+
             setTitle(image.getName());
 
             borderPane.setCenter(canvas);
@@ -359,5 +488,9 @@ public class LogicielStructure {
 
     public File getImageOpened() {
         return imageOpened;
+    }
+
+    public Grid getGrid() {
+        return grid;
     }
 }

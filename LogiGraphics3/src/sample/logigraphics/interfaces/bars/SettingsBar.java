@@ -42,6 +42,7 @@ public class SettingsBar {
 
         ImageView save = getButton("https://image.flaticon.com/icons/png/512/93/93643.png", event -> logicielStructure.getLogiciel().save(true));
 
+
         flowPane.getChildren().addAll(settings,save);
 
         return flowPane;

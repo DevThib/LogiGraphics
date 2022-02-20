@@ -172,6 +172,12 @@ public class Logiciel {
             }
         });
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN)), () -> shapeType = ShapeType.PENCIL);
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.ADD, KeyCombination.CONTROL_DOWN)), () -> {
+            if(logicielStructure.getGrid().isVisible())logicielStructure.getGrid().setNumberOfLines(logicielStructure.getGrid().getNumberOfLines()+1);
+        });
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.SUBTRACT, KeyCombination.CONTROL_DOWN)), () -> {
+            if(logicielStructure.getGrid().isVisible() && logicielStructure.getGrid().getNumberOfLines()-1 != 0)logicielStructure.getGrid().setNumberOfLines(logicielStructure.getGrid().getNumberOfLines()-1);
+        });
 
         getScene().setOnKeyPressed(event -> {
 
@@ -360,7 +366,7 @@ public class Logiciel {
 
         if(!dataBase.exists()){
             dataBase.create();
-            dataBase.createDirectories("cache","projects","themes");
+            dataBase.createDirectories("cache","projects","themes","temporary");
             dataBase.getDirectoryByName("cache").createFile("settings.txt");
             dataBase.getDirectoryByName("cache").createFile("themes.txt");
         }
@@ -507,8 +513,7 @@ public class Logiciel {
     }
 
     public void changeThemeInDatabase(String theme){
-       dataBase.getDirectoryByName("cache").removeInFile(dataBase.getDirectoryByName("cache").getFileByName("theme.txt"), dataBase.getDirectoryByName("cache").readLineFile("theme.txt",0));
-       dataBase.getDirectoryByName("cache").saveInFile("theme.txt",theme);
+       
     }
 
     private void resetText(double x,double y){

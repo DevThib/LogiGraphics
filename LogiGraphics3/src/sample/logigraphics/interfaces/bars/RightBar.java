@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -18,9 +19,12 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import sample.logigraphics.canvas.CanvasEditor;
 import sample.logigraphics.creation.Creation;
 import sample.logigraphics.creation.ShapeType;
+import sample.logigraphics.events.Event;
 import sample.logigraphics.interfaces.LogicielStructure;
+import sample.logigraphics.interfaces.ProgressBar;
 import sample.logigraphics.windows.SmallWindow;
 
 public class RightBar {
@@ -41,6 +45,9 @@ public class RightBar {
     SmallWindow smallWindow = new SmallWindow("Sélectionnez une couleur custom");
 
     Rectangle indicator = new Rectangle(100,35,Color.BLACK);
+
+    SmallWindow loading = new SmallWindow("Traitement de l'image...");
+    ProgressBar progressBar = new ProgressBar();
 
     public RightBar(LogicielStructure logicielStructure){
         this.logicielStructure = logicielStructure;
@@ -71,10 +78,10 @@ public class RightBar {
         return principal;
     }
 
-    public FlowPane getButtons(){
+    private FlowPane getButtons(){
 
         FlowPane cre = getCreation();
-        FlowPane ma = new FlowPane();
+        FlowPane treat = getTreat();
 
         FlowPane flowPane = new FlowPane();
         flowPane.setOrientation(Orientation.VERTICAL);
@@ -95,12 +102,42 @@ public class RightBar {
         maths.setOnMouseClicked(event -> {
             maths.setFill(backgroundC);
             creation.setFill(choiceC);
-            principal.getChildren().set(1,ma);
+            principal.getChildren().set(1,treat);
         });
         maths.setFill(choiceC);
         maths.setTranslateX(10);
 
         flowPane.getChildren().addAll(creation,maths);
+
+        return flowPane;
+    }
+
+    public FlowPane getTreat(){
+
+        FlowPane flowPane = new FlowPane();
+
+        flowPane.setMinWidth(170);
+        flowPane.setMaxWidth(170);
+        flowPane.setMinHeight(8000);
+        flowPane.setBackground(background);
+        flowPane.setOrientation(Orientation.VERTICAL);
+        flowPane.setAlignment(Pos.TOP_CENTER);
+        flowPane.setColumnHalignment(HPos.CENTER);
+        flowPane.setVgap(15);
+
+        CheckBox checkBox = new CheckBox("Noir et blanc");
+        //une seekbar pour choisir l'assombrissement
+        checkBox.setOnAction(event -> {
+            if(checkBox.isSelected()){
+                if(logicielStructure.hasImageOpened()) {
+                    CanvasEditor.blackAndWhite(logicielStructure.getCanvas(), logicielStructure.getImageOpened());
+                }else checkBox.setSelected(false);
+            }
+        });
+        checkBox.setTextFill(Color.WHITE);
+        checkBox.setFont(trebuchet);
+
+        flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst("Traitement"),checkBox);
 
         return flowPane;
     }
@@ -117,7 +154,7 @@ public class RightBar {
         flowPane.setAlignment(Pos.TOP_CENTER);
         flowPane.setColumnHalignment(HPos.CENTER);
         flowPane.setVgap(15);
-        flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst(),getChoiceSelector(),getSeparator(),getColorSelector(),getSeparator(),getFunctionSelector());
+        flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst("Création"),getChoiceSelector(),getSeparator(),getColorSelector(),getSeparator(),getFunctionSelector());
 
         return flowPane;
     }
@@ -128,12 +165,12 @@ public class RightBar {
         return rectangle;
     }
 
-    private VBox getFirst(){
+    private VBox getFirst(String text){
 
         VBox first = new VBox(10);
         first.setAlignment(Pos.CENTER);
 
-        Label title = new Label("Création");
+        Label title = new Label(text);
         title.setTextFill(Color.WHITE);
         title.setFont(trebuchet);
 
