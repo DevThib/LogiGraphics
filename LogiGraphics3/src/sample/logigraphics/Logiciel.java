@@ -1,12 +1,14 @@
 package sample.logigraphics;
 
 import fr.devthib.databaseapi.Location;
+import javafx.animation.FadeTransition;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -21,8 +23,10 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import sample.logigraphics.creation.*;
 import sample.logigraphics.interfaces.LogicielColors;
 import sample.logigraphics.interfaces.LogicielStructure;
@@ -33,6 +37,7 @@ import sample.logigraphics.projects.ProjectChooser;
 import sample.logigraphics.stuff.Debug;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,7 +71,8 @@ public class Logiciel {
 
     Show show = new Show();
 
-    //Pour le truc a gauche,un tree de dossiers comme intellij pour ouvrir les projets
+    boolean treating = false;
+
     //Faire de LogiGraphics un paint très mathématique : genre créer des tangentes aux cercles etc...
     //Une système pour changer l'hexagone,on demande un nombre de cotés spécifiques et c'est calculer mathématiquement
     //la barre a droite on peut ouvrir différents onglets,un pour la création,un pour les fonctiones etc...
@@ -112,9 +118,7 @@ public class Logiciel {
     double startX;
     double startY;
 
-
     ArrayList<Point> shapesPoints = new ArrayList<>();
-
     ArrayList<Point> points = new ArrayList<>();
 
     public Logiciel() {
@@ -160,6 +164,10 @@ public class Logiciel {
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> save(true));
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)), this::openImage);
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN)), () -> shapeType = ShapeType.PENCIL);
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), () -> {
+            Logiciel l = new Logiciel();
+            l.start();
+        } );
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.ADD, KeyCombination.CONTROL_DOWN)), () -> {
             if(logicielStructure.getGrid().isVisible())logicielStructure.getGrid().setNumberOfLines(logicielStructure.getGrid().getNumberOfLines()+1);
         });
@@ -268,6 +276,14 @@ public class Logiciel {
         logicielStructure.getGraphicsContext().setStroke(selectedColor);
     }
 
+    public boolean isTreating() {
+        return treating;
+    }
+
+    public void setTreating(boolean treating) {
+        this.treating = treating;
+    }
+
     public ShapeType getShapeType() {
         return shapeType;
     }
@@ -303,10 +319,10 @@ public class Logiciel {
 
         if(!dataBase.exists()){
             dataBase.create();
-            dataBase.createDirectories("cache","projects");
+            dataBase.createDirectories("cache","projects","temporary");
             dataBase.getDirectoryByName("cache").createFile("settings.txt");
         }
-        if(!dataBase.containsDirectories("cache","projects")){
+        if(!dataBase.containsDirectories("cache","projects","temporary")){
             dataBase.createDirectories("cache","projects");
         }
         if(!dataBase.getDirectoryByName("cache").containsFile("settings.txt")){
@@ -457,8 +473,9 @@ public class Logiciel {
     public void save(boolean volunteer){
 
         if(directoryToSave == null && volunteer){
+
             FileChooser savefile = new FileChooser();
-            savefile.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image (*JPG)", "*.jpg"));
+            savefile.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image (*PNG)", "*.png"));
             savefile.setInitialFileName(logicielStructure.getTitle());
             if(logicielStructure.hasImageOpened()){
 
@@ -473,10 +490,9 @@ public class Logiciel {
             directoryToSave = savefile.showSaveDialog(new Stage());
             if (directoryToSave != null) {
                 try {
-
                     WritableImage writableImage = new WritableImage((int) logicielStructure.getCanvas().getWidth(),(int) logicielStructure.getCanvas().getHeight());
                     logicielStructure.getCanvas().snapshot(null, writableImage);
-                    RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                    RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage,null);
                     ImageIO.write(renderedImage, "png", directoryToSave);
                     logicielStructure.setTitle(directoryToSave.getName());
                 } catch (IOException ex) {
@@ -487,10 +503,12 @@ public class Logiciel {
         }else{
             if(directoryToSave != null) {
                 try {
+
                     WritableImage writableImage = new WritableImage((int) logicielStructure.getCanvas().getWidth(), (int) logicielStructure.getCanvas().getHeight());
                     logicielStructure.getCanvas().snapshot(null, writableImage);
                     RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
                     ImageIO.write(renderedImage, "png", directoryToSave);
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

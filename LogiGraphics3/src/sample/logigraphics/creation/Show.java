@@ -26,7 +26,6 @@ public class Show {
         line.setVisible(false);
     }
 
-
     public void showRectangle(double x, double y, Paint color){
         rectangle.setY(y);
         rectangle.setX(x);
@@ -46,6 +45,8 @@ public class Show {
     public void showLine(double x, double y, Paint color){
         line.setStartY(y);
         line.setStartX(x);
+        line.setEndY(y);
+        line.setEndX(x);
         line.setFill(color);
         line.setVisible(true);
     }

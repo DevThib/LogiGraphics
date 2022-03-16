@@ -1,5 +1,6 @@
 package sample.logigraphics.interfaces;
 
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -13,16 +14,19 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import sample.logigraphics.Logiciel;
 import sample.logigraphics.creation.Point;
 import sample.logigraphics.creation.ShapeType;
+import sample.logigraphics.creation.Show;
 import sample.logigraphics.interfaces.bars.LogicielBar;
 import sample.logigraphics.interfaces.bars.RightBar;
 import sample.logigraphics.interfaces.bars.SettingsBar;
@@ -65,6 +69,8 @@ public class LogicielStructure {
 
     Glass glass = new Glass(this);
 
+    Show show = new Show();
+
     public LogicielStructure(Logiciel logiciel){
         this.logiciel = logiciel;
         logicielBar = new LogicielBar(this);
@@ -81,9 +87,10 @@ public class LogicielStructure {
 
         Group group = new Group();
         group.getChildren().addAll(canvas,logiciel.getMirrorAxe(),grid.getGrid());
+        group.getChildren().addAll(logiciel.getShow().getRectangle(),logiciel.getShow().getLine(),logiciel.getShow().getCircle());
 
         VBox bars = new VBox();
-        bars.getChildren().addAll(logicielBar.get());
+        bars.getChildren().addAll(logicielBar.get(), settingsBar.get());
 
         borderPane.setMinWidth(scene.getWidth());
         borderPane.setMinHeight(scene.getHeight());
@@ -114,6 +121,13 @@ public class LogicielStructure {
 
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.7),borderPane);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.setCycleCount(1);
+
+        stage.setOnShowing(event -> fadeIn.play());
     }
 
     public void loadBackgroundImage() throws FileNotFoundException {
@@ -145,6 +159,10 @@ public class LogicielStructure {
 
     public Glass getGlass() {
         return glass;
+    }
+
+    public SettingsBar getSettingsBar() {
+        return settingsBar;
     }
 
     private void buildCanvas(){
@@ -194,19 +212,17 @@ public class LogicielStructure {
                             logiciel.stopCreating();
                         }
 
-                /*    if(logiciel.isCreating()){
+                    if(logiciel.isCreating()){
                         if(logiciel.getShapeType() == ShapeType.CIRCLE){
-                            logiciel.getShow().showCircle(event.getX(),event.getY(),graphicsContext.getStroke());
+                            logiciel.getShow().showCircle(event.getX(),event.getY(),graphicsContext.getFill());
                         }
                         if(logiciel.getShapeType() == ShapeType.RECTANGLE){
-                            logiciel.getShow().showRectangle(event.getX(),event.getY(),graphicsContext.getStroke());
+                            logiciel.getShow().showRectangle(event.getX(),event.getY(),graphicsContext.getFill());
                         }
                         if(logiciel.getShapeType() == ShapeType.LINE){
-                            logiciel.getShow().showLine(event.getX(),event.getY(),graphicsContext.getStroke());
+                            logiciel.getShow().showLine(event.getX(),event.getY(),graphicsContext.getFill());
                         }
-
                     }else{
-
                         if(logiciel.getShapeType() == ShapeType.CIRCLE){
                             logiciel.getShow().hideCircle();
                         }
@@ -216,8 +232,7 @@ public class LogicielStructure {
                         if(logiciel.getShapeType() == ShapeType.LINE){
                             logiciel.getShow().hideLine();
                         }
-
-                    }*/
+                    }
 
                         break;
 
@@ -229,7 +244,7 @@ public class LogicielStructure {
 
         });
 
-    /*    canvas.setOnMouseMoved(event -> {
+        canvas.setOnMouseMoved(event -> {
 
             if(logiciel.isCreating()) {
 
@@ -237,7 +252,7 @@ public class LogicielStructure {
 
                     case RECTANGLE:
 
-                        if(event.getX() < logiciel.getShow().getRectangle().getX() && event.getY() < logiciel.getShow().getRectangle().getY()){
+                     /*   if(event.getX() < logiciel.getShow().getRectangle().getX() && event.getY() < logiciel.getShow().getRectangle().getY()){
                             logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
                             logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getRectangle().getY()-event.getY());
                         }else if(event.getX() < logiciel.getShow().getRectangle().getX() && event.getY() > logiciel.getShow().getRectangle().getY()){
@@ -246,10 +261,34 @@ public class LogicielStructure {
                         }else if(event.getX() > logiciel.getShow().getRectangle().getX() && event.getY() < logiciel.getShow().getRectangle().getY()){
                             logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
                             logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getRectangle().getY()-event.getY());
+                        }else if(event.getX() > logiciel.getShow().getRectangle().getX() && event.getY() > logiciel.getShow().getRectangle().getY()){
+                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
+                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getRectangle().getY());
                         }else{
                             logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
                             logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getRectangle().getY());
                         }
+
+                      */
+                        if(event.getX() < logiciel.getShow().getInitialX() && event.getY() < logiciel.getShow().getInitialY()){
+                            logiciel.getShow().getRectangle().setX(event.getX());
+                            logiciel.getShow().getRectangle().setY(event.getY());
+                            logiciel.getShow().getRectangle().setWidth(logiciel.getShow().getInitialX()-event.getX());
+                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getInitialY()-event.getY());
+                        }else if(event.getX() < logiciel.getShow().getInitialX() && event.getY() > logiciel.getShow().getInitialY()){
+                            logiciel.getShow().getRectangle().setX(event.getX());
+                            logiciel.getShow().getRectangle().setWidth(logiciel.getShow().getInitialX()-event.getX());
+                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getInitialY());
+                        }else if(event.getX() > logiciel.getShow().getInitialX() && event.getY() < logiciel.getShow().getInitialY()){
+                            logiciel.getShow().getRectangle().setY(event.getY());
+                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getInitialY()-event.getY());
+                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getInitialX());
+                        }else{
+                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getInitialX());
+                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getInitialY());
+                        }
+
+
                         break;
 
                     case CIRCLE:
@@ -269,9 +308,6 @@ public class LogicielStructure {
 
             }
 
-        });*/
-
-        canvas.setOnMouseMoved(event -> {
             pointPLaced.set(false);
             for(Point point : logiciel.getPoints()){
                 if(point.getX() > event.getX()-1 && point.getX() < event.getX()+1 || point.getY() > event.getY()-1 && point.getY() < event.getY()+1){
@@ -284,7 +320,6 @@ public class LogicielStructure {
             }
             logiciel.getIndicator().setVisible(pointPLaced.get());
 
-           // if(glass.isActivated())glass.zoom(event.getX(),event.getY());
         });
 
         canvas.setOnMousePressed(event -> pressing = true);
@@ -296,6 +331,12 @@ public class LogicielStructure {
         });
         canvas.setOnMouseExited(event -> glass.stopZoom());
 
+        scene.setOnDragOver(event -> event.acceptTransferModes(TransferMode.COPY_OR_MOVE));
+        scene.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            File file = db.getFiles().get(0);
+            if(file.isDirectory()) treeBuilder.setDirectory(file); else openImage(file);
+        });
 
         grid.setOnMouseClicked(event -> {
 
@@ -461,9 +502,21 @@ public class LogicielStructure {
             canvas.setWidth(image1.getWidth());
             grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
             setTitle(image.getName());
+            rightBar.unCheckAll();
 
             imageOpened = image;
         }catch (FileNotFoundException e){}
+    }
+
+    public void openNewPaper(){
+        logiciel.save(true);
+        adaptCanvasSize();
+        logicielBar.setTitle("Nouveau projet");
+        canvas.getGraphicsContext2D().setFill(Color.WHITE);
+        canvas.getGraphicsContext2D().clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+        canvas.getGraphicsContext2D().fillRect(0,0,canvas.getWidth(),canvas.getHeight());
+        canvas.getGraphicsContext2D().setFill(rightBar.getIndicator().getFill());
+        grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
     }
 
     public String getTitle(){

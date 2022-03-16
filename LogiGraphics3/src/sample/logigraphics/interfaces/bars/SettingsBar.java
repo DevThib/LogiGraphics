@@ -5,13 +5,14 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import sample.logigraphics.interfaces.LogicielColors;
 import sample.logigraphics.interfaces.LogicielStructure;
 
@@ -21,45 +22,49 @@ public class SettingsBar {
 
     Background grey = new Background(new BackgroundFill(LogicielColors.getTopBarColor(),new CornerRadii(0),new Insets(0)));
 
+    Font trebuchet = new Font("Trebuchet MS",20);
+
+    FlowPane flowPane = new FlowPane();
+
     public SettingsBar(LogicielStructure logicielStructure){
         this.logicielStructure = logicielStructure;
     }
 
     public FlowPane get(){
 
-        FlowPane flowPane = new FlowPane();
         flowPane.setMinHeight(30);
         flowPane.setMinWidth(logicielStructure.getScene().getWidth());
         flowPane.setMaxHeight(30);
         flowPane.setMaxWidth(logicielStructure.getScene().getWidth());
         flowPane.setBackground(grey);
-        flowPane.setHgap(5);
+        flowPane.setHgap(10);
         flowPane.setAlignment(Pos.CENTER_LEFT);
 
-        ImageView settings = getButton("https://image.flaticon.com/icons/png/512/93/93643.png", event -> {
+        Rectangle sepa = new Rectangle(0,0);
+        sepa.setFill(Color.TRANSPARENT);
 
-        });
+        Label save = getButton("💾", event -> logicielStructure.getLogiciel().save(true));
+        Label create = getButton("📝", event -> logicielStructure.openNewPaper());
 
-        ImageView save = getButton("https://image.flaticon.com/icons/png/512/93/93643.png", event -> logicielStructure.getLogiciel().save(true));
-
-
-        flowPane.getChildren().addAll(settings,save);
+        flowPane.getChildren().addAll(sepa,save,create);
 
         return flowPane;
     }
 
-    private ImageView getButton(String url, EventHandler<MouseEvent> event){
-        Image image = new Image(url);
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-        imageView.setOnMouseClicked(event);
-        imageView.setOnMouseEntered(event1 -> imageView.setOpacity(0.5));
-        imageView.setOnMouseExited(event1 -> imageView.setOpacity(1));
-        return imageView;
+    private Label getButton(String text,EventHandler<MouseEvent> event){
+        Label label = new Label(text);
+        label.setFont(trebuchet);
+        label.setTextFill(Color.WHITE);
+        label.setOnMouseClicked(event);
+        label.setOnMouseEntered(event1 -> label.setTextFill(Color.GREY));
+        label.setOnMouseExited(event1 -> label.setTextFill(Color.WHITE));
+
+        return label;
     }
 
-
+    public void adapt(double width){
+        flowPane.setMinWidth(width);
+    }
 
 
 }

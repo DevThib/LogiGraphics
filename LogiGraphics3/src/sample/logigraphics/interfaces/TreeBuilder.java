@@ -76,7 +76,7 @@ public class TreeBuilder {
 
             if(event.getButton().equals(MouseButton.SECONDARY)){
                 contextMenu.show(node,event.getScreenX(),event.getScreenY());
-            }else if(event.getButton().equals(MouseButton.PRIMARY)){
+            }else if(event.getButton().equals(MouseButton.PRIMARY) && !logicielStructure.getLogiciel().isTreating()){
 
                 selected = treeView.getSelectionModel().getSelectedItem();
                 lastClick = System.currentTimeMillis();
