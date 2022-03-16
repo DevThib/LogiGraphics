@@ -60,6 +60,10 @@ public class RightBar {
 
     DropShadow dropShadow = new DropShadow(2,Color.GREY);
 
+    FlowPane cre = getCreation();
+    FlowPane treat = getTreat();
+    FlowPane cha = getCharts();
+
     public RightBar(LogicielStructure logicielStructure){
         this.logicielStructure = logicielStructure;
 
@@ -83,8 +87,7 @@ public class RightBar {
 
         principal.setMinWidth(200);
         principal.setMaxWidth(200);
-
-        principal.getChildren().addAll(getButtons(),getCreation());
+        principal.getChildren().addAll(getButtons(),cre);
 
         return principal;
     }
@@ -92,10 +95,6 @@ public class RightBar {
     private FlowPane getButtons(){
 
         Color c = Color.rgb(30,30,30);
-
-        FlowPane cre = getCreation();
-        FlowPane treat = getTreat();
-        FlowPane cha = getCharts();
 
         FlowPane flowPane = new FlowPane();
         flowPane.setOrientation(Orientation.VERTICAL);
