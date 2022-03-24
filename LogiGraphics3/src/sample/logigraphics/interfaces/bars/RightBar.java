@@ -1,6 +1,5 @@
 package sample.logigraphics.interfaces.bars;
 
-import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -9,12 +8,8 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -22,15 +17,17 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
 import sample.logigraphics.canvas.CanvasEditor;
+import sample.logigraphics.charts.PieChart;
 import sample.logigraphics.creation.Creation;
 import sample.logigraphics.creation.ShapeType;
-import sample.logigraphics.events.Event;
 import sample.logigraphics.interfaces.LogicielColors;
 import sample.logigraphics.interfaces.LogicielStructure;
-import sample.logigraphics.interfaces.ProgressBar;
+import sample.logigraphics.windows.ChartWindow;
+import sample.logigraphics.windows.ColorWindow;
 import sample.logigraphics.windows.SmallWindow;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RightBar {
 
@@ -47,8 +44,6 @@ public class RightBar {
 
     LogicielStructure logicielStructure;
 
-    SmallWindow smallWindow = new SmallWindow("Sélectionnez une couleur custom");
-
     Rectangle indicator = new Rectangle(100,35,Color.BLACK);
 
     CheckBox checkBox = new CheckBox("Noir et blanc");
@@ -64,31 +59,30 @@ public class RightBar {
     FlowPane treat = getTreat();
     FlowPane cha = getCharts();
 
+    PieChart pieChart;
+
+    ColorWindow colorWindow;
+    ChartWindow chartWindow;
+
     public RightBar(LogicielStructure logicielStructure){
         this.logicielStructure = logicielStructure;
 
-        ColorPicker colorPicker = new ColorPicker();
-        Button button = smallWindow.getStyliziedButton("OK");
-        button.setOnAction(event -> {
-            logicielStructure.getGraphicsContext().setStroke(colorPicker.getValue());
-            logicielStructure.getGraphicsContext().setFill(colorPicker.getValue());
-            indicator.setFill(colorPicker.getValue());
-            smallWindow.close();
-        });
+        pieChart = new PieChart(2);
 
-        smallWindow.setSpacing(10);
-        smallWindow.add(colorPicker);
-        smallWindow.add(button);
+        colorWindow = new ColorWindow(logicielStructure,indicator);
+        chartWindow = new ChartWindow(logicielStructure,pieChart);
 
         indicator.setCursor(Cursor.HAND);
     }
 
-    public FlowPane get(){
+    public ChartWindow getChartWindow() {
+        return chartWindow;
+    }
 
+    public FlowPane get(){
         principal.setMinWidth(200);
         principal.setMaxWidth(200);
         principal.getChildren().addAll(getButtons(),cre);
-
         return principal;
     }
 
@@ -243,12 +237,9 @@ public class RightBar {
         flowPane.setVgap(15);
 
         Button pie = getButton("Rond", event -> {
-            //générer le pie chart
+            pieChart.init();
+            chartWindow.show();
         });
-
-
-
-
 
         flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst("Graphiques"),pie);
 
@@ -683,7 +674,7 @@ public class RightBar {
 
     private VBox getColorSelector(){
 
-        indicator.setOnMouseClicked(event -> smallWindow.show());
+        indicator.setOnMouseClicked(event -> colorWindow.show());
 
         VBox vBox = new VBox();
         vBox.setMinWidth(160);
@@ -837,8 +828,14 @@ public class RightBar {
         button.setTextFill(Color.WHITE);
         button.setFont(trebuchet);
         button.setBackground(new Background(new BackgroundFill(LogicielColors.getBackgroundColor(),new CornerRadii(0),new Insets(0))));
-        button.setOnMouseEntered(event -> button.setEffect(dropShadow));
-        button.setOnMouseExited(event -> button.setEffect(null));
+        button.setOnMouseEntered(event -> {
+            button.setEffect(dropShadow);
+            button.setTextFill(Color.BLACK);
+        });
+        button.setOnMouseExited(event -> {
+            button.setEffect(null);
+            button.setTextFill(Color.WHITE);
+        });
         button.setOnAction(ev);
         return button;
     }

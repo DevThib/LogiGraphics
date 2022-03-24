@@ -12,18 +12,21 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import sample.logigraphics.Logiciel;
+import sample.logigraphics.charts.PieChart;
 import sample.logigraphics.creation.Point;
 import sample.logigraphics.creation.ShapeType;
 import sample.logigraphics.creation.Show;
@@ -31,11 +34,14 @@ import sample.logigraphics.interfaces.bars.LogicielBar;
 import sample.logigraphics.interfaces.bars.RightBar;
 import sample.logigraphics.interfaces.bars.SettingsBar;
 import sample.logigraphics.tools.Glass;
+import sample.logigraphics.windows.ChartWindow;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LogicielStructure {
@@ -71,6 +77,12 @@ public class LogicielStructure {
 
     Show show = new Show();
 
+    TextField textField = new TextField();
+
+    Group group = new Group();
+
+    AtomicBoolean pointPLaced = new AtomicBoolean(false);
+
     public LogicielStructure(Logiciel logiciel){
         this.logiciel = logiciel;
         logicielBar = new LogicielBar(this);
@@ -79,13 +91,14 @@ public class LogicielStructure {
 
         adaptCanvasSize();
         buildCanvas();
+        buildScene();
+        buildGrid();
         buildMenu();
 
         grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
         grid.setNumberOfLines(1);
         grid.setVisible(false);
 
-        Group group = new Group();
         group.getChildren().addAll(canvas,logiciel.getMirrorAxe(),grid.getGrid());
         group.getChildren().addAll(logiciel.getShow().getRectangle(),logiciel.getShow().getLine(),logiciel.getShow().getCircle());
 
@@ -102,14 +115,6 @@ public class LogicielStructure {
         borderPane.setOnMouseClicked(event -> {
             if(event.getButton() == MouseButton.SECONDARY)menu.show(borderPane,event.getScreenX(),event.getScreenY());
         });
-
-        DropShadow ds = new DropShadow();
-        ds.setOffsetY(5);
-        ds.setOffsetX(5);
-        ds.setRadius(10);
-
-        canvas.setEffect(ds);
-        canvas.setCursor(Cursor.CROSSHAIR);
 
         graphicsContext.setFill(Color.WHITE);
         graphicsContext.fillRect(0,0,canvas.getWidth(),canvas.getHeight());
@@ -165,179 +170,16 @@ public class LogicielStructure {
         return settingsBar;
     }
 
-    private void buildCanvas(){
-
-        AtomicBoolean pointPLaced = new AtomicBoolean(false);
-
-        canvas.setOnMouseClicked(event -> {
-
-            if(event.getButton() == MouseButton.PRIMARY) {
-
-                switch (logiciel.getShapeType()) {
-
-                    case TRIANGLE:
-                        if (logiciel.getShapesPoints().size() == 2) {
-                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
-                            logiciel.stopCreating();
-                            for (Point point : logiciel.getShapesPoints()) {
-                                logiciel.getPoints().add(point);
-                            }
-                            logiciel.setShapesPoints(new ArrayList<>());
-                        } else {
-                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
-                        }
-                        break;
-
-                    case HEXAGON:
-                        if (logiciel.getShapesPoints().size() == 6) {
-                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
-                            logiciel.stopCreating();
-                            for (Point point : logiciel.getShapesPoints()) {
-                                logiciel.getPoints().add(point);
-                            }
-                            logiciel.setShapesPoints(new ArrayList<>());
-                        } else {
-                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
-                        }
-                        break;
-
-                    default:
-                        if (!logiciel.isCreating()) {
-                            logiciel.setStartX(event.getX());
-                            logiciel.setStartY(event.getY());
-                            logiciel.setCreating(true);
-                        } else {
-                            logiciel.setCurrentX(event.getX());
-                            logiciel.setCurrentY(event.getY());
-                            logiciel.stopCreating();
-                        }
-
-                    if(logiciel.isCreating()){
-                        if(logiciel.getShapeType() == ShapeType.CIRCLE){
-                            logiciel.getShow().showCircle(event.getX(),event.getY(),graphicsContext.getFill());
-                        }
-                        if(logiciel.getShapeType() == ShapeType.RECTANGLE){
-                            logiciel.getShow().showRectangle(event.getX(),event.getY(),graphicsContext.getFill());
-                        }
-                        if(logiciel.getShapeType() == ShapeType.LINE){
-                            logiciel.getShow().showLine(event.getX(),event.getY(),graphicsContext.getFill());
-                        }
-                    }else{
-                        if(logiciel.getShapeType() == ShapeType.CIRCLE){
-                            logiciel.getShow().hideCircle();
-                        }
-                        if(logiciel.getShapeType() == ShapeType.RECTANGLE){
-                            logiciel.getShow().hideRectangle();
-                        }
-                        if(logiciel.getShapeType() == ShapeType.LINE){
-                            logiciel.getShow().hideLine();
-                        }
-                    }
-
-                        break;
-
-                }
-
-            }else if(event.getButton() == MouseButton.SECONDARY){
-                menu.show(borderPane,event.getScreenX(),event.getScreenY());
-            }
-
-        });
-
-        canvas.setOnMouseMoved(event -> {
-
-            if(logiciel.isCreating()) {
-
-                switch (logiciel.getShapeType()) {
-
-                    case RECTANGLE:
-
-                     /*   if(event.getX() < logiciel.getShow().getRectangle().getX() && event.getY() < logiciel.getShow().getRectangle().getY()){
-                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
-                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getRectangle().getY()-event.getY());
-                        }else if(event.getX() < logiciel.getShow().getRectangle().getX() && event.getY() > logiciel.getShow().getRectangle().getY()){
-                            logiciel.getShow().getRectangle().setWidth(logiciel.getShow().getRectangle().getX()-event.getX());
-                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getRectangle().getY());
-                        }else if(event.getX() > logiciel.getShow().getRectangle().getX() && event.getY() < logiciel.getShow().getRectangle().getY()){
-                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
-                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getRectangle().getY()-event.getY());
-                        }else if(event.getX() > logiciel.getShow().getRectangle().getX() && event.getY() > logiciel.getShow().getRectangle().getY()){
-                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
-                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getRectangle().getY());
-                        }else{
-                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getRectangle().getX());
-                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getRectangle().getY());
-                        }
-
-                      */
-                        if(event.getX() < logiciel.getShow().getInitialX() && event.getY() < logiciel.getShow().getInitialY()){
-                            logiciel.getShow().getRectangle().setX(event.getX());
-                            logiciel.getShow().getRectangle().setY(event.getY());
-                            logiciel.getShow().getRectangle().setWidth(logiciel.getShow().getInitialX()-event.getX());
-                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getInitialY()-event.getY());
-                        }else if(event.getX() < logiciel.getShow().getInitialX() && event.getY() > logiciel.getShow().getInitialY()){
-                            logiciel.getShow().getRectangle().setX(event.getX());
-                            logiciel.getShow().getRectangle().setWidth(logiciel.getShow().getInitialX()-event.getX());
-                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getInitialY());
-                        }else if(event.getX() > logiciel.getShow().getInitialX() && event.getY() < logiciel.getShow().getInitialY()){
-                            logiciel.getShow().getRectangle().setY(event.getY());
-                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getInitialY()-event.getY());
-                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getInitialX());
-                        }else{
-                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getInitialX());
-                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getInitialY());
-                        }
-
-
-                        break;
-
-                    case CIRCLE:
-                        if((event.getY() - logiciel.getShow().getCircle().getCenterY()) > (event.getX() - logiciel.getShow().getCircle().getCenterX())){
-                            logiciel.getShow().getCircle().setRadius(Math.abs(event.getY()-logiciel.getShow().getCircle().getCenterY()));
-                        }else{
-                            logiciel.getShow().getCircle().setRadius(Math.abs(event.getX()-logiciel.getShow().getCircle().getCenterX()));
-                        }
-                        break;
-
-                    case LINE:
-                        logiciel.getShow().getLine().setEndY(event.getY()-1);
-                        logiciel.getShow().getLine().setEndX(event.getX()-1);
-                        break;
-
-                }
-
-            }
-
-            pointPLaced.set(false);
-            for(Point point : logiciel.getPoints()){
-                if(point.getX() > event.getX()-1 && point.getX() < event.getX()+1 || point.getY() > event.getY()-1 && point.getY() < event.getY()+1){
-                    logiciel.getIndicator().setStartX(point.getX());
-                    logiciel.getIndicator().setStartY(point.getY());
-                    logiciel.getIndicator().setEndX(event.getX()-1);
-                    logiciel.getIndicator().setEndY(event.getY()-1);
-                    pointPLaced.set(true);
-                }
-            }
-            logiciel.getIndicator().setVisible(pointPLaced.get());
-
-        });
-
-        canvas.setOnMousePressed(event -> pressing = true);
-        canvas.setOnMouseReleased(event -> pressing = false);
-        canvas.setOnMouseDragged(event -> {
-            if(pressing && logiciel.getShapeType() == ShapeType.PENCIL){
-                graphicsContext.fillRect(event.getX(),event.getY(),5,5);
-            }
-        });
-        canvas.setOnMouseExited(event -> glass.stopZoom());
-
+    private void buildScene(){
         scene.setOnDragOver(event -> event.acceptTransferModes(TransferMode.COPY_OR_MOVE));
         scene.setOnDragDropped(event -> {
             Dragboard db = event.getDragboard();
             File file = db.getFiles().get(0);
             if(file.isDirectory()) treeBuilder.setDirectory(file); else openImage(file);
         });
+    }
 
+    private void buildGrid(){
         grid.setOnMouseClicked(event -> {
 
             if(event.getButton() == MouseButton.PRIMARY) {
@@ -440,6 +282,158 @@ public class LogicielStructure {
         });
     }
 
+    private void buildCanvas(){
+
+        DropShadow ds = new DropShadow();
+        ds.setOffsetY(5);
+        ds.setOffsetX(5);
+        ds.setRadius(10);
+
+        canvas.setEffect(ds);
+        canvas.setCursor(Cursor.CROSSHAIR);
+
+        canvas.setOnMouseClicked(event -> {
+
+            if(event.getButton() == MouseButton.PRIMARY) {
+
+                switch (logiciel.getShapeType()) {
+
+                    case TRIANGLE:
+                        if (logiciel.getShapesPoints().size() == 2) {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                            logiciel.stopCreating();
+                            for (Point point : logiciel.getShapesPoints()) {
+                                logiciel.getPoints().add(point);
+                            }
+                            logiciel.setShapesPoints(new ArrayList<>());
+                        } else {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                        }
+                        break;
+
+                    case HEXAGON:
+                        if (logiciel.getShapesPoints().size() == 6) {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                            logiciel.stopCreating();
+                            for (Point point : logiciel.getShapesPoints()) {
+                                logiciel.getPoints().add(point);
+                            }
+                            logiciel.setShapesPoints(new ArrayList<>());
+                        } else {
+                            logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
+                        }
+                        break;
+
+                    default:
+                        if (!logiciel.isCreating()) {
+                            logiciel.setStartX(event.getX());
+                            logiciel.setStartY(event.getY());
+                            logiciel.setCreating(true);
+                        } else {
+                            logiciel.setCurrentX(event.getX());
+                            logiciel.setCurrentY(event.getY());
+                            logiciel.stopCreating();
+                        }
+
+                    if(logiciel.isCreating()){
+                        if(logiciel.getShapeType() == ShapeType.CIRCLE){
+                            logiciel.getShow().showCircle(event.getX(),event.getY(),graphicsContext.getFill());
+                        }
+                        if(logiciel.getShapeType() == ShapeType.RECTANGLE){
+                            logiciel.getShow().showRectangle(event.getX(),event.getY(),graphicsContext.getFill());
+                        }
+                        if(logiciel.getShapeType() == ShapeType.LINE){
+                            logiciel.getShow().showLine(event.getX(),event.getY(),graphicsContext.getFill());
+                        }
+                    }else{
+                        if(logiciel.getShapeType() == ShapeType.CIRCLE){
+                            logiciel.getShow().hideCircle();
+                        }
+                        if(logiciel.getShapeType() == ShapeType.RECTANGLE){
+                            logiciel.getShow().hideRectangle();
+                        }
+                        if(logiciel.getShapeType() == ShapeType.LINE){
+                            logiciel.getShow().hideLine();
+                        }
+                    }
+
+                        break;
+
+                }
+
+            }else if(event.getButton() == MouseButton.SECONDARY){
+                menu.show(borderPane,event.getScreenX(),event.getScreenY());
+            }
+
+        });
+
+       /* canvas.setOnMouseMoved(event -> {
+
+            if(logiciel.isCreating()) {
+
+                switch (logiciel.getShapeType()) {
+
+                    case RECTANGLE:
+
+                        if(event.getX() < logiciel.getShow().getInitialX() && event.getY() < logiciel.getShow().getInitialY()){
+                            logiciel.getShow().getRectangle().setX(event.getX());
+                            logiciel.getShow().getRectangle().setY(event.getY());
+                            logiciel.getShow().getRectangle().setWidth(logiciel.getShow().getInitialX()-event.getX());
+                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getInitialY()-event.getY());
+                        }else if(event.getX() < logiciel.getShow().getInitialX() && event.getY() > logiciel.getShow().getInitialY()){
+                            logiciel.getShow().getRectangle().setX(event.getX());
+                            logiciel.getShow().getRectangle().setWidth(logiciel.getShow().getInitialX()-event.getX());
+                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getInitialY());
+                        }else if(event.getX() > logiciel.getShow().getInitialX() && event.getY() < logiciel.getShow().getInitialY()){
+                            logiciel.getShow().getRectangle().setY(event.getY());
+                            logiciel.getShow().getRectangle().setHeight(logiciel.getShow().getInitialY()-event.getY());
+                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getInitialX());
+                        }else{
+                            logiciel.getShow().getRectangle().setWidth(event.getX()-logiciel.getShow().getInitialX());
+                            logiciel.getShow().getRectangle().setHeight(event.getY()-logiciel.getShow().getInitialY());
+                        }
+                        break;
+
+                    case CIRCLE:
+                        if((event.getY() - logiciel.getShow().getCircle().getCenterY()) > (event.getX() - logiciel.getShow().getCircle().getCenterX())){
+                            logiciel.getShow().getCircle().setRadius(Math.abs(event.getY()-logiciel.getShow().getCircle().getCenterY()));
+                        }else{
+                            logiciel.getShow().getCircle().setRadius(Math.abs(event.getX()-logiciel.getShow().getCircle().getCenterX()));
+                        }
+                        break;
+
+                    case LINE:
+                        logiciel.getShow().getLine().setEndY(event.getY()-1);
+                        logiciel.getShow().getLine().setEndX(event.getX()-1);
+                        break;
+
+                }
+
+            }
+
+            pointPLaced.set(false);
+            for(Point point : logiciel.getPoints()){
+                if(point.getX() > event.getX()-1 && point.getX() < event.getX()+1 || point.getY() > event.getY()-1 && point.getY() < event.getY()+1){
+                    logiciel.getIndicator().setStartX(point.getX());
+                    logiciel.getIndicator().setStartY(point.getY());
+                    logiciel.getIndicator().setEndX(event.getX()-1);
+                    logiciel.getIndicator().setEndY(event.getY()-1);
+                    pointPLaced.set(true);
+                }
+            }
+            logiciel.getIndicator().setVisible(pointPLaced.get());
+
+        });*/
+        canvas.setOnMousePressed(event -> pressing = true);
+        canvas.setOnMouseReleased(event -> pressing = false);
+        canvas.setOnMouseDragged(event -> {
+            if(pressing && logiciel.getShapeType() == ShapeType.PENCIL){
+                graphicsContext.fillRect(event.getX(),event.getY(),5,5);
+            }
+        });
+        canvas.setOnMouseExited(event -> glass.stopZoom());
+    }
+
     private void buildMenu(){
         CheckMenuItem checkMenuItem = new CheckMenuItem("➕ Grilles");
         checkMenuItem.setSelected(false);
@@ -461,7 +455,7 @@ public class LogicielStructure {
     }
 
     public Group getGroup() {
-        return null;
+        return group;
     }
 
     public Stage getStage() {
@@ -504,6 +498,8 @@ public class LogicielStructure {
             setTitle(image.getName());
             rightBar.unCheckAll();
 
+            buildCanvas();
+
             imageOpened = image;
         }catch (FileNotFoundException e){}
     }
@@ -538,4 +534,15 @@ public class LogicielStructure {
     public RightBar getRightBar() {
         return rightBar;
     }
+
+    public void setCanvas(Canvas canvas) {
+        group.getChildren().remove(this.canvas);
+        group.getChildren().remove(grid.getGrid());
+        this.canvas = canvas;
+        group.getChildren().add(canvas);
+        group.getChildren().add(grid.getGrid());
+        graphicsContext = canvas.getGraphicsContext2D();
+        grid.setCanvasSize(canvas.getWidth(),canvas.getHeight());
+    }
+
 }

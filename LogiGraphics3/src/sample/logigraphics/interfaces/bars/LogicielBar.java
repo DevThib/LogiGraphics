@@ -26,9 +26,13 @@ public class LogicielBar {
     Background lessRed = new Background(new BackgroundFill(Color.rgb(255,71,71),new CornerRadii(0),new Insets(0)));
     Background lessGrey = new Background(new BackgroundFill(Color.rgb(117,117,117),new CornerRadii(0),new Insets(0)));
 
-    Font font = new Font("Seoge MDL2 Assets",15);
+    Font font = new Font("Trebuchet MS",15);
 
     Label title = new Label("Nouveau projet");
+
+    Button extend = new Button("🔳");
+
+    BorderPane borderPane = new BorderPane();
 
     public LogicielBar(LogicielStructure logicielStructure){
         this.logicielStructure = logicielStructure;
@@ -36,9 +40,6 @@ public class LogicielBar {
 
     public BorderPane get(){
 
-        Button extend = new Button("🔳");
-
-        BorderPane borderPane = new BorderPane();
         borderPane.setMinWidth(logicielStructure.getScene().getWidth());
         borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
         borderPane.setMinHeight(40);
@@ -56,28 +57,15 @@ public class LogicielBar {
         borderPane.setOnMouseDragged(event -> {
             logicielStructure.getStage().setX(event.getScreenX()-initialX[0]);
             logicielStructure.getStage().setY(event.getScreenY()-initialY[0]);
-            if(logicielStructure.getStage().isMaximized() && event.getScreenY() > 0){
-                extend.setText("🔳");
-                logicielStructure.getStage().setMaximized(false);
-                borderPane.setMinWidth(logicielStructure.getScene().getWidth());
-                borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
-            }
+            if(logicielStructure.getStage().isMaximized() && event.getScreenY() > 0) unExtend();
         });
-        borderPane.setOnMouseReleased(event -> {
-            if(event.getScreenY() == 0){
-                extend.setText("↙");
-                logicielStructure.getStage().setX(0);
-                logicielStructure.getStage().setY(0);
-                logicielStructure.getStage().setMaximized(true);
-                borderPane.setMinWidth(logicielStructure.getScene().getWidth());
-                borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
-            }
-        });
+        borderPane.setOnMouseReleased(event -> {if(event.getScreenY() == 0) extend();});
 
         FlowPane flowPane1 = new FlowPane();
         FlowPane flowPane2 = new FlowPane();
 
-        Button cross = new Button("\uE106");
+     //   Button cross = new Button("\uE106");
+        Button cross = new Button("❌");
         cross.setMinWidth(50);
         cross.setMinHeight(30);
         cross.setMaxHeight(30);
@@ -103,18 +91,7 @@ public class LogicielBar {
         extend.setTextFill(Color.WHITE);
         extend.setOnMouseEntered(event -> extend.setBackground(lessGrey));
         extend.setOnMouseExited(event -> extend.setBackground(grey));
-        extend.setOnAction(event -> {
-            if(logicielStructure.getStage().isMaximized()){
-                extend.setText("🔳");
-                logicielStructure.getStage().setMaximized(false);
-            }else{
-                extend.setText("↙");
-                logicielStructure.getStage().setMaximized(true);
-            }
-            borderPane.setMinWidth(logicielStructure.getScene().getWidth());
-            borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
-            logicielStructure.getSettingsBar().adapt(logicielStructure.getScene().getWidth());
-        });
+        extend.setOnAction(event -> {if(logicielStructure.getStage().isMaximized()) unExtend(); else extend();});
         extend.setFont(font);
 
         ImageView imageView = null;
@@ -149,6 +126,24 @@ public class LogicielBar {
 
     public String getTitle(){
         return title.getText();
+    }
+
+    private void extend(){
+        extend.setText("↙");
+        logicielStructure.getStage().setX(0);
+        logicielStructure.getStage().setY(0);
+        logicielStructure.getStage().setMaximized(true);
+        borderPane.setMinWidth(logicielStructure.getScene().getWidth());
+        borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
+        logicielStructure.getSettingsBar().adapt(logicielStructure.getScene().getWidth());
+    }
+
+    private void unExtend(){
+        extend.setText("🔳");
+        logicielStructure.getStage().setMaximized(false);
+        borderPane.setMinWidth(logicielStructure.getScene().getWidth());
+        borderPane.setMaxWidth(logicielStructure.getScene().getWidth());
+        logicielStructure.getSettingsBar().adapt(logicielStructure.getScene().getWidth());
     }
 
 }

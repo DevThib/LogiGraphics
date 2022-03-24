@@ -108,7 +108,6 @@ public class SmallWindow {
         title.setMaxWidth(120);
         title.setMinWidth(120);
         title.setTranslateX(5);
-        title.setStyle("-fx-font-weight: bold");
 
         rectangle.setFill(Color.TRANSPARENT);
         autoCalcRectangle();

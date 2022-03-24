@@ -45,8 +45,9 @@ public class SettingsBar {
 
         Label save = getButton("💾", event -> logicielStructure.getLogiciel().save(true));
         Label create = getButton("📝", event -> logicielStructure.openNewPaper());
+        Label charts = getButton("📊", event -> logicielStructure.getRightBar().getChartWindow().show());
 
-        flowPane.getChildren().addAll(sepa,save,create);
+        flowPane.getChildren().addAll(sepa,save,create,charts);
 
         return flowPane;
     }
