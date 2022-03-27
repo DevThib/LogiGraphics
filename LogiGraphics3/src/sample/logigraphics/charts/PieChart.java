@@ -24,6 +24,10 @@ public class PieChart {
         this.size = size;
     }
 
+    public HashMap<String, Double> getValues() {
+        return values;
+    }
+
     public void init(){
         values = new HashMap<>();
         keys = new ArrayList<>();
