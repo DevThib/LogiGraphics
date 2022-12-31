@@ -64,7 +64,6 @@ public class LogicielBar {
         FlowPane flowPane1 = new FlowPane();
         FlowPane flowPane2 = new FlowPane();
 
-     //   Button cross = new Button("\uE106");
         Button cross = new Button("❌");
         cross.setMinWidth(50);
         cross.setMinHeight(30);

@@ -95,7 +95,7 @@ public class CanvasEditor {
                     canvas.getGraphicsContext2D().fillRect(a, i, 1, 1);
                 }
             }
-            if(!cursor)savePicture(canvas,logicielStructure);
+            //if(!cursor)savePicture(canvas,logicielStructure);
             logicielStructure.getLogiciel().setTreating(false);
 
         }catch (IOException ee){}
@@ -134,42 +134,9 @@ public class CanvasEditor {
                     canvas.getGraphicsContext2D().fillRect(a, i, 1, 1);
                 }
             }
-            savePicture(canvas,logicielStructure);
+            //savePicture(canvas,logicielStructure);
             logicielStructure.getLogiciel().setTreating(false);
 
-         /*   Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                int i = 0;
-                int color;
-                int red;
-                int blue;
-                int green;
-                int invertRed;
-                int invertBlue;
-                int invertGreen;
-                @Override
-                public void run() {
-                    if(i < canvas.getHeight()){
-                        for (int a = 0; a < canvas.getWidth(); a++) {
-                            color = pixelReader.getArgb(a, i);
-                            red = (color >> 16) & 0xff;
-                            green = (color >> 8) & 0xff;
-                            blue = color & 0xff;
-                            invertRed = 255 - red;
-                            invertGreen = 255 - green;
-                            invertBlue = 255 - blue;
-                            canvas.getGraphicsContext2D().setFill(Color.rgb(invertRed,invertGreen,invertBlue));
-                            canvas.getGraphicsContext2D().fillRect(a, i, 1, 1);
-                        }
-                    }else{
-                        cancel();
-                    }
-                    i++;
-                }
-            },2,2);
-
-
-          */
         }catch (IOException  ee){}
 
     }
@@ -220,7 +187,7 @@ public class CanvasEditor {
                 }
             }
 
-            savePicture(canvas,logicielStructure);
+            //savePicture(canvas,logicielStructure);
             logicielStructure.getLogiciel().setTreating(false);
 
         }catch (IOException  ee){}

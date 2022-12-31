@@ -1,6 +1,7 @@
 package sample.logigraphics.windows;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -16,26 +17,28 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sample.logigraphics.Logiciel;
+import sample.logigraphics.events.Event;
 import sample.logigraphics.interfaces.LogicielColors;
 
 public class SmallWindow {
 
     Group group = new Group();
     Stage stage = new Stage();
-    Scene scene = new Scene(group,750,400);
+    Scene scene;
 
     Background grey = new Background(new BackgroundFill(LogicielColors.getTopBarColor(),new CornerRadii(0),new Insets(0)));
     Background red = new Background(new BackgroundFill(Color.RED,new CornerRadii(0),new Insets(0)));
     Background lessRed = new Background(new BackgroundFill(Color.rgb(255,71,71),new CornerRadii(0),new Insets(0)));
 
-    Font font = new Font("Trebuchet MS",16);
-
-    Rectangle rectangle = new Rectangle();
+    Font font;
+    Font labelFont = new Font("Trebuchet MS",20);
 
     String title;
 
     Background buttonBackground = new Background(new BackgroundFill(Color.rgb(0,169,242),new CornerRadii(5),new Insets(0)));
     Background buttonOnHover = new Background(new BackgroundFill(Color.rgb(0,163,222),new CornerRadii(5),new Insets(0)));
+    Background redBackground = new Background(new BackgroundFill(Color.RED,new CornerRadii(5),new Insets(0)));
+    Background redOnHover = new Background(new BackgroundFill(Color.rgb(255,71,71),new CornerRadii(5),new Insets(0)));
 
     Border buttonBorder = new Border(new BorderStroke(Color.WHITE,BorderStrokeStyle.SOLID,new CornerRadii(5),new BorderWidths(2)));
 
@@ -43,10 +46,18 @@ public class SmallWindow {
 
     VBox vBox = new VBox();
 
-    Button cross = new Button();
+    Button cross = new Button("❌");
 
-    public SmallWindow(String title){
+    double size;
+
+    Event event;
+
+    public SmallWindow(String title,double size){
         this.title = title;
+        this.size = size;
+        this.font = new Font("Trebuchet MS",16*size);
+
+        this.scene = new Scene(group,750*size,400*size);
 
         vBox.setMinWidth(scene.getWidth());
         vBox.setMinHeight(scene.getHeight());
@@ -65,28 +76,33 @@ public class SmallWindow {
         stage.show();
     }
 
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
     public void add(Node node){
         vBox.getChildren().add(node);
     }
 
-    private FlowPane get(){
+    private BorderPane get(){
 
-        FlowPane padded = new FlowPane();
+        BorderPane padd = new BorderPane();
+        FlowPane left = new FlowPane();
+        FlowPane right = new FlowPane();
 
-        FlowPane flowPane = new FlowPane();
-        flowPane.setMinWidth(scene.getWidth());
-        flowPane.setMinHeight(40);
-        flowPane.setMaxHeight(40);
-        flowPane.setMaxWidth(scene.getWidth());
-        flowPane.setBackground(grey);
+        final double[] initialX = {0};
+        final double[] initialY = {0};
 
-        cross.setMinWidth(50);
-        cross.setMinHeight(30);
-        cross.setMaxHeight(30);
-        cross.setMaxWidth(50);
+        cross.setMinWidth(50*size);
+        cross.setMinHeight(30*size);
+        cross.setMaxHeight(30*size);
+        cross.setMaxWidth(50*size);
         cross.setBackground(red);
         cross.setTextFill(Color.WHITE);
-        cross.setText("❌");
         cross.setOnMouseEntered(event -> {
             cross.setBackground(lessRed);
             cross.setTextFill(Color.GREY);
@@ -99,49 +115,71 @@ public class SmallWindow {
         cross.setFont(font);
 
         Rectangle imageView = new Rectangle();
-        imageView.setWidth(20);
-        imageView.setHeight(20);
+        imageView.setWidth(20*size);
+        imageView.setHeight(20*size);
 
         Label title = new Label(this.title);
         title.setFont(font);
         title.setTextFill(Color.WHITE);
-        title.setMaxWidth(120);
-        title.setMinWidth(120);
-        title.setTranslateX(5);
+        title.setTranslateX(5*size);
 
-        rectangle.setFill(Color.TRANSPARENT);
-        autoCalcRectangle();
+        left.getChildren().addAll(imageView,title);
+        left.setOrientation(Orientation.HORIZONTAL);
+        left.setHgap(5);
+        left.setPadding(new Insets(10*size,0,10*size,5*size));
 
-        padded.getChildren().addAll(imageView,title,rectangle,cross);
-        padded.setPadding(new Insets(5));
-        padded.setMinWidth(flowPane.getMinWidth());
+        right.getChildren().addAll(cross);
+        right.setOrientation(Orientation.HORIZONTAL);
+        right.setPadding(new Insets(5*size,0,5*size,-5*size));
+        right.setMinWidth(cross.getMinWidth());
+        right.setMaxWidth(cross.getMaxWidth());
+        right.setMinHeight(cross.getMinHeight());
+        right.setMaxHeight(cross.getMaxHeight());
 
-        flowPane.getChildren().add(padded);
+        padd.setLeft(left);
+        padd.setRight(right);
+        padd.setMinWidth(scene.getWidth());
+        padd.setMaxWidth(scene.getWidth());
+        padd.setMinHeight(40*size);
+        padd.setMaxHeight(40*size);
+        padd.setOnMousePressed(event -> {
+            initialX[0] = event.getX();
+            initialY[0] = event.getY();
+        });
+        padd.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX()-initialX[0]);
+            stage.setY(event.getScreenY()-initialY[0]);
+        });
+        padd.setBackground(grey);
 
-        return flowPane;
+        return padd;
     }
 
-    private void autoCalcRectangle(){
-        rectangle.setWidth(scene.getWidth()-200);
-    }
-
-    public Button getStyliziedButton(String text){
+    public Button getStyliziedButton(String text,boolean red){
 
         Button button = new Button(text);
-        button.setBackground(buttonBackground);
+        button.setBackground(getButtonBackground(red,false));
         button.setTextFill(Color.WHITE);
         button.setBorder(buttonBorder);
         button.setOnMouseEntered(event -> {
             button.setEffect(ds);
-            button.setBackground(buttonOnHover);
+            button.setBackground(getButtonBackground(red,true));
         });
         button.setOnMouseExited(event -> {
             button.setEffect(null);
-            button.setBackground(buttonBackground);
+            button.setBackground(getButtonBackground(red,false));
         });
         button.setStyle("-fx-font-weight: bold");
 
         return button;
+    }
+
+    private Background getButtonBackground(boolean red,boolean hover){
+        if(red){
+            if(hover)return redOnHover; else return redBackground;
+        }else{
+            if(hover)return buttonOnHover;else return buttonBackground;
+        }
     }
 
     public double getWidth(){
@@ -150,6 +188,10 @@ public class SmallWindow {
 
     public double getHeight(){
         return scene.getHeight();
+    }
+
+    public Font getLabelFont() {
+        return labelFont;
     }
 
     public void close(){
@@ -166,5 +208,12 @@ public class SmallWindow {
 
     public void setSpacing(double value){
         vBox.setSpacing(value);
+    }
+
+    public void addLabel(String text){
+        Label label = new Label(text);
+        label.setFont(labelFont);
+        label.setTextFill(Color.WHITE);
+        vBox.getChildren().add(label);
     }
 }

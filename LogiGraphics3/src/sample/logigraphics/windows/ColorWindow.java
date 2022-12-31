@@ -8,11 +8,11 @@ import sample.logigraphics.interfaces.LogicielStructure;
 
 public class ColorWindow {
 
-    SmallWindow smallWindow = new SmallWindow("Sélectionnez une couleur custom");
+    SmallWindow smallWindow = new SmallWindow("Couleur custom",1);
 
     public ColorWindow(LogicielStructure logicielStructure, Rectangle indicator){
         ColorPicker colorPicker = new ColorPicker();
-        Button button = smallWindow.getStyliziedButton("OK");
+        Button button = smallWindow.getStyliziedButton("OK",false);
         button.setOnAction(event -> {
             logicielStructure.getGraphicsContext().setStroke(colorPicker.getValue());
             logicielStructure.getGraphicsContext().setFill(colorPicker.getValue());

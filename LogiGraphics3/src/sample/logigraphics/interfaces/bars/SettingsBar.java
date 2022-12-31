@@ -44,10 +44,11 @@ public class SettingsBar {
         sepa.setFill(Color.TRANSPARENT);
 
         Label save = getButton("💾", event -> logicielStructure.getLogiciel().save(true));
-        Label create = getButton("📝", event -> logicielStructure.openNewPaper());
+        Label create = getButton("📝", event -> logicielStructure.openSave());
         Label charts = getButton("📊", event -> logicielStructure.getRightBar().getChartWindow().show());
+        Label info = getButton("❓", event -> logicielStructure.getInfo().show());
 
-        flowPane.getChildren().addAll(sepa,save,create,charts);
+        flowPane.getChildren().addAll(sepa,save,create,charts,info);
 
         return flowPane;
     }

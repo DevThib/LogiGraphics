@@ -1,6 +1,7 @@
 package sample.logigraphics.tools;
 
 import javafx.scene.canvas.Canvas;
+import javafx.scene.image.PixelReader;
 import javafx.scene.paint.Color;
 import sample.logigraphics.interfaces.LogicielStructure;
 

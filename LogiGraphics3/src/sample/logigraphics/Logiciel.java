@@ -60,6 +60,8 @@ public class Logiciel {
 
     ShapeType shapeType = ShapeType.RECTANGLE;
 
+    double pencilSize = 5;
+
     Line mirrorAxe = new Line(750,0,750,0);
     TextField text = new TextField();
 
@@ -164,10 +166,7 @@ public class Logiciel {
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), () -> save(true));
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)), this::openImage);
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN)), () -> shapeType = ShapeType.PENCIL);
-        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), () -> {
-            Logiciel l = new Logiciel();
-            l.start();
-        } );
+        addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), this::restart);
         addKeyShort(new KeyShort(new KeyCodeCombination(KeyCode.ADD, KeyCombination.CONTROL_DOWN)), () -> {
             if(logicielStructure.getGrid().isVisible())logicielStructure.getGrid().setNumberOfLines(logicielStructure.getGrid().getNumberOfLines()+1);
         });
@@ -238,6 +237,14 @@ public class Logiciel {
     public Scene getScene() {
         logicielStructure = new LogicielStructure(this);
         return logicielStructure.getScene();
+    }
+
+    public double getPencilSize() {
+        return pencilSize;
+    }
+
+    public void setPencilSize(double pencilSize) {
+        this.pencilSize = pencilSize;
     }
 
     public void start(){
@@ -426,6 +433,10 @@ public class Logiciel {
 
             case TRIANGLE:
                 logicielStructure.getGraphicsContext().fillPolygon(new double[]{shapesPoints.get(0).getX(),shapesPoints.get(1).getX(),shapesPoints.get(2).getX()},new double[]{shapesPoints.get(0).getY(),shapesPoints.get(1).getY(),shapesPoints.get(2).getY()},3);
+                break;
+
+            case NONFILLEDTRIANGLE:
+                logicielStructure.getGraphicsContext().strokePolygon(new double[]{shapesPoints.get(0).getX(),shapesPoints.get(1).getX(),shapesPoints.get(2).getX()},new double[]{shapesPoints.get(0).getY(),shapesPoints.get(1).getY(),shapesPoints.get(2).getY()},3);
                 break;
 
             case HEXAGON:

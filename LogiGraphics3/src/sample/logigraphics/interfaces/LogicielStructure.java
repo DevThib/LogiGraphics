@@ -4,15 +4,13 @@ import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
@@ -22,6 +20,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -30,11 +29,13 @@ import sample.logigraphics.charts.PieChart;
 import sample.logigraphics.creation.Point;
 import sample.logigraphics.creation.ShapeType;
 import sample.logigraphics.creation.Show;
+import sample.logigraphics.events.Event;
 import sample.logigraphics.interfaces.bars.LogicielBar;
 import sample.logigraphics.interfaces.bars.RightBar;
 import sample.logigraphics.interfaces.bars.SettingsBar;
 import sample.logigraphics.tools.Glass;
 import sample.logigraphics.windows.ChartWindow;
+import sample.logigraphics.windows.SmallWindow;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -83,6 +84,11 @@ public class LogicielStructure {
 
     AtomicBoolean pointPLaced = new AtomicBoolean(false);
 
+    SmallWindow save = new SmallWindow("Enregistrer ?",0.5);
+    SmallWindow info = new SmallWindow("Raccourcis clavier",1);
+
+    FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.7),borderPane);
+
     public LogicielStructure(Logiciel logiciel){
         this.logiciel = logiciel;
         logicielBar = new LogicielBar(this);
@@ -127,12 +133,40 @@ public class LogicielStructure {
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
 
-        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.7),borderPane);
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
         fadeIn.setCycleCount(1);
 
         stage.setOnShowing(event -> fadeIn.play());
+
+        Button button = save.getStyliziedButton("Oui",false);
+        button.setOnAction(event -> {
+            logiciel.save(true);
+            openNewPaper();
+        });
+
+        Button button1 = save.getStyliziedButton("Non",true);
+        button1.setOnAction(event -> {
+            save.close();
+            openNewPaper();
+        });
+
+        FlowPane flowPane = new FlowPane();
+        flowPane.getChildren().addAll(button,button1);
+        flowPane.setAlignment(Pos.CENTER);
+        flowPane.setHgap(20);
+
+        save.setSpacing(10);
+        save.addLabel("Enregistrer le projet ?");
+        save.add(flowPane);
+
+        info.setSpacing(5);
+        info.addLabel("Ctrl + s : Enregistrer le projet actuel");
+        info.addLabel("Ctrl + o : Ouvrir un projet");
+        info.addLabel("Ctrl + n : Redémarrer le logiciel");
+        info.addLabel("Ctrl + p : Passer en pinceau");
+        info.addLabel("Ctrl + +/- : Ajouter/Retirer des grilles lorsqu'elles sont actives");
+
     }
 
     public void loadBackgroundImage() throws FileNotFoundException {
@@ -294,11 +328,11 @@ public class LogicielStructure {
 
         canvas.setOnMouseClicked(event -> {
 
-            if(event.getButton() == MouseButton.PRIMARY) {
+            if(event.getButton() == MouseButton.PRIMARY && !menu.isShowing()) {
 
                 switch (logiciel.getShapeType()) {
 
-                    case TRIANGLE:
+                    case TRIANGLE: case NONFILLEDTRIANGLE:
                         if (logiciel.getShapesPoints().size() == 2) {
                             logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
                             logiciel.stopCreating();
@@ -323,6 +357,8 @@ public class LogicielStructure {
                             logiciel.getShapesPoints().add(new Point(event.getX(), event.getY()));
                         }
                         break;
+
+                    case PENCIL: graphicsContext.fillOval(event.getX(),event.getY(),logiciel.getPencilSize(),logiciel.getPencilSize());break;
 
                     default:
                         if (!logiciel.isCreating()) {
@@ -363,6 +399,8 @@ public class LogicielStructure {
 
             }else if(event.getButton() == MouseButton.SECONDARY){
                 menu.show(borderPane,event.getScreenX(),event.getScreenY());
+            }else{
+                menu.hide();
             }
 
         });
@@ -428,7 +466,7 @@ public class LogicielStructure {
         canvas.setOnMouseReleased(event -> pressing = false);
         canvas.setOnMouseDragged(event -> {
             if(pressing && logiciel.getShapeType() == ShapeType.PENCIL){
-                graphicsContext.fillRect(event.getX(),event.getY(),5,5);
+                graphicsContext.fillOval(event.getX(),event.getY(),logiciel.getPencilSize(),logiciel.getPencilSize());
             }
         });
         canvas.setOnMouseExited(event -> glass.stopZoom());
@@ -444,6 +482,10 @@ public class LogicielStructure {
         glass.setOnAction(event -> this.glass.setActivated(glass.isSelected()));
 
         menu.getItems().addAll(checkMenuItem);
+    }
+
+    public SmallWindow getInfo() {
+        return info;
     }
 
     public Logiciel getLogiciel() {
@@ -504,8 +546,11 @@ public class LogicielStructure {
         }catch (FileNotFoundException e){}
     }
 
-    public void openNewPaper(){
-        logiciel.save(true);
+    public void openSave(){
+        save.show();
+    }
+
+    private void openNewPaper(){
         adaptCanvasSize();
         logicielBar.setTitle("Nouveau projet");
         canvas.getGraphicsContext2D().setFill(Color.WHITE);
@@ -513,6 +558,7 @@ public class LogicielStructure {
         canvas.getGraphicsContext2D().fillRect(0,0,canvas.getWidth(),canvas.getHeight());
         canvas.getGraphicsContext2D().setFill(rightBar.getIndicator().getFill());
         grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
+        fadeIn.play();
     }
 
     public String getTitle(){

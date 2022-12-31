@@ -10,6 +10,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -55,14 +56,35 @@ public class RightBar {
 
     DropShadow dropShadow = new DropShadow(2,Color.GREY);
 
-    FlowPane cre = getCreation();
-    FlowPane treat = getTreat();
-    FlowPane cha = getCharts();
-
     PieChart pieChart;
 
     ColorWindow colorWindow;
     ChartWindow chartWindow;
+
+    Rectangle rectangle = new Rectangle(33.75,33.75,Color.RED);
+    Circle circle = new Circle(16.875,Color.WHITE);
+    Polygon triangle = new Polygon();
+    Polygon hexagon = new Polygon();
+    Ellipse ellipse = new Ellipse(16.875,13);
+
+    Group n1 = getNonFilled("Rectangle");
+    Group n2 = getNonFilled("Circle");
+    Group n3 = getNonFilled("Line");
+    Group n4 = getNonFilled("Triangle");
+
+    Rectangle nonfilled = (Rectangle) n1.getChildren().get(0);
+    Rectangle nonfilled2 = (Rectangle) n1.getChildren().get(1);
+    Circle nonfilledC = (Circle) n2.getChildren().get(0);
+    Circle nonfilledC2 = (Circle) n2.getChildren().get(1);
+    Rectangle line = (Rectangle) n3.getChildren().get(1);
+    Polygon nonFilledT = (Polygon) n4.getChildren().get(0);
+    Polygon nonFilledT2 = (Polygon) n4.getChildren().get(1);
+
+    Label pencil = new Label("🖌");
+
+    FlowPane cre = getCreation();
+    FlowPane treat = getTreat();
+    FlowPane cha = getCharts();
 
     public RightBar(LogicielStructure logicielStructure){
         this.logicielStructure = logicielStructure;
@@ -111,6 +133,7 @@ public class RightBar {
         creation.setArcHeight(25.0d);
         creation.setArcWidth(25.0d);
         creation.setTranslateX(10);
+        creation.setCursor(Cursor.HAND);
 
         maths.setOnMouseClicked(event -> {
             maths.setFill(backgroundC);
@@ -124,6 +147,7 @@ public class RightBar {
         maths.setArcHeight(25.0d);
         maths.setArcWidth(25.0d);
         maths.setTranslateX(10);
+        maths.setCursor(Cursor.HAND);
 
         charts.setOnMouseClicked(event -> {
             charts.setFill(backgroundC);
@@ -137,6 +161,7 @@ public class RightBar {
         charts.setTranslateX(10);
         charts.setArcHeight(25.0d);
         charts.setArcWidth(25.0d);
+        charts.setCursor(Cursor.HAND);
 
         flowPane.getChildren().addAll(creation,maths,charts);
 
@@ -156,16 +181,24 @@ public class RightBar {
         flowPane.setColumnHalignment(HPos.LEFT);
         flowPane.setVgap(15);
 
+        slider.setValue(50);
+        slider.setVisible(false);
+
         checkBox.setOnAction(event -> {
             if(checkBox.isSelected()){
                 if(logicielStructure.hasImageOpened()) {
                     slider.setValue(50);
+                    slider.setVisible(true);
                     invert.setSelected(false);
+                    removeBG.setSelected(false);
                     CanvasEditor.blackAndWhite(logicielStructure.getCanvas(), logicielStructure.getImageOpened(),slider.getValue(),logicielStructure,false);
+                }else{
+                    checkBox.setSelected(false);
                 }
             }else{
                 logicielStructure.openImage(logicielStructure.getImageOpened());
-                checkBox.setSelected(false);
+                //checkBox.setSelected(false);
+                slider.setVisible(false);
             }
         });
         checkBox.setTextFill(Color.WHITE);
@@ -178,6 +211,9 @@ public class RightBar {
                 if(logicielStructure.hasImageOpened()) {
                     CanvasEditor.invertColors(logicielStructure.getCanvas(), logicielStructure.getImageOpened(),logicielStructure);
                     checkBox.setSelected(false);
+                    removeBG.setSelected(false);
+                }else{
+                    invert.setSelected(false);
                 }
             }else{
                 logicielStructure.openImage(logicielStructure.getImageOpened());
@@ -192,6 +228,10 @@ public class RightBar {
             if(removeBG.isSelected()){
                 if(logicielStructure.hasImageOpened()) {
                     CanvasEditor.removeBackground(logicielStructure.getCanvas(), logicielStructure.getImageOpened(),logicielStructure);
+                    checkBox.setSelected(false);
+                    invert.setSelected(false);
+                }else{
+                    removeBG.setSelected(false);
                 }
             }else{
                 logicielStructure.openImage(logicielStructure.getImageOpened());
@@ -218,7 +258,7 @@ public class RightBar {
         flowPane.setAlignment(Pos.TOP_CENTER);
         flowPane.setColumnHalignment(HPos.CENTER);
         flowPane.setVgap(15);
-        flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst("Création"),getChoiceSelector(),getSeparator(),getColorSelector(),getSeparator(),getFunctionSelector());
+        flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst("Création"),getChoiceSelector(),getSeparator(),getColorSelector(),getSeparator(),getPencil());
 
         return flowPane;
     }
@@ -240,6 +280,7 @@ public class RightBar {
             pieChart.init();
             chartWindow.show();
         });
+        pie.setCursor(Cursor.HAND);
 
         flowPane.getChildren().addAll(new Rectangle(0,0,Color.TRANSPARENT),getFirst("Graphiques"),pie);
 
@@ -283,25 +324,6 @@ public class RightBar {
         flowPane2.setHgap(5);
         flowPane2.setTranslateX(5);
 
-        Rectangle rectangle = new Rectangle(33.75,33.75,Color.RED);
-        Circle circle = new Circle(16.875,Color.WHITE);
-        Polygon triangle = new Polygon();
-        Polygon hexagon = new Polygon();
-        Ellipse ellipse = new Ellipse(16.875,13);
-
-        Group n1 = getNonFilled("Rectangle");
-        Group n2 = getNonFilled("Circle");
-        Group n3 = getNonFilled("Line");
-        Group n4 = getNonFilled("Triangle");
-
-        Rectangle nonfilled = (Rectangle) n1.getChildren().get(0);
-        Rectangle nonfilled2 = (Rectangle) n1.getChildren().get(1);
-        Circle nonfilledC = (Circle) n2.getChildren().get(0);
-        Circle nonfilledC2 = (Circle) n2.getChildren().get(1);
-        Rectangle line = (Rectangle) n3.getChildren().get(1);
-        Rectangle line2 = (Rectangle) n3.getChildren().get(0);
-        Polygon triangle1 = (Polygon) n4.getChildren().get(0);
-
         rectangle.setOnMouseExited(event -> {
             if(logicielStructure.getLogiciel().getShapeType() != ShapeType.RECTANGLE){
                 rectangle.setFill(Color.WHITE);
@@ -314,14 +336,8 @@ public class RightBar {
         });
         rectangle.setCursor(Cursor.HAND);
         rectangle.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.RED);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
-            nonfilled.setFill(Color.WHITE);
-            nonfilledC.setFill(Color.WHITE);
-            line.setFill(Color.WHITE);
+           unCheckAllChoices();
+           rectangle.setFill(Color.RED);
             logicielStructure.getLogiciel().setShapeType(ShapeType.RECTANGLE);
         });
 
@@ -337,14 +353,8 @@ public class RightBar {
         });
         circle.setCursor(Cursor.HAND);
         circle.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
+            unCheckAllChoices();
             circle.setFill(Color.RED);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
-            nonfilled.setFill(Color.WHITE);
-            nonfilledC.setFill(Color.WHITE);
-            line.setFill(Color.WHITE);
             logicielStructure.getLogiciel().setShapeType(ShapeType.CIRCLE);
         });
 
@@ -362,14 +372,8 @@ public class RightBar {
         });
         triangle.setCursor(Cursor.HAND);
         triangle.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.RED);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
-            nonfilled.setFill(Color.WHITE);
-            nonfilledC.setFill(Color.WHITE);
-            line.setFill(Color.WHITE);
+           unCheckAllChoices();
+           triangle.setFill(Color.RED);
             logicielStructure.getLogiciel().setShapeType(ShapeType.TRIANGLE);
         });
 
@@ -387,14 +391,8 @@ public class RightBar {
         });
         hexagon.setCursor(Cursor.HAND);
         hexagon.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
+            unCheckAllChoices();
             hexagon.setFill(Color.RED);
-            ellipse.setFill(Color.WHITE);
-            nonfilled.setFill(Color.WHITE);
-            nonfilledC.setFill(Color.WHITE);
-            line.setFill(Color.WHITE);
             logicielStructure.getLogiciel().setShapeType(ShapeType.HEXAGON);
         });
 
@@ -411,101 +409,44 @@ public class RightBar {
         });
         ellipse.setCursor(Cursor.HAND);
         ellipse.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
+            unCheckAllChoices();
             ellipse.setFill(Color.RED);
-            nonfilled.setFill(Color.WHITE);
-            nonfilledC.setFill(Color.WHITE);
-            line.setFill(Color.WHITE);
             logicielStructure.getLogiciel().setShapeType(ShapeType.ELLIPSE);
         });
-        nonfilled.setOnMouseExited(event -> {
-            if(logicielStructure.getLogiciel().getShapeType() != ShapeType.NONFILLEDRECTANGLE){
-                nonfilled.setFill(Color.WHITE);
-            }
-        });
-        nonfilled.setOnMouseEntered(event -> {
-            if(logicielStructure.getLogiciel().getShapeType() != ShapeType.NONFILLEDRECTANGLE){
-                nonfilled.setFill(Color.GREY);
-            }
-        });
         nonfilled.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
+            unCheckAllChoices();
             nonfilled.setFill(Color.RED);
-            nonfilledC.setFill(Color.WHITE);
-            line.setFill(Color.WHITE);
             logicielStructure.getLogiciel().setShapeType(ShapeType.NONFILLEDRECTANGLE);
         });
-        nonfilledC.setOnMouseExited(event -> {
-            if(logicielStructure.getLogiciel().getShapeType() != ShapeType.NONFILLEDCIRCLE){
-                nonfilledC.setFill(Color.WHITE);
-            }
-        });
-        nonfilledC.setOnMouseEntered(event -> {
-            if(logicielStructure.getLogiciel().getShapeType() != ShapeType.NONFILLEDCIRCLE){
-                nonfilledC.setFill(Color.GREY);
-            }
-        });
         nonfilledC.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
-            nonfilled.setFill(Color.WHITE);
+            unCheckAllChoices();
             nonfilledC.setFill(Color.RED);
-            line.setFill(Color.WHITE);
             logicielStructure.getLogiciel().setShapeType(ShapeType.NONFILLEDCIRCLE);
         });
         nonfilled2.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
+            unCheckAllChoices();
             nonfilled.setFill(Color.RED);
-            nonfilledC.setFill(Color.WHITE);
-            line.setFill(Color.WHITE);
             logicielStructure.getLogiciel().setShapeType(ShapeType.NONFILLEDRECTANGLE);
         });
         nonfilledC2.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
-            nonfilled.setFill(Color.WHITE);
+            unCheckAllChoices();
             nonfilledC.setFill(Color.RED);
-            line.setFill(Color.WHITE);
             logicielStructure.getLogiciel().setShapeType(ShapeType.NONFILLEDCIRCLE);
         });
         line.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
-            nonfilled.setFill(Color.WHITE);
-            nonfilledC.setFill(Color.WHITE);
+            unCheckAllChoices();
             line.setFill(Color.RED);
             logicielStructure.getLogiciel().setShapeType(ShapeType.LINE);
         });
-        line2.setOnMouseClicked(event -> {
-            rectangle.setFill(Color.WHITE);
-            circle.setFill(Color.WHITE);
-            triangle.setFill(Color.WHITE);
-            hexagon.setFill(Color.WHITE);
-            ellipse.setFill(Color.WHITE);
-            nonfilled.setFill(Color.WHITE);
-            nonfilledC.setFill(Color.WHITE);
-            line.setFill(Color.RED);
-            logicielStructure.getLogiciel().setShapeType(ShapeType.LINE);
+        nonFilledT.setOnMouseClicked(event -> {
+            unCheckAllChoices();
+            nonFilledT.setFill(Color.RED);
+            logicielStructure.getLogiciel().setShapeType(ShapeType.NONFILLEDTRIANGLE);
+        });
+        nonFilledT2.setOnMouseClicked(event -> {
+            unCheckAllChoices();
+            nonFilledT.setFill(Color.RED);
+            logicielStructure.getLogiciel().setShapeType(ShapeType.NONFILLEDTRIANGLE);
         });
 
         n1.getChildren().set(0,nonfilled);
@@ -519,6 +460,53 @@ public class RightBar {
         vBox.getChildren().addAll(flowPane,flowPane1,flowPane2);
 
         return vBox;
+    }
+
+    private void unCheckAllChoices(){
+        rectangle.setFill(Color.WHITE);
+        circle.setFill(Color.WHITE);
+        triangle.setFill(Color.WHITE);
+        hexagon.setFill(Color.WHITE);
+        ellipse.setFill(Color.WHITE);
+        nonfilled.setFill(Color.WHITE);
+        nonfilledC.setFill(Color.WHITE);
+        line.setFill(Color.WHITE);
+        pencil.setTextFill(Color.WHITE);
+        nonFilledT.setFill(Color.WHITE);
+    }
+
+    private FlowPane getPencil(){
+
+        FlowPane flowPane = new FlowPane();
+
+        pencil.setFont(trebuchet);
+        pencil.setTextFill(Color.WHITE);
+        pencil.setOnMouseClicked(event -> {
+            unCheckAllChoices();
+            logicielStructure.getLogiciel().setShapeType(ShapeType.PENCIL);
+            pencil.setTextFill(Color.RED);
+        });
+        pencil.setOnMouseEntered(event1 -> {if(logicielStructure.getLogiciel().getShapeType() != ShapeType.PENCIL)pencil.setTextFill(Color.GREY);});
+        pencil.setOnMouseExited(event1 -> {if(logicielStructure.getLogiciel().getShapeType() != ShapeType.PENCIL)pencil.setTextFill(Color.WHITE);});
+        pencil.setCursor(Cursor.HAND);
+
+        Slider slider = new Slider();
+        slider.setValue(5);
+        slider.setMin(5);
+        slider.setMax(20);
+        slider.setMinSize(100,0);
+        slider.setMaxSize(100,8000);
+        slider.setOnMouseDragged(event -> logicielStructure.getLogiciel().setPencilSize(slider.getValue()));
+        slider.setCursor(Cursor.CLOSED_HAND);
+
+        flowPane.getChildren().addAll(pencil,slider);
+        flowPane.setOrientation(Orientation.HORIZONTAL);
+        flowPane.setHgap(10);
+        flowPane.setTranslateX(5);
+        flowPane.setMinWidth(160);
+        flowPane.setMaxWidth(160);
+
+        return flowPane;
     }
 
     private Group getNonFilled(String node){
@@ -636,12 +624,12 @@ public class RightBar {
                 triangle.getPoints().addAll(0.0,0.0,33.75,0.0,16.875,-33.75);
                 triangle.setFill(Color.WHITE);
                 triangle.setOnMouseEntered(event -> {
-                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.TRIANGLE){
+                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.NONFILLEDTRIANGLE){
                         triangle.setFill(Color.GREY);
                     }
                 });
                 triangle.setOnMouseExited(event -> {
-                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.TRIANGLE){
+                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.NONFILLEDTRIANGLE){
                         triangle.setFill(Color.WHITE);
                     }
                 });
@@ -650,12 +638,12 @@ public class RightBar {
                 black.getPoints().addAll(5.0,-2.5,28.75,-2.5,16.875,-27.75);
                 black.setFill(LogicielColors.getTopBarColor());
                 black.setOnMouseExited(event -> {
-                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.TRIANGLE){
+                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.NONFILLEDTRIANGLE){
                         triangle.setFill(Color.WHITE);
                     }
                 });
                 black.setOnMouseEntered(event -> {
-                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.TRIANGLE){
+                    if(logicielStructure.getLogiciel().getShapeType() != ShapeType.NONFILLEDTRIANGLE){
                         triangle.setFill(Color.GREY);
                     }
                 });
@@ -817,6 +805,7 @@ public class RightBar {
     public void unCheckAll(){
         checkBox.setSelected(false);
         invert.setSelected(false);
+        removeBG.setSelected(false);
     }
 
     private Button getButton(String text,EventHandler<ActionEvent> ev){
@@ -828,10 +817,7 @@ public class RightBar {
         button.setTextFill(Color.WHITE);
         button.setFont(trebuchet);
         button.setBackground(new Background(new BackgroundFill(LogicielColors.getBackgroundColor(),new CornerRadii(0),new Insets(0))));
-        button.setOnMouseEntered(event -> {
-            button.setEffect(dropShadow);
-            button.setTextFill(Color.BLACK);
-        });
+        button.setOnMouseEntered(event -> button.setEffect(dropShadow));
         button.setOnMouseExited(event -> {
             button.setEffect(null);
             button.setTextFill(Color.WHITE);

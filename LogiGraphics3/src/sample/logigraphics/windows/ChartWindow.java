@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
@@ -17,11 +18,9 @@ import javafx.scene.text.Font;
 import sample.logigraphics.charts.PieChart;
 import sample.logigraphics.interfaces.LogicielStructure;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public class ChartWindow {
 
-    SmallWindow smallWindow = new SmallWindow("Graphique");
+    SmallWindow smallWindow = new SmallWindow("Graphique",1);
 
     Border test = new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.DOTTED,new CornerRadii(0),new BorderWidths(1)));
     Border white = new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(1)));
@@ -102,7 +101,7 @@ public class ChartWindow {
                         "  -fx-font-family: \"Trebuchet MS\";");
         listView.getItems().add("Aucune valeur entrée");
 
-        Button confirm = smallWindow.getStyliziedButton("Ajouter");
+        Button confirm = smallWindow.getStyliziedButton("Ajouter",false);
         confirm.setOnAction(event -> {
             if(!name.getText().equalsIgnoreCase("") && !value.getText().equalsIgnoreCase("")) {
                 if (listView.getItems().size() == 1 && listView.getItems().get(0).equalsIgnoreCase("Aucune valeur entrée")) {
@@ -115,11 +114,13 @@ public class ChartWindow {
             }
         });
 
-        Button create = smallWindow.getStyliziedButton("Créer");
+        Button create = smallWindow.getStyliziedButton("Créer",false);
         create.setOnAction(event -> {
             if(pieChart.getValues().size() > 0) {
+                logicielStructure.getCanvas().getGraphicsContext2D().clearRect(0,0,logicielStructure.getCanvas().getWidth(),logicielStructure.getCanvas().getHeight());
                 logicielStructure.setCanvas(pieChart.build());
                 listView.getItems().removeAll(listView.getItems());
+                pieChart.init();
                 smallWindow.close();
             }
         });
