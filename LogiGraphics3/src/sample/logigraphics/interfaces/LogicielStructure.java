@@ -13,6 +13,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -33,6 +34,7 @@ import sample.logigraphics.events.Event;
 import sample.logigraphics.interfaces.bars.LogicielBar;
 import sample.logigraphics.interfaces.bars.RightBar;
 import sample.logigraphics.interfaces.bars.SettingsBar;
+import sample.logigraphics.stuff.Debug;
 import sample.logigraphics.tools.Glass;
 import sample.logigraphics.windows.ChartWindow;
 import sample.logigraphics.windows.SmallWindow;
@@ -61,7 +63,7 @@ public class LogicielStructure {
 
     Background background = new Background(new BackgroundFill(LogicielColors.getBackgroundColor(),new CornerRadii(0),new Insets(0)));
 
-    RightBar rightBar = new RightBar(this);
+    RightBar rightBar;
 
     Canvas canvas = new Canvas();
     GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
@@ -84,15 +86,15 @@ public class LogicielStructure {
 
     AtomicBoolean pointPLaced = new AtomicBoolean(false);
 
-    SmallWindow save = new SmallWindow("Enregistrer ?",0.5);
-    SmallWindow info = new SmallWindow("Raccourcis clavier",1);
+    SmallWindow save;
+    SmallWindow info;
 
     FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.7),borderPane);
 
     public LogicielStructure(Logiciel logiciel){
         this.logiciel = logiciel;
         logicielBar = new LogicielBar(this);
-
+        rightBar= new RightBar(this);
         treeBuilder = new TreeBuilder(new File(logiciel.getDataBase().getDirectoryByName("cache").readLineFile("root.txt",0)),borderPane,scene,this);
 
         adaptCanvasSize();
@@ -100,6 +102,9 @@ public class LogicielStructure {
         buildScene();
         buildGrid();
         buildMenu();
+
+        save = new SmallWindow("Enregistrer ?",0.5, Debug.getIcon("chart",this,0.5));
+        info = new SmallWindow("Raccourcis clavier",1,Debug.getIcon("chart",this,1));
 
         grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
         grid.setNumberOfLines(1);

@@ -368,6 +368,52 @@ public class Logiciel {
             }
 
         }
+        if(!dataBase.getDirectoryByName("cache").containsFile("graph.png")){
+            Canvas canvas = new Canvas(20,20);
+            GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+            graphicsContext.setFill(Color.WHITE);
+            graphicsContext.fillRect(0,0,20,20);
+            graphicsContext.setFill(Color.RED);
+            graphicsContext.fillRect(2.86,7,2.86,13);
+            graphicsContext.setFill(Color.BLUE);
+            graphicsContext.fillRect(8.57,15,2.86,5);
+            graphicsContext.setFill(Color.GREEN);
+            graphicsContext.fillRect(14.29,11,2.86,9);
+
+            try {
+                WritableImage writableImage = new WritableImage((int) canvas.getWidth(),(int) canvas.getHeight());
+                canvas.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                ImageIO.write(renderedImage, "png", new File(dataBase.getLocation()+"\\.logiGraphics\\cache\\graph.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        if(!dataBase.getDirectoryByName("cache").containsFile("colors.png")){
+            Canvas canvas = new Canvas(20,20);
+            GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+            graphicsContext.setFill(LogicielColors.getTopBarColor());
+            graphicsContext.fillRect(0,0,20,20);
+            graphicsContext.setFill(Color.RED);
+            graphicsContext.fillRect(0,0,10,10);
+            graphicsContext.setFill(Color.BLUE);
+            graphicsContext.fillRect(10,0,10,10);
+            graphicsContext.setFill(Color.GREEN);
+            graphicsContext.fillRect(0,10,10,10);
+            graphicsContext.setFill(Color.CYAN);
+            graphicsContext.fillRect(10,10,10,10);
+
+            try {
+                WritableImage writableImage = new WritableImage((int) canvas.getWidth(),(int) canvas.getHeight());
+                canvas.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                ImageIO.write(renderedImage, "png", new File(dataBase.getLocation()+"\\.logiGraphics\\cache\\colors.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
 
     }
 

@@ -100,6 +100,7 @@ public class LogicielBar {
         imageView.setFitWidth(20);
         imageView.setFitHeight(20);
 
+
         title.setFont(font);
         title.setTextFill(Color.WHITE);
 

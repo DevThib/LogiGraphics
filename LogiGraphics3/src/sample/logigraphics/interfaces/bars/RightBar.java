@@ -91,8 +91,8 @@ public class RightBar {
 
         pieChart = new PieChart(2);
 
-        colorWindow = new ColorWindow(logicielStructure,indicator);
         chartWindow = new ChartWindow(logicielStructure,pieChart);
+        colorWindow = new ColorWindow(logicielStructure,indicator);
 
         indicator.setCursor(Cursor.HAND);
     }

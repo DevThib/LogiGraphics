@@ -11,16 +11,23 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import sample.logigraphics.charts.PieChart;
 import sample.logigraphics.interfaces.LogicielStructure;
+import sample.logigraphics.stuff.Debug;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public class ChartWindow {
 
-    SmallWindow smallWindow = new SmallWindow("Graphique",1);
+    SmallWindow smallWindow;
 
     Border test = new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.DOTTED,new CornerRadii(0),new BorderWidths(1)));
     Border white = new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID,new CornerRadii(3),new BorderWidths(1)));
@@ -29,6 +36,9 @@ public class ChartWindow {
     Font font = new Font("Trebuchet MS",15);
 
     public ChartWindow(LogicielStructure logicielStructure, PieChart pieChart){
+
+        smallWindow = new SmallWindow("Graphique",1,Debug.getIcon("chart",logicielStructure,1));
+
         FlowPane central = new FlowPane();
         central.setAlignment(Pos.CENTER);
         central.setHgap(100);
@@ -66,6 +76,8 @@ public class ChartWindow {
         name.setOnMouseExited(event -> name.setBorder(invisible));
         name.setFont(font);
 
+        ListView<String> listView = new ListView<>();
+
         TextField value = new TextField();
         value.setBorder(invisible);
         value.setPromptText("Valeur");
@@ -82,8 +94,20 @@ public class ChartWindow {
         };
         value.textProperty().addListener(numericTextFieldListener);
         value.setFont(font);
+        value.setOnKeyPressed(event -> {
+            if(event.getCode().getName().equalsIgnoreCase("Enter")){
+                if(!name.getText().equalsIgnoreCase("") && !value.getText().equalsIgnoreCase("")) {
+                    if (listView.getItems().size() == 1 && listView.getItems().get(0).equalsIgnoreCase("Aucune valeur entrée")) {
+                        listView.getItems().remove(0);
+                    }
+                    pieChart.addValue(name.getText(), Double.parseDouble(value.getText()));
+                    listView.getItems().add(name.getText() + " - " + value.getText());
+                    name.setText("");
+                    value.setText("");
+                }
+            }
+        });
 
-        ListView<String> listView = new ListView<>();
         listView.setBorder(test);
         listView.setOnMouseClicked(event -> {
             if(event.getButton() == MouseButton.SECONDARY && !listView.getSelectionModel().getSelectedItem().equalsIgnoreCase("Aucune valeur entrée")){
