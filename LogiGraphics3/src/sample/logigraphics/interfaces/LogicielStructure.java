@@ -97,21 +97,21 @@ public class LogicielStructure {
         rightBar= new RightBar(this);
         treeBuilder = new TreeBuilder(new File(logiciel.getDataBase().getDirectoryByName("cache").readLineFile("root.txt",0)),borderPane,scene,this);
 
-        adaptCanvasSize();
-        buildCanvas();
+        adaptCanvasSize(canvas);
+        buildCanvas(canvas);
         buildScene();
         buildGrid();
         buildMenu();
 
         save = new SmallWindow("Enregistrer ?",0.5, Debug.getIcon("chart",this,0.5));
-        info = new SmallWindow("Raccourcis clavier",1,Debug.getIcon("chart",this,1));
+        info = new SmallWindow("Raccourcis clavier",1,Debug.getIcon("keyboard",this,1));
 
         grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
         grid.setNumberOfLines(1);
         grid.setVisible(false);
 
-        group.getChildren().addAll(canvas,logiciel.getMirrorAxe(),grid.getGrid());
-        group.getChildren().addAll(logiciel.getShow().getRectangle(),logiciel.getShow().getLine(),logiciel.getShow().getCircle());
+        group.getChildren().addAll(canvas,grid.getGrid());
+        //group.getChildren().addAll(logiciel.getShow().getRectangle(),logiciel.getShow().getLine(),logiciel.getShow().getCircle());
 
         VBox bars = new VBox();
         bars.getChildren().addAll(logicielBar.get(), settingsBar.get());
@@ -321,7 +321,7 @@ public class LogicielStructure {
         });
     }
 
-    private void buildCanvas(){
+    private void buildCanvas(Canvas canvas){
 
         DropShadow ds = new DropShadow();
         ds.setOffsetY(5);
@@ -521,7 +521,7 @@ public class LogicielStructure {
         return graphicsContext;
     }
 
-    public void adaptCanvasSize(){
+    public void adaptCanvasSize(Canvas canvas){
         canvas.setWidth(scene.getWidth()-420);
         canvas.setHeight(scene.getHeight()-90);
     }
@@ -537,7 +537,7 @@ public class LogicielStructure {
             Image image1 = new Image(new FileInputStream(image));
 
             canvas.getGraphicsContext2D().clearRect(0,0,canvas.getWidth(),canvas.getHeight());
-            adaptCanvasSize();
+            adaptCanvasSize(canvas);
             graphicsContext.drawImage(image1, 0, 0);
             canvas.setHeight(image1.getHeight());
             canvas.setWidth(image1.getWidth());
@@ -545,7 +545,7 @@ public class LogicielStructure {
             setTitle(image.getName());
             rightBar.unCheckAll();
 
-            buildCanvas();
+            buildCanvas(canvas);
 
             imageOpened = image;
         }catch (FileNotFoundException e){}
@@ -556,13 +556,18 @@ public class LogicielStructure {
     }
 
     private void openNewPaper(){
-        adaptCanvasSize();
+        Canvas canvas = new Canvas();
+
         logicielBar.setTitle("Nouveau projet");
+
+        adaptCanvasSize(canvas);
+        buildCanvas(canvas);
         canvas.getGraphicsContext2D().setFill(Color.WHITE);
         canvas.getGraphicsContext2D().clearRect(0,0,canvas.getWidth(),canvas.getHeight());
         canvas.getGraphicsContext2D().fillRect(0,0,canvas.getWidth(),canvas.getHeight());
         canvas.getGraphicsContext2D().setFill(rightBar.getIndicator().getFill());
-        grid.setCanvasSize(canvas.getWidth(), canvas.getHeight());
+        setCanvas(canvas);
+
         fadeIn.play();
     }
 

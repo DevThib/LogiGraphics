@@ -35,6 +35,15 @@ public class Debug {
             imageView.setFitHeight(20*size);
             return imageView;
         }
+        if(code.equalsIgnoreCase("keyboard")){
+            ImageView imageView = null;
+            try {
+                imageView = new ImageView(new Image(new FileInputStream(logicielStructure.getLogiciel().getDataBase().getDirectoryByName("cache").getFileByName("keyboard.png"))));
+            } catch (FileNotFoundException e) {e.printStackTrace();}
+            imageView.setFitWidth(20*size);
+            imageView.setFitHeight(20*size);
+            return imageView;
+        }
         return null;
     }
 

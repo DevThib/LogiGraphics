@@ -5,13 +5,12 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
-import sample.logigraphics.windows.SmallWindow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-public class PieChart implements Chart{
+public class BarChart implements Chart{
 
     HashMap<String,Double> values = new HashMap<>();
     ArrayList<String> keys = new ArrayList<>();
@@ -22,7 +21,7 @@ public class PieChart implements Chart{
 
     double size;
 
-    public PieChart(double size){
+    public BarChart(double size){
         chart = new Canvas(size*300+400+20,size*300+20);
 
         DropShadow ds = new DropShadow();
@@ -72,38 +71,36 @@ public class PieChart implements Chart{
     @Override
     public Canvas build(){
 
-        double total = 0;
-        double part;
-        double totalAngle = 0;
-
         chart.getGraphicsContext2D().clearRect(0,0,size*300+420,size*300+20);
         chart.getGraphicsContext2D().setFill(Color.WHITE);
         chart.getGraphicsContext2D().fillRect(0,0,size*300+420,size*300+20);
 
-        for(String string : keys){
-            total += values.get(string);
+        double max = 0;
+
+        for (String key : keys) {
+            if (max < values.get(key)) max = values.get(key);
         }
+        double ratio = size*300/max;
+
         int i = 0;
         for(String string : keys){
 
             Color color = Color.rgb(random.nextInt(256),random.nextInt(256), random.nextInt(256));
 
-            part = values.get(string)/total;
+            double width = (size*300)/keys.size()-10;
+
             chart.getGraphicsContext2D().setFill(color);
-            chart.getGraphicsContext2D().fillArc(10,10,size*300,size*300,totalAngle,360*part, ArcType.ROUND);
+            chart.getGraphicsContext2D().fillRect(i*(width+10)+10,10+size*300-ratio*values.get(string),width,ratio*values.get(string));
 
             chart.getGraphicsContext2D().fillRect(size*300+60,50+i*45,40,40);
             chart.getGraphicsContext2D().setFill(Color.BLACK);
             chart.getGraphicsContext2D().setFont(new Font("Trebuchet MS",20));
             chart.getGraphicsContext2D().fillText(string,size*300+115,75+i*45);
 
-            totalAngle += 360*part;
             i++;
         }
 
         return chart;
     }
-
-
 
 }

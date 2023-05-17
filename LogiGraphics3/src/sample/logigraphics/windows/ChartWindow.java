@@ -18,6 +18,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import sample.logigraphics.charts.Chart;
 import sample.logigraphics.charts.PieChart;
 import sample.logigraphics.interfaces.LogicielStructure;
 import sample.logigraphics.stuff.Debug;
@@ -35,7 +36,11 @@ public class ChartWindow {
 
     Font font = new Font("Trebuchet MS",15);
 
-    public ChartWindow(LogicielStructure logicielStructure, PieChart pieChart){
+    Chart chart;
+
+    public ChartWindow(LogicielStructure logicielStructure, Chart chatr){
+
+        this.chart = chatr;
 
         smallWindow = new SmallWindow("Graphique",1,Debug.getIcon("chart",logicielStructure,1));
 
@@ -100,7 +105,7 @@ public class ChartWindow {
                     if (listView.getItems().size() == 1 && listView.getItems().get(0).equalsIgnoreCase("Aucune valeur entrée")) {
                         listView.getItems().remove(0);
                     }
-                    pieChart.addValue(name.getText(), Double.parseDouble(value.getText()));
+                    chart.addValue(name.getText(), Double.parseDouble(value.getText()));
                     listView.getItems().add(name.getText() + " - " + value.getText());
                     name.setText("");
                     value.setText("");
@@ -131,7 +136,7 @@ public class ChartWindow {
                 if (listView.getItems().size() == 1 && listView.getItems().get(0).equalsIgnoreCase("Aucune valeur entrée")) {
                     listView.getItems().remove(0);
                 }
-                pieChart.addValue(name.getText(), Double.parseDouble(value.getText()));
+                chart.addValue(name.getText(), Double.parseDouble(value.getText()));
                 listView.getItems().add(name.getText() + " - " + value.getText());
                 name.setText("");
                 value.setText("");
@@ -140,11 +145,11 @@ public class ChartWindow {
 
         Button create = smallWindow.getStyliziedButton("Créer",false);
         create.setOnAction(event -> {
-            if(pieChart.getValues().size() > 0) {
+            if(chart.getValues().size() > 0) {
                 logicielStructure.getCanvas().getGraphicsContext2D().clearRect(0,0,logicielStructure.getCanvas().getWidth(),logicielStructure.getCanvas().getHeight());
-                logicielStructure.setCanvas(pieChart.build());
+                logicielStructure.setCanvas(chart.build());
                 listView.getItems().removeAll(listView.getItems());
-                pieChart.init();
+                chart.init();
                 smallWindow.close();
             }
         });
@@ -161,6 +166,9 @@ public class ChartWindow {
         smallWindow.show();
     }
 
-
+    public void setChart(Chart chart){
+        chart.init();
+        this.chart = chart;
+    }
 
 }

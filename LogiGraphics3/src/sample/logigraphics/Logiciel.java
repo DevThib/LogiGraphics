@@ -181,6 +181,7 @@ public class Logiciel {
                     keyShort1.execute();
                 }
             }
+            System.out.println(event.getCode());
 
             if(creation == Creation.MIRROR) {
 
@@ -409,6 +410,32 @@ public class Logiciel {
                 canvas.snapshot(null, writableImage);
                 RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
                 ImageIO.write(renderedImage, "png", new File(dataBase.getLocation()+"\\.logiGraphics\\cache\\colors.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        if(!dataBase.getDirectoryByName("cache").containsFile("keyboard.png")){
+            Canvas canvas = new Canvas(20,20);
+            GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+            graphicsContext.setFill(LogicielColors.getTopBarColor());
+            graphicsContext.fillRect(0,0,20,20);
+            graphicsContext.setFill(Color.RED);
+            graphicsContext.fillRect(1,4,3,3);
+            for(int i = 0; i < 4; i++){
+                graphicsContext.fillRect(3+3*i,1,3,3);
+            }
+            graphicsContext.fillRect(12,4,3,3);
+            graphicsContext.fillRect(9,7,3,3);
+            graphicsContext.fillRect(9,10,3,3);
+            graphicsContext.fillRect(9,13,3,3);
+            graphicsContext.fillRect(9,19,3,3);
+
+            try {
+                WritableImage writableImage = new WritableImage((int) canvas.getWidth(),(int) canvas.getHeight());
+                canvas.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                ImageIO.write(renderedImage, "png", new File(dataBase.getLocation()+"\\.logiGraphics\\cache\\keyboard.png"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
